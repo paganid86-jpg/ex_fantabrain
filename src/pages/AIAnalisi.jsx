@@ -22,16 +22,16 @@ function MessageBubble({ msg }) {
     }}>
       {!isUser && (
         <div style={{
-          width: 30,
-          height: 30,
+          width: 32,
+          height: 32,
           borderRadius: '50%',
           background: 'linear-gradient(135deg, var(--purple), var(--cyan))',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          fontSize: 15,
+          fontSize: 16,
           flexShrink: 0,
-          boxShadow: '0 0 12px rgba(168,85,247,0.4)',
+          boxShadow: '0 0 14px rgba(168,85,247,0.45)',
         }}>🤖</div>
       )}
       <div style={{
@@ -46,7 +46,7 @@ function MessageBubble({ msg }) {
         color: 'var(--text-primary)',
         lineHeight: 1.65,
         whiteSpace: 'pre-wrap',
-        backdropFilter: 'blur(8px)',
+        backdropFilter: 'blur(10px)',
       }}>
         {msg.content}
       </div>
@@ -121,7 +121,10 @@ export default function AIAnalisi() {
           background: 'rgba(245,200,66,0.03)',
         }}>
           <div>
-            <div style={{ fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: 17, color: 'var(--text-primary)', letterSpacing: '0.02em' }}>
+            <div style={{
+              fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: 17,
+              color: 'var(--text-primary)', letterSpacing: '0.02em',
+            }}>
               🤖 Chat FantaBrain AI
             </div>
             <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>
@@ -148,10 +151,11 @@ export default function AIAnalisi() {
         <div style={{ flex: 1, overflowY: 'auto', padding: '20px 20px 10px' }}>
           {messaggi.length === 0 && (
             <div className="empty-state" style={{ paddingTop: 40, paddingBottom: 20 }}>
-              <div className="empty-state-icon" style={{ fontSize: 44 }}>🤖</div>
+              <div className="empty-state-icon" style={{ fontSize: 48 }}>🤖</div>
               <div className="empty-state-title">Benvenuto su FantaBrain AI</div>
               <div className="empty-state-desc">
-                Sono il tuo assistente per il Fantacalcio Mantra. Chiedimi tutto sulla tua rosa, sul prossimo avversario o sulle strategie di mercato.
+                Sono il tuo assistente per il Fantacalcio Mantra. Chiedimi tutto sulla tua rosa,
+                sul prossimo avversario o sulle strategie di mercato.
               </div>
               <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 8 }}>
                 Usa i prompt rapidi qui sotto o scrivi la tua domanda
@@ -166,22 +170,25 @@ export default function AIAnalisi() {
           {loading && (
             <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, marginBottom: 14 }}>
               <div style={{
-                width: 30, height: 30, borderRadius: '50%',
+                width: 32, height: 32, borderRadius: '50%',
                 background: 'linear-gradient(135deg, var(--purple), var(--cyan))',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, flexShrink: 0,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 16, flexShrink: 0,
+                boxShadow: '0 0 14px rgba(168,85,247,0.45)',
               }}>🤖</div>
               <div style={{
                 background: 'var(--bg-glass)',
                 border: '1px solid rgba(168,85,247,0.2)',
                 borderRadius: '18px 18px 18px 4px',
-                padding: '12px 18px',
-                display: 'flex', gap: 5, alignItems: 'center',
+                padding: '14px 18px',
+                display: 'flex', gap: 6, alignItems: 'center',
+                backdropFilter: 'blur(10px)',
               }}>
-                {[0, 1, 2].map((i) => (
-                  <div key={i} style={{
+                {[0, 1, 2].map((idx) => (
+                  <div key={idx} style={{
                     width: 7, height: 7, borderRadius: '50%',
                     background: 'var(--purple)',
-                    animation: `dotPulse 1.2s ease-in-out ${i * 0.2}s infinite`,
+                    animation: `dotPulse 1.2s ease-in-out ${idx * 0.2}s infinite`,
                   }} />
                 ))}
               </div>
@@ -226,7 +233,7 @@ export default function AIAnalisi() {
                 onMouseEnter={(e) => {
                   e.currentTarget.style.borderColor = 'var(--purple)';
                   e.currentTarget.style.color = 'var(--purple)';
-                  e.currentTarget.style.background = 'rgba(168,85,247,0.12)';
+                  e.currentTarget.style.background = 'rgba(168,85,247,0.14)';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.borderColor = 'rgba(168,85,247,0.2)';
@@ -268,7 +275,8 @@ export default function AIAnalisi() {
         <div className="glass-card" style={{ padding: 16 }}>
           <div style={{
             fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: 13,
-            color: 'var(--gold)', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 10,
+            color: 'var(--gold)', letterSpacing: '0.06em',
+            textTransform: 'uppercase', marginBottom: 10,
           }}>
             🔑 Claude API Key
           </div>
@@ -308,13 +316,14 @@ export default function AIAnalisi() {
         <div className="glass-card" style={{ padding: 16, flex: 1 }}>
           <div style={{
             fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: 13,
-            color: 'var(--text-primary)', letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: 12,
+            color: 'var(--text-primary)', letterSpacing: '0.04em',
+            textTransform: 'uppercase', marginBottom: 12,
           }}>
             📋 La Tua Rosa
           </div>
 
           {rosa.length === 0 ? (
-            <div style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.6 }}>
+            <div style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.7 }}>
               Aggiungi giocatori alla rosa per contestualizzare l'AI con i tuoi dati.
             </div>
           ) : (

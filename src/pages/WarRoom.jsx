@@ -1,67 +1,112 @@
 import { useState } from 'react';
 import useAppStore from '../store/useAppStore';
-import { rosaAvversaria, classificaLega } from '../data/mockData';
 import { warRoomAnalisi } from '../lib/claudeApi';
 
-const AVVERSARI = classificaLega.filter((t) => !t.isUser).map((t) => t.nome);
+const LOADING_STEPS = [
+  'Analizzando avversario...',
+  'Valutando vantaggi...',
+  'Generando piano tattico...',
+];
 
 export default function WarRoom() {
   const rosa = useAppStore((s) => s.rosa);
+  const classifica = useAppStore((s) => s.classifica);
   const giornataCorrente = useAppStore((s) => s.giornataCorrente);
   const aiCrediti = useAppStore((s) => s.aiCrediti);
 
-  const [avversario, setAvversario] = useState('Juventino Power');
+  const avversariLista = classifica.filter((t) => !t.isUser).map((t) => t.nome);
+
+  const [avversario, setAvversario] = useState(avversariLista[0] || '');
+  const [avversarioLibero, setAvversarioLibero] = useState('');
   const [apiKey, setApiKey] = useState('');
   const [showApiKey, setShowApiKey] = useState(false);
 
   const [loading, setLoading] = useState(false);
-  const [loadingStep, setLoadingStep] = useState('');
+  const [loadingStep, setLoadingStep] = useState(0);
   const [risultato, setRisultato] = useState(null);
   const [error, setError] = useState(null);
 
-  const rosaAvv = rosaAvversaria[avversario] || rosaAvversaria['Juventino Power'] || [];
+  const nomeAvversario = avversariLista.length > 0 ? avversario : avversarioLibero;
 
   async function lanciaAnalisi() {
+    if (!nomeAvversario.trim()) return;
     setLoading(true);
     setError(null);
     setRisultato(null);
+    setLoadingStep(0);
 
     try {
-      setLoadingStep('Analizzando la rosa avversaria...');
-      const { analisiAvversario, vantaggi, pianoTattico } = await warRoomAnalisi(rosa, rosaAvv, avversario, giornataCorrente, apiKey);
-
+      setLoadingStep(0);
+      const { analisiAvversario, vantaggi, pianoTattico } = await warRoomAnalisi(
+        rosa,
+        [],
+        nomeAvversario,
+        giornataCorrente,
+        apiKey,
+      );
+      setLoadingStep(2);
       setRisultato({ analisiAvversario, vantaggi, pianoTattico });
     } catch {
       setError('Analisi non disponibile al momento. Verifica la API key e i crediti AI.');
     } finally {
       setLoading(false);
-      setLoadingStep('');
     }
   }
 
   function salvaAnalisi() {
     if (risultato) {
-      sessionStorage.setItem(`war-room-g${giornataCorrente}`, JSON.stringify({ avversario, risultato, timestamp: Date.now() }));
-      alert('Analisi salvata!');
+      sessionStorage.setItem(
+        `war-room-g${giornataCorrente}`,
+        JSON.stringify({ avversario: nomeAvversario, risultato, timestamp: Date.now() }),
+      );
     }
   }
 
   return (
     <div>
-      {/* Header configurazione */}
-      <div className="card" style={{ marginBottom: 16 }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr auto', gap: 16, alignItems: 'end', flexWrap: 'wrap' }}>
+      {/* Config card */}
+      <div className="glass-card" style={{ padding: 20, marginBottom: 20 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
+          {/* Dropdown avversario */}
           <div>
-            <label style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'Barlow Condensed', letterSpacing: '0.08em', display: 'block', marginBottom: 6 }}>
-              AVVERSARIO GIORNATA {giornataCorrente}
+            <label style={{
+              fontSize: 11, color: 'var(--text-muted)',
+              fontFamily: 'Barlow Condensed', letterSpacing: '0.08em',
+              display: 'block', marginBottom: 6, textTransform: 'uppercase',
+            }}>
+              Avversario · Giornata {giornataCorrente}
             </label>
-            <select className="input-field" value={avversario} onChange={(e) => { setAvversario(e.target.value); setRisultato(null); }}>
-              {AVVERSARI.map((a) => <option key={a} value={a}>{a}</option>)}
-            </select>
+            {avversariLista.length > 0 ? (
+              <select
+                className="input-field"
+                value={avversario}
+                onChange={(e) => { setAvversario(e.target.value); setRisultato(null); }}
+              >
+                {avversariLista.map((a) => <option key={a} value={a}>{a}</option>)}
+              </select>
+            ) : (
+              <input
+                className="input-field"
+                placeholder="Nome avversario (es. Juventino Power)"
+                value={avversarioLibero}
+                onChange={(e) => { setAvversarioLibero(e.target.value); setRisultato(null); }}
+              />
+            )}
+            {avversariLista.length === 0 && (
+              <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>
+                Aggiungi la classifica per selezionare l'avversario dalla lista
+              </div>
+            )}
           </div>
+
+          {/* API Key */}
           <div>
-            <label style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'Barlow Condensed', letterSpacing: '0.08em', display: 'block', marginBottom: 6 }}>
-              CLAUDE API KEY
+            <label style={{
+              fontSize: 11, color: 'var(--text-muted)',
+              fontFamily: 'Barlow Condensed', letterSpacing: '0.08em',
+              display: 'block', marginBottom: 6, textTransform: 'uppercase',
+            }}>
+              Claude API Key
             </label>
             <div style={{ display: 'flex', gap: 6 }}>
               <input
@@ -71,95 +116,110 @@ export default function WarRoom() {
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
               />
-              <button onClick={() => setShowApiKey((s) => !s)} className="btn-secondary" style={{ padding: '8px 10px', flexShrink: 0 }}>
+              <button
+                onClick={() => setShowApiKey((s) => !s)}
+                className="btn-secondary"
+                style={{ padding: '8px 10px', flexShrink: 0 }}
+              >
                 {showApiKey ? '🙈' : '👁'}
               </button>
             </div>
           </div>
+        </div>
+
+        {/* Avviso rosa vuota */}
+        {rosa.length === 0 && (
+          <div style={{
+            marginBottom: 14, padding: '10px 14px',
+            background: 'rgba(168,85,247,0.08)',
+            border: '1px solid rgba(168,85,247,0.2)',
+            borderRadius: 8, fontSize: 12, color: 'var(--text-secondary)',
+          }}>
+            ℹ️ Aggiungi giocatori per un'analisi personalizzata. Puoi comunque eseguire un'analisi generica.
+          </div>
+        )}
+
+        {/* Avviso crediti */}
+        {aiCrediti < 3 && (
+          <div style={{
+            marginBottom: 14, padding: '8px 12px',
+            background: 'rgba(251,191,36,0.08)',
+            border: '1px solid rgba(251,191,36,0.25)',
+            borderRadius: 6, fontSize: 12, color: 'var(--amber)',
+          }}>
+            ⚠️ Solo {aiCrediti} crediti AI rimasti! L'analisi War Room ne usa 3.
+          </div>
+        )}
+
+        {/* Bottone grande centrato */}
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
           <button
             className="btn-ai"
             onClick={lanciaAnalisi}
-            disabled={loading || aiCrediti === 0}
-            style={{ padding: '12px 24px', fontSize: 16, letterSpacing: '0.05em', alignSelf: 'end', whiteSpace: 'nowrap' }}
+            disabled={loading || aiCrediti === 0 || !nomeAvversario.trim()}
+            style={{
+              padding: '14px 40px', fontSize: 16,
+              letterSpacing: '0.06em', fontFamily: 'Barlow Condensed',
+              fontWeight: 700, minWidth: 240,
+            }}
           >
             {loading ? '⏳ Analizzando...' : '⚔️ LANCIA ANALISI AI'}
           </button>
         </div>
 
-        {aiCrediti < 3 && (
-          <div style={{ marginTop: 12, padding: '8px 12px', background: 'rgba(255,171,0,0.08)', borderRadius: 6, border: '1px solid rgba(255,171,0,0.2)', fontSize: 12, color: 'var(--accent-amber)' }}>
-            ⚠️ Attenzione: solo {aiCrediti} crediti AI rimasti! L'analisi War Room ne usa 3.
-          </div>
-        )}
-
-        {loading && loadingStep && (
-          <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, color: 'var(--accent-blue)' }}>
-            <div className="spinner" />
-            {loadingStep}
-          </div>
-        )}
-      </div>
-
-      {/* Rosa avversaria */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
-        <div className="card">
-          <div className="section-title" style={{ fontSize: 14, marginBottom: 12 }}>
-            🛡️ Rosa Avversaria — {avversario}
-          </div>
-          {rosaAvv.length > 0 ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              {rosaAvv.map((g, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 0', borderBottom: '1px solid rgba(30,45,69,0.4)' }}>
-                  <span className="badge badge-muted" style={{ fontSize: 9, width: 36, textAlign: 'center', flexShrink: 0 }}>{g.ruoloMantra}</span>
-                  <span style={{ flex: 1, fontSize: 13, fontWeight: 500, color: 'var(--text-primary)' }}>{g.nome}</span>
-                  <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{g.squadra}</span>
-                  <span style={{ fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: 13, color: g.votoMedia >= 7 ? 'var(--accent-green)' : 'var(--text-secondary)' }}>
-                    {g.votoMedia.toFixed(1)}
-                  </span>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div style={{ fontSize: 12, color: 'var(--text-muted)', padding: '20px 0', textAlign: 'center' }}>
-              Rosa non disponibile per questo avversario nel prototipo.
-            </div>
-          )}
-        </div>
-
-        <div className="card">
-          <div className="section-title" style={{ fontSize: 14, marginBottom: 12 }}>
-            📊 La Mia Rosa (Titolari)
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            {rosa.filter((g) => !g.infortunato).slice(0, 11).map((g) => (
-              <div key={g.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 0', borderBottom: '1px solid rgba(30,45,69,0.4)' }}>
-                <span className="badge badge-muted" style={{ fontSize: 9, width: 36, textAlign: 'center', flexShrink: 0 }}>{g.ruoloMantra}</span>
-                <span style={{ flex: 1, fontSize: 13, fontWeight: 500, color: 'var(--text-primary)' }}>{g.cognome}</span>
-                <span style={{ fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: 13, color: g.votoMedia >= 7 ? 'var(--accent-green)' : 'var(--text-secondary)' }}>
-                  {g.votoMedia.toFixed(1)}
-                </span>
-                {g.diffidato && <span style={{ fontSize: 10 }}>⚠️</span>}
+        {/* Loading steps */}
+        {loading && (
+          <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {LOADING_STEPS.map((step, i) => (
+              <div
+                key={step}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 10,
+                  fontSize: 13,
+                  color: i <= loadingStep ? 'var(--blue)' : 'var(--text-muted)',
+                  opacity: i <= loadingStep ? 1 : 0.4,
+                  transition: 'all 0.3s',
+                }}
+              >
+                {i < loadingStep ? (
+                  <span style={{ color: 'var(--green)' }}>✓</span>
+                ) : i === loadingStep ? (
+                  <div className="spinner" />
+                ) : (
+                  <span style={{ width: 14, display: 'inline-block' }} />
+                )}
+                {step}
               </div>
             ))}
           </div>
-        </div>
+        )}
       </div>
 
-      {/* Risultato AI */}
+      {/* Error */}
       {error && (
-        <div style={{ padding: '16px', background: 'rgba(255,23,68,0.08)', border: '1px solid rgba(255,23,68,0.2)', borderRadius: 10, color: 'var(--accent-red)', fontSize: 13, marginBottom: 16 }}>
+        <div style={{
+          padding: 16,
+          background: 'rgba(248,113,113,0.08)',
+          border: '1px solid rgba(248,113,113,0.2)',
+          borderRadius: 10, color: 'var(--red)',
+          fontSize: 13, marginBottom: 16,
+        }}>
           {error}
         </div>
       )}
 
+      {/* Risultato AI */}
       {risultato && (
         <div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+          <div style={{
+            display: 'flex', justifyContent: 'space-between',
+            alignItems: 'center', marginBottom: 16,
+          }}>
             <div className="section-title" style={{ fontSize: 18 }}>
-              ⚔️ War Room Analysis — G{giornataCorrente} vs {avversario}
+              ⚔️ War Room — G{giornataCorrente} vs {nomeAvversario}
             </div>
-            <button onClick={salvaAnalisi} className="btn-secondary" style={{ fontSize: 13 }}>
-              💾 Salva Analisi
+            <button onClick={salvaAnalisi} className="btn-secondary" style={{ fontSize: 12 }}>
+              💾 Salva
             </button>
           </div>
 
@@ -168,23 +228,23 @@ export default function WarRoom() {
               {
                 titolo: '🔍 Analisi Avversario',
                 contenuto: risultato.analisiAvversario,
-                color: 'var(--accent-blue)',
-                bg: 'rgba(41,121,255,0.05)',
-                border: 'rgba(41,121,255,0.2)',
+                color: 'var(--blue)',
+                bg: 'rgba(96,165,250,0.05)',
+                border: 'rgba(96,165,250,0.2)',
               },
               {
                 titolo: '⚡ Vantaggi e Rischi',
                 contenuto: risultato.vantaggi,
-                color: 'var(--accent-green)',
-                bg: 'rgba(0,230,118,0.05)',
-                border: 'rgba(0,230,118,0.2)',
+                color: 'var(--green)',
+                bg: 'rgba(74,222,128,0.05)',
+                border: 'rgba(74,222,128,0.2)',
               },
               {
                 titolo: '🗺️ Piano Tattico',
                 contenuto: risultato.pianoTattico,
-                color: 'var(--accent-amber)',
-                bg: 'rgba(255,171,0,0.05)',
-                border: 'rgba(255,171,0,0.2)',
+                color: 'var(--gold)',
+                bg: 'rgba(245,200,66,0.05)',
+                border: 'rgba(245,200,66,0.2)',
               },
             ].map((sezione) => (
               <div
@@ -193,12 +253,20 @@ export default function WarRoom() {
                   background: sezione.bg,
                   border: `1px solid ${sezione.border}`,
                   borderRadius: 12, padding: 16,
+                  backdropFilter: 'blur(10px)',
                 }}
               >
-                <div style={{ fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: 15, color: sezione.color, marginBottom: 12, letterSpacing: '0.03em' }}>
+                <div style={{
+                  fontFamily: 'Barlow Condensed', fontWeight: 700,
+                  fontSize: 15, color: sezione.color,
+                  marginBottom: 12, letterSpacing: '0.03em',
+                }}>
                   {sezione.titolo}
                 </div>
-                <div style={{ fontSize: 13, lineHeight: 1.7, color: 'var(--text-primary)', whiteSpace: 'pre-wrap' }}>
+                <div style={{
+                  fontSize: 13, lineHeight: 1.7,
+                  color: 'var(--text-primary)', whiteSpace: 'pre-wrap',
+                }}>
                   {sezione.contenuto}
                 </div>
               </div>
@@ -207,14 +275,14 @@ export default function WarRoom() {
         </div>
       )}
 
+      {/* Empty state */}
       {!risultato && !loading && !error && (
-        <div style={{ textAlign: 'center', padding: '60px 20px' }}>
-          <div style={{ fontSize: 48, marginBottom: 16 }}>⚔️</div>
-          <div style={{ fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: 24, color: 'var(--text-primary)', marginBottom: 8 }}>
-            War Room
-          </div>
-          <div style={{ fontSize: 14, color: 'var(--text-muted)', maxWidth: 400, margin: '0 auto', lineHeight: 1.7 }}>
-            Seleziona l'avversario della giornata e lancia l'analisi AI per ottenere una tattica personalizzata: punti di forza, rischi e piano tattico.
+        <div className="empty-state" style={{ paddingTop: 60 }}>
+          <div className="empty-state-icon" style={{ fontSize: 52 }}>⚔️</div>
+          <div className="empty-state-title">War Room</div>
+          <div className="empty-state-desc">
+            Seleziona l'avversario della giornata e lancia l'analisi AI per ottenere
+            punti di forza, rischi e piano tattico personalizzato.
           </div>
         </div>
       )}

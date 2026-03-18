@@ -1,30 +1,12 @@
 import { useState, useMemo } from 'react';
 import useAppStore from '../store/useAppStore';
+import AddPlayerModal from '../components/ui/AddPlayerModal';
+import { RUOLI_MANTRA } from '../data/mockData';
 
-const ruoliMantra = ['Tutti', 'Por', 'DD', 'DS', 'DC', 'M/C', 'C', 'T/A', 'W', 'T', 'A', 'PC'];
+const RUOLI_FILTRO = ['Tutti', ...RUOLI_MANTRA];
+const RUOLI_KPI = ['Por', 'DC', 'DD', 'DS', 'M/C', 'C', 'T/A', 'PC'];
 
-function VotiBar({ voti }) {
-  return (
-    <div style={{ display: 'flex', gap: 3, alignItems: 'center' }}>
-      {voti.map((v, i) => {
-        let color = 'var(--text-muted)';
-        if (v >= 7) color = 'var(--accent-green)';
-        else if (v >= 6) color = 'var(--accent-amber)';
-        else if (v > 0) color = 'var(--accent-red)';
-        return (
-          <div
-            key={i}
-            title={v > 0 ? v.toString() : 'SV'}
-            style={{
-              width: 8, height: 8, borderRadius: '50%',
-              background: color, flexShrink: 0,
-            }}
-          />
-        );
-      })}
-    </div>
-  );
-}
+/* ── Sub-componenti ──────────────────────────────────────── */
 
 function StatoBadge({ infortunato, diffidato }) {
   if (infortunato) return <span className="badge badge-red">Infortunato</span>;
@@ -32,30 +14,74 @@ function StatoBadge({ infortunato, diffidato }) {
   return <span className="badge badge-green">Disponibile</span>;
 }
 
-function DettaglioGiocatore({ giocatore, onClose }) {
+function VotiDots({ voti }) {
+  return (
+    <div style={{ display: 'flex', gap: 3, alignItems: 'center' }}>
+      {voti.map((v, i) => {
+        let color = 'var(--text-muted)';
+        if (v >= 7) color = 'var(--green)';
+        else if (v >= 6) color = 'var(--amber)';
+        else if (v > 0) color = 'var(--red)';
+        return (
+          <div
+            key={i}
+            title={v > 0 ? String(v) : 'SV'}
+            style={{ width: 8, height: 8, borderRadius: '50%', background: color, flexShrink: 0 }}
+          />
+        );
+      })}
+    </div>
+  );
+}
+
+function DettaglioGiocatore({ giocatore, onModifica, onRimuovi, onClose }) {
   if (!giocatore) return null;
-  const maxVoto = Math.max(...giocatore.votiUltimi5.filter((v) => v > 0), 0.1);
+
+  const votiValidi = giocatore.votiUltimi5.filter((v) => v > 0);
+  const mediaUltimi3 = votiValidi.slice(-3).length > 0
+    ? votiValidi.slice(-3).reduce((s, v) => s + v, 0) / votiValidi.slice(-3).length
+    : null;
+  const inForma = mediaUltimi3 != null && mediaUltimi3 >= giocatore.votoMedia;
 
   return (
-    <div className="card" style={{ position: 'sticky', top: 0 }}>
+    <div className="glass-elevated" style={{ position: 'sticky', top: 0 }}>
+      {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
         <div>
-          <div style={{ fontFamily: 'Barlow Condensed', fontWeight: 800, fontSize: 22, color: 'var(--text-primary)' }}>
+          <div style={{ fontFamily: 'Barlow Condensed', fontWeight: 800, fontSize: 22, color: 'var(--text-primary)', lineHeight: 1.1 }}>
             {giocatore.nome} {giocatore.cognome}
           </div>
-          <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{giocatore.squadra}</div>
+          <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: 2 }}>{giocatore.squadra}</div>
         </div>
-        <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: 20 }}>✕</button>
+        <button
+          onClick={onClose}
+          style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: 20, padding: 2, lineHeight: 1 }}
+        >✕</button>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16 }}>
+      {/* Badge stato + forma */}
+      <div style={{ display: 'flex', gap: 6, marginBottom: 16, flexWrap: 'wrap' }}>
+        <StatoBadge infortunato={giocatore.infortunato} diffidato={giocatore.diffidato} />
+        {mediaUltimi3 != null && (
+          <span className={`badge badge-${inForma ? 'green' : 'red'}`}>
+            {inForma ? 'In forma' : 'In calo'}
+          </span>
+        )}
+      </div>
+
+      {/* Dati griglia */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 16 }}>
         {[
           { label: 'Ruolo', value: giocatore.ruoloMantra },
           { label: 'Quotazione', value: `${giocatore.quotazione}M` },
           { label: 'Media Voti', value: giocatore.votoMedia.toFixed(1) },
-          { label: 'Stato', value: <StatoBadge infortunato={giocatore.infortunato} diffidato={giocatore.diffidato} /> },
+          { label: 'Media Ultimi 3', value: mediaUltimi3 != null ? mediaUltimi3.toFixed(1) : '—' },
         ].map((item) => (
-          <div key={item.label} style={{ background: 'var(--bg-elevated)', borderRadius: 8, padding: '10px 12px' }}>
+          <div key={item.label} style={{
+            background: 'var(--bg-glass)',
+            borderRadius: 8, padding: '10px 12px',
+            border: '1px solid rgba(168,85,247,0.1)',
+          }}>
             <div style={{ fontSize: 10, color: 'var(--text-muted)', fontFamily: 'Barlow Condensed', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 4 }}>
               {item.label}
             </div>
@@ -66,26 +92,27 @@ function DettaglioGiocatore({ giocatore, onClose }) {
         ))}
       </div>
 
+      {/* Grafico voti */}
       <div style={{ marginBottom: 16 }}>
         <div style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'Barlow Condensed', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 10 }}>
           Andamento Voti (Ultimi 5)
         </div>
-        <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6, height: 80 }}>
+        <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6, height: 70 }}>
           {giocatore.votiUltimi5.map((v, i) => {
             let color = 'var(--text-muted)';
-            if (v >= 7) color = 'var(--accent-green)';
-            else if (v >= 6) color = 'var(--accent-amber)';
-            else if (v > 0) color = 'var(--accent-red)';
+            if (v >= 7) color = 'var(--green)';
+            else if (v >= 6) color = 'var(--amber)';
+            else if (v > 0) color = 'var(--red)';
             const heightPct = v > 0 ? ((v - 4) / 6) * 100 : 4;
             return (
-              <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, height: '100%', justifyContent: 'flex-end' }}>
-                <div style={{ fontSize: 10, color, fontFamily: 'Barlow Condensed', fontWeight: 700 }}>
+              <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, height: '100%', justifyContent: 'flex-end' }}>
+                <div style={{ fontSize: 9, color, fontFamily: 'Barlow Condensed', fontWeight: 700 }}>
                   {v > 0 ? v : 'SV'}
                 </div>
                 <div style={{
                   width: '100%', height: `${Math.max(heightPct, 4)}%`,
-                  background: color, borderRadius: '3px 3px 0 0', opacity: 0.8,
-                  minHeight: 4,
+                  background: color, borderRadius: '3px 3px 0 0', opacity: 0.85,
+                  minHeight: 4, boxShadow: `0 0 6px ${color}55`,
                 }} />
               </div>
             );
@@ -93,17 +120,34 @@ function DettaglioGiocatore({ giocatore, onClose }) {
         </div>
       </div>
 
-      <div style={{ fontSize: 12, color: 'var(--text-muted)', fontStyle: 'italic', padding: '10px 0', borderTop: '1px solid var(--border)' }}>
+      {/* Note stato */}
+      <div style={{ fontSize: 12, color: 'var(--text-muted)', fontStyle: 'italic', padding: '10px 0', borderTop: '1px solid var(--gold-border)', marginBottom: 14 }}>
         {giocatore.infortunato && '⚠️ Giocatore non disponibile per infortunio.'}
-        {giocatore.diffidato && '⚠️ In diffida: attenzione alla prossima ammonizione.'}
+        {giocatore.diffidato && !giocatore.infortunato && '⚠️ In diffida: attenzione alla prossima ammonizione.'}
         {!giocatore.infortunato && !giocatore.diffidato && '✅ Giocatore disponibile e in condizione.'}
+      </div>
+
+      {/* Azioni */}
+      <div style={{ display: 'flex', gap: 8 }}>
+        <button className="btn-secondary" style={{ flex: 1 }} onClick={onModifica}>
+          ✏️ Modifica
+        </button>
+        <button className="btn-danger" style={{ flex: 1 }} onClick={onRimuovi}>
+          🗑️ Rimuovi
+        </button>
       </div>
     </div>
   );
 }
 
+/* ── Componente principale ───────────────────────────────── */
+
 export default function LaRosa() {
   const rosa = useAppStore((s) => s.rosa);
+  const removeGiocatore = useAppStore((s) => s.removeGiocatore);
+
+  const [showAdd, setShowAdd] = useState(false);
+  const [editPlayer, setEditPlayer] = useState(null);
   const [filtroRuolo, setFiltroRuolo] = useState('Tutti');
   const [filtroSquadra, setFiltroSquadra] = useState('');
   const [filtroStato, setFiltroStato] = useState('tutti');
@@ -113,6 +157,11 @@ export default function LaRosa() {
   const [selezionato, setSelezionato] = useState(null);
 
   const squadre = useMemo(() => [...new Set(rosa.map((g) => g.squadra))].sort(), [rosa]);
+
+  const kpiRuoli = useMemo(() => RUOLI_KPI.map((r) => ({
+    ruolo: r,
+    count: rosa.filter((g) => g.ruoloMantra.startsWith(r.split('/')[0])).length,
+  })), [rosa]);
 
   const rosaFiltrata = useMemo(() => {
     let r = [...rosa];
@@ -131,14 +180,6 @@ export default function LaRosa() {
     return r;
   }, [rosa, filtroRuolo, filtroSquadra, filtroStato, cerca, sortKey, sortDir]);
 
-  const kpiRuoli = useMemo(() => {
-    const ruoliBase = ['Por', 'DC', 'DD', 'DS', 'M/C', 'C', 'T/A', 'PC'];
-    return ruoliBase.map((r) => ({
-      ruolo: r,
-      count: rosa.filter((g) => g.ruoloMantra.startsWith(r.split('/')[0])).length,
-    }));
-  }, [rosa]);
-
   function handleSort(key) {
     if (sortKey === key) setSortDir((d) => d * -1);
     else { setSortKey(key); setSortDir(1); }
@@ -146,29 +187,81 @@ export default function LaRosa() {
 
   function SortIcon({ col }) {
     if (sortKey !== col) return <span style={{ opacity: 0.3, marginLeft: 4 }}>↕</span>;
-    return <span style={{ marginLeft: 4 }}>{sortDir === 1 ? '↑' : '↓'}</span>;
+    return <span style={{ marginLeft: 4, color: 'var(--gold)' }}>{sortDir === 1 ? '↑' : '↓'}</span>;
   }
 
+  function handleRemove(g) {
+    if (window.confirm(`Rimuovere ${g.nome} ${g.cognome} dalla rosa?`)) {
+      removeGiocatore(g.id);
+      if (selezionato?.id === g.id) setSelezionato(null);
+    }
+  }
+
+  /* ── Empty state ─────────────────────────────────────── */
+  if (rosa.length === 0) {
+    return (
+      <div>
+        {/* Header */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+          <div>
+            <h2 className="section-title">La Rosa</h2>
+            <p className="section-subtitle">Gestisci i tuoi giocatori</p>
+          </div>
+          <button className="btn-primary" onClick={() => setShowAdd(true)}>
+            + Aggiungi Giocatore
+          </button>
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '50vh' }}>
+          <div className="empty-state">
+            <div className="empty-state-icon">👥</div>
+            <div className="empty-state-title">La tua rosa è vuota</div>
+            <div className="empty-state-desc">
+              Aggiungi i tuoi giocatori per iniziare. Usa il pulsante in alto a destra.
+            </div>
+            <button className="btn-primary" style={{ marginTop: 24 }} onClick={() => setShowAdd(true)}>
+              + Aggiungi il primo giocatore
+            </button>
+          </div>
+        </div>
+
+        {showAdd && (
+          <AddPlayerModal onClose={() => setShowAdd(false)} />
+        )}
+      </div>
+    );
+  }
+
+  /* ── Layout principale ───────────────────────────────── */
   return (
     <div>
-      {/* KPI Ruoli */}
+      {/* Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <h2 className="section-title" style={{ margin: 0 }}>La Rosa</h2>
+          <span className="badge badge-gold">{rosa.length} giocatori</span>
+        </div>
+        <button className="btn-primary" onClick={() => setShowAdd(true)}>
+          + Aggiungi Giocatore
+        </button>
+      </div>
+
+      {/* KPI ruoli */}
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 20 }}>
         {kpiRuoli.map((k) => (
           <div key={k.ruolo} style={{
-            background: 'var(--bg-card)', border: '1px solid var(--border)',
-            borderRadius: 8, padding: '6px 14px', display: 'flex', alignItems: 'center', gap: 6,
+            background: 'var(--bg-glass)',
+            border: '1px solid var(--gold-border)',
+            borderRadius: 8, padding: '6px 14px',
+            display: 'flex', alignItems: 'center', gap: 6,
+            backdropFilter: 'blur(4px)',
           }}>
-            <span style={{ fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: 15, color: 'var(--accent-blue)' }}>
+            <span style={{ fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: 16, color: 'var(--gold)' }}>
               {k.count}
             </span>
             <span style={{ fontSize: 12, color: 'var(--text-secondary)', fontFamily: 'Barlow Condensed' }}>{k.ruolo}</span>
           </div>
         ))}
-        <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'flex-end' }}>
-          <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Totale:</span>
-          <span style={{ fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: 18, color: 'var(--text-primary)' }}>{rosa.length}</span>
-          <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>giocatori</span>
-        </div>
       </div>
 
       {/* Filtri */}
@@ -181,7 +274,7 @@ export default function LaRosa() {
           style={{ maxWidth: 220 }}
         />
         <select className="input-field" value={filtroRuolo} onChange={(e) => setFiltroRuolo(e.target.value)} style={{ maxWidth: 140 }}>
-          {ruoliMantra.map((r) => <option key={r} value={r}>{r}</option>)}
+          {RUOLI_FILTRO.map((r) => <option key={r} value={r}>{r}</option>)}
         </select>
         <select className="input-field" value={filtroSquadra} onChange={(e) => setFiltroSquadra(e.target.value)} style={{ maxWidth: 160 }}>
           <option value="">Tutte le squadre</option>
@@ -198,18 +291,29 @@ export default function LaRosa() {
       {/* Layout tabella + dettaglio */}
       <div style={{ display: 'grid', gridTemplateColumns: selezionato ? '1fr 300px' : '1fr', gap: 16 }}>
         {/* Tabella */}
-        <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+        <div className="glass-card" style={{ padding: 0, overflow: 'hidden' }}>
           <div style={{ overflowX: 'auto' }}>
             <table className="data-table">
               <thead>
                 <tr>
-                  <th onClick={() => handleSort('ruoloMantra')}>Ruolo<SortIcon col="ruoloMantra" /></th>
-                  <th onClick={() => handleSort('cognome')}>Nome<SortIcon col="cognome" /></th>
-                  <th onClick={() => handleSort('squadra')}>Squadra<SortIcon col="squadra" /></th>
-                  <th onClick={() => handleSort('quotazione')}>Quota<SortIcon col="quotazione" /></th>
-                  <th onClick={() => handleSort('votoMedia')}>Media<SortIcon col="votoMedia" /></th>
+                  <th onClick={() => handleSort('ruoloMantra')} style={{ cursor: 'pointer' }}>
+                    Ruolo<SortIcon col="ruoloMantra" />
+                  </th>
+                  <th onClick={() => handleSort('cognome')} style={{ cursor: 'pointer' }}>
+                    Nome<SortIcon col="cognome" />
+                  </th>
+                  <th onClick={() => handleSort('squadra')} style={{ cursor: 'pointer' }}>
+                    Squadra<SortIcon col="squadra" />
+                  </th>
+                  <th onClick={() => handleSort('quotazione')} style={{ cursor: 'pointer' }}>
+                    Quota<SortIcon col="quotazione" />
+                  </th>
+                  <th onClick={() => handleSort('votoMedia')} style={{ cursor: 'pointer' }}>
+                    Media<SortIcon col="votoMedia" />
+                  </th>
                   <th>Ultimi 5</th>
                   <th>Stato</th>
+                  <th style={{ textAlign: 'center' }}>Azioni</th>
                 </tr>
               </thead>
               <tbody>
@@ -217,8 +321,11 @@ export default function LaRosa() {
                   <tr
                     key={g.id}
                     onClick={() => setSelezionato(selezionato?.id === g.id ? null : g)}
-                    style={{ cursor: 'pointer' }}
-                    className={selezionato?.id === g.id ? 'highlight' : ''}
+                    style={{
+                      cursor: 'pointer',
+                      background: selezionato?.id === g.id ? 'rgba(168,85,247,0.06)' : undefined,
+                      borderLeft: selezionato?.id === g.id ? '2px solid var(--purple)' : '2px solid transparent',
+                    }}
                   >
                     <td>
                       <span className="badge badge-muted">{g.ruoloMantra}</span>
@@ -226,39 +333,81 @@ export default function LaRosa() {
                     <td>
                       <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{g.nome} {g.cognome}</span>
                     </td>
-                    <td>{g.squadra}</td>
+                    <td style={{ color: 'var(--text-secondary)' }}>{g.squadra}</td>
                     <td>
-                      <span style={{ fontFamily: 'Barlow Condensed', fontWeight: 700, color: 'var(--accent-amber)' }}>
+                      <span style={{ fontFamily: 'Barlow Condensed', fontWeight: 700, color: 'var(--gold)' }}>
                         {g.quotazione}M
                       </span>
                     </td>
                     <td>
-                      <span style={{ fontFamily: 'Barlow Condensed', fontWeight: 700, color: g.votoMedia >= 7 ? 'var(--accent-green)' : g.votoMedia >= 6 ? 'var(--text-primary)' : 'var(--accent-red)' }}>
+                      <span style={{
+                        fontFamily: 'Barlow Condensed', fontWeight: 700,
+                        color: g.votoMedia >= 7 ? 'var(--green)' : g.votoMedia >= 6 ? 'var(--amber)' : 'var(--red)',
+                      }}>
                         {g.votoMedia.toFixed(1)}
                       </span>
                     </td>
-                    <td><VotiBar voti={g.votiUltimi5} /></td>
+                    <td><VotiDots voti={g.votiUltimi5} /></td>
                     <td><StatoBadge infortunato={g.infortunato} diffidato={g.diffidato} /></td>
+                    <td onClick={(e) => e.stopPropagation()} style={{ textAlign: 'center' }}>
+                      <div style={{ display: 'flex', gap: 6, justifyContent: 'center' }}>
+                        <button
+                          title="Modifica"
+                          onClick={() => setEditPlayer(g)}
+                          style={{
+                            background: 'rgba(168,85,247,0.12)', border: '1px solid rgba(168,85,247,0.25)',
+                            borderRadius: 6, padding: '4px 8px', cursor: 'pointer', fontSize: 13,
+                            color: 'var(--purple)', transition: 'all 0.15s',
+                          }}
+                          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(168,85,247,0.22)'; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(168,85,247,0.12)'; }}
+                        >✏️</button>
+                        <button
+                          title="Rimuovi"
+                          onClick={() => handleRemove(g)}
+                          style={{
+                            background: 'rgba(248,113,113,0.1)', border: '1px solid rgba(248,113,113,0.2)',
+                            borderRadius: 6, padding: '4px 8px', cursor: 'pointer', fontSize: 13,
+                            color: 'var(--red)', transition: 'all 0.15s',
+                          }}
+                          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(248,113,113,0.22)'; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(248,113,113,0.1)'; }}
+                        >🗑️</button>
+                      </div>
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
           {rosaFiltrata.length === 0 && (
-            <div style={{ padding: 40, textAlign: 'center', color: 'var(--text-muted)' }}>
+            <div style={{ padding: 40, textAlign: 'center', color: 'var(--text-muted)', fontSize: 13 }}>
               Nessun giocatore trovato con i filtri selezionati.
             </div>
           )}
         </div>
 
-        {/* Dettaglio */}
+        {/* Pannello dettaglio */}
         {selezionato && (
           <DettaglioGiocatore
             giocatore={selezionato}
             onClose={() => setSelezionato(null)}
+            onModifica={() => { setEditPlayer(selezionato); setSelezionato(null); }}
+            onRimuovi={() => handleRemove(selezionato)}
           />
         )}
       </div>
+
+      {/* Modali */}
+      {showAdd && (
+        <AddPlayerModal onClose={() => setShowAdd(false)} />
+      )}
+      {editPlayer && (
+        <AddPlayerModal
+          onClose={() => setEditPlayer(null)}
+          giocatoreEsistente={editPlayer}
+        />
+      )}
     </div>
   );
 }
