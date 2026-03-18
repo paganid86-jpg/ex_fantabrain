@@ -155,8 +155,6 @@ export default function Scouting() {
   const [filtroSquadra, setFiltroSquadra] = useState('Tutte');
   const [filtroFascia, setFiltroFascia] = useState('');
   const [report, setReport] = useState({});
-  const [apiKey, setApiKey] = useState('');
-  const [showApiKey, setShowApiKey] = useState(false);
   const [confronto, setConfronto] = useState([]);
 
   const filtrati = rosa.filter((g) => {
@@ -173,13 +171,13 @@ export default function Scouting() {
   async function generaReport(g) {
     setReport((r) => ({ ...r, [g.id]: { loading: true, testo: null, error: null } }));
     try {
-      const testo = await reportScouting(g, apiKey);
+      const testo = await reportScouting(g);
       const consiglio = estraiConsiglio(testo);
       setReport((r) => ({ ...r, [g.id]: { loading: false, testo, consiglio, error: null } }));
     } catch {
       setReport((r) => ({
         ...r,
-        [g.id]: { loading: false, testo: null, error: 'Report non disponibile. Verifica la API key.' },
+        [g.id]: { loading: false, testo: null, error: 'Report non disponibile. Riprova più tardi.' },
       }));
     }
   }
@@ -246,32 +244,6 @@ export default function Scouting() {
           <span style={{ fontSize: 12, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
             {filtrati.length} giocatori · <span className={`badge ${aiCrediti < 3 ? 'badge-red' : 'badge-gold'}`}>{aiCrediti} crediti</span>
           </span>
-        </div>
-      </div>
-
-      {/* API Key */}
-      <div className="glass-card" style={{ padding: 14, marginBottom: 16 }}>
-        <div style={{
-          fontSize: 11, color: 'var(--gold)',
-          fontFamily: 'Barlow Condensed', letterSpacing: '0.06em',
-          textTransform: 'uppercase', marginBottom: 8,
-        }}>🔑 Claude API Key</div>
-        <div style={{ display: 'flex', gap: 6 }}>
-          <input
-            type={showApiKey ? 'text' : 'password'}
-            className="input-field"
-            placeholder="sk-ant-..."
-            value={apiKey}
-            onChange={(e) => setApiKey(e.target.value)}
-            style={{ fontSize: 12, flex: 1 }}
-          />
-          <button
-            onClick={() => setShowApiKey((s) => !s)}
-            className="btn-secondary"
-            style={{ padding: '8px 10px', flexShrink: 0 }}
-          >
-            {showApiKey ? '🙈' : '👁'}
-          </button>
         </div>
       </div>
 

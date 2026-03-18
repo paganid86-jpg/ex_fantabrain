@@ -80,7 +80,6 @@ export default function Schieramento() {
   const [aiLoading, setAiLoading] = useState(false);
   const [aiRisultato, setAiRisultato] = useState(null);
   const [aiError, setAiError] = useState(null);
-  const [apiKey, setApiKey] = useState('');
 
   const config = MODULO_SLOTS[modulo] || MODULO_SLOTS['4-3-3'];
   const slotTotali = config.righe.flat().length;
@@ -113,10 +112,10 @@ export default function Schieramento() {
         infortunato: g.infortunato,
         diffidato: g.diffidato,
       }));
-      const testo = await analizzaSchieramento(schieramentoData, rosa, giornataCorrente, apiKey);
+      const testo = await analizzaSchieramento(schieramentoData, rosa, giornataCorrente);
       setAiRisultato(testo);
     } catch {
-      setAiError('Analisi non disponibile al momento. Verifica la API key.');
+      setAiError('Analisi non disponibile al momento. Riprova più tardi.');
     } finally {
       setAiLoading(false);
     }
@@ -327,23 +326,6 @@ export default function Schieramento() {
             Analisi schieramento e suggerimenti tattici per la giornata {giornataCorrente}.
           </div>
 
-          {/* API Key */}
-          <div style={{ marginBottom: 12 }}>
-            <label style={{
-              fontSize: 11, color: 'var(--text-muted)', fontFamily: 'Barlow Condensed',
-              letterSpacing: '0.06em', display: 'block', marginBottom: 4,
-            }}>
-              CLAUDE API KEY
-            </label>
-            <input
-              type="password"
-              className="input-field"
-              placeholder="sk-ant-..."
-              value={apiKey}
-              onChange={(e) => setApiKey(e.target.value)}
-            />
-          </div>
-
           <button
             className="btn-ai"
             onClick={ottimizzaConAI}
@@ -375,7 +357,7 @@ export default function Schieramento() {
 
           {!aiRisultato && !aiLoading && !aiError && (
             <div style={{ fontSize: 12, color: 'var(--text-muted)', textAlign: 'center', padding: '16px 0', fontStyle: 'italic' }}>
-              Inserisci la tua API key e clicca il pulsante per ricevere suggerimenti tattici.
+              Clicca il pulsante per ricevere suggerimenti tattici personalizzati.
             </div>
           )}
         </div>

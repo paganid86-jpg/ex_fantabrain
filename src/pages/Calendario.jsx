@@ -14,8 +14,6 @@ export default function Calendario() {
   const [aiLoading, setAiLoading] = useState(false);
   const [aiRisultato, setAiRisultato] = useState(null);
   const [aiError, setAiError] = useState(null);
-  const [apiKey, setApiKey] = useState('');
-  const [showApiKey, setShowApiKey] = useState(false);
 
   const titolari = titolariIds.map((id) => rosa.find((g) => g.id === id)).filter(Boolean);
 
@@ -31,10 +29,10 @@ export default function Calendario() {
     setAiRisultato(null);
     try {
       const partite = [{ mio: 'Serie A', avversario: 'Avversario giornata' }];
-      const testo = await analizzaGiornata(titolari, partite, giornataCorrente, apiKey);
+      const testo = await analizzaGiornata(titolari, partite, giornataCorrente);
       setAiRisultato(testo);
     } catch {
-      setAiError('Analisi non disponibile. Verifica la API key.');
+      setAiError('Analisi non disponibile. Riprova più tardi.');
     } finally {
       setAiLoading(false);
     }
@@ -66,26 +64,6 @@ export default function Calendario() {
             </div>
             <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 14 }}>
               Analisi AI dei tuoi titolari per la prossima giornata
-            </div>
-
-            <div style={{ marginBottom: 10 }}>
-              <div style={{ display: 'flex', gap: 6 }}>
-                <input
-                  type={showApiKey ? 'text' : 'password'}
-                  className="input-field"
-                  placeholder="sk-ant-..."
-                  value={apiKey}
-                  onChange={(e) => setApiKey(e.target.value)}
-                  style={{ fontSize: 12, flex: 1 }}
-                />
-                <button
-                  onClick={() => setShowApiKey((s) => !s)}
-                  className="btn-secondary"
-                  style={{ padding: '8px 10px', flexShrink: 0 }}
-                >
-                  {showApiKey ? '🙈' : '👁'}
-                </button>
-              </div>
             </div>
 
             <button
@@ -290,24 +268,6 @@ export default function Calendario() {
           </div>
           <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 14 }}>
             Analisi AI dei tuoi titolari per la prossima giornata
-          </div>
-
-          <div style={{ display: 'flex', gap: 6, marginBottom: 10 }}>
-            <input
-              type={showApiKey ? 'text' : 'password'}
-              className="input-field"
-              placeholder="sk-ant-..."
-              value={apiKey}
-              onChange={(e) => setApiKey(e.target.value)}
-              style={{ fontSize: 12, flex: 1 }}
-            />
-            <button
-              onClick={() => setShowApiKey((s) => !s)}
-              className="btn-secondary"
-              style={{ padding: '8px 10px', flexShrink: 0 }}
-            >
-              {showApiKey ? '🙈' : '👁'}
-            </button>
           </div>
 
           <button

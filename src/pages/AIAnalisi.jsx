@@ -68,8 +68,6 @@ export default function AIAnalisi() {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [apiKey, setApiKey] = useState('');
-  const [showApiKey, setShowApiKey] = useState(false);
   const bottomRef = useRef(null);
 
   useEffect(() => {
@@ -95,11 +93,10 @@ export default function AIAnalisi() {
         messages: claudeMessages,
         systemPrompt,
         maxTokens: 600,
-        apiKey,
       });
       aggiungiMessaggio(PAGE_ID, { role: 'assistant', content: risposta });
     } catch {
-      setError('Risposta non disponibile. Verifica la API key o riprova più tardi.');
+      setError('Risposta non disponibile. Riprova più tardi.');
     } finally {
       setLoading(false);
     }
@@ -270,47 +267,6 @@ export default function AIAnalisi() {
 
       {/* Sidebar destra */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 14, overflowY: 'auto' }}>
-
-        {/* API Key */}
-        <div className="glass-card" style={{ padding: 16 }}>
-          <div style={{
-            fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: 13,
-            color: 'var(--gold)', letterSpacing: '0.06em',
-            textTransform: 'uppercase', marginBottom: 10,
-          }}>
-            🔑 Claude API Key
-          </div>
-          <div style={{ display: 'flex', gap: 6 }}>
-            <input
-              type={showApiKey ? 'text' : 'password'}
-              className="input-field"
-              placeholder="sk-ant-..."
-              value={apiKey}
-              onChange={(e) => setApiKey(e.target.value)}
-              style={{ fontSize: 12, flex: 1 }}
-            />
-            <button
-              onClick={() => setShowApiKey((s) => !s)}
-              className="btn-secondary"
-              style={{ padding: '8px 10px', flexShrink: 0 }}
-            >
-              {showApiKey ? '🙈' : '👁'}
-            </button>
-          </div>
-          <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 6 }}>
-            Prototipo client-side. In produzione la chiave va server-side.
-          </div>
-          {aiCrediti < 3 && (
-            <div style={{
-              marginTop: 10, padding: '7px 10px',
-              background: 'rgba(251,191,36,0.08)',
-              border: '1px solid rgba(251,191,36,0.25)',
-              borderRadius: 6, fontSize: 11, color: 'var(--amber)',
-            }}>
-              ⚠️ Solo {aiCrediti} crediti rimasti!
-            </div>
-          )}
-        </div>
 
         {/* Rosa contestuale */}
         <div className="glass-card" style={{ padding: 16, flex: 1 }}>
