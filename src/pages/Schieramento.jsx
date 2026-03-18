@@ -3,9 +3,10 @@ import useAppStore from '../store/useAppStore';
 import { moduli } from '../data/mockData';
 import { analizzaSchieramento } from '../lib/claudeApi';
 
+/* ── Definizione slot per modulo ─────────────────────────── */
+
 const MODULO_SLOTS = {
   '4-3-3': {
-    Por: 1, DC: 2, DD: 1, DS: 1, MC: 3, ATT: 3,
     righe: [
       [{ ruolo: 'Por', label: 'Por' }],
       [{ ruolo: 'DD', label: 'DD' }, { ruolo: 'DC', label: 'DC' }, { ruolo: 'DC', label: 'DC' }, { ruolo: 'DS', label: 'DS' }],
@@ -56,12 +57,16 @@ const MODULO_SLOTS = {
   },
 };
 
+/* ── Utilità ─────────────────────────────────────────────── */
+
 function isCompatibile(ruoloGiocatore, ruoloSlot) {
   if (!ruoloGiocatore) return false;
   const g = ruoloGiocatore.split('/');
   const s = ruoloSlot.split('/');
   return g.some((r) => s.some((sr) => r.trim() === sr.trim()));
 }
+
+/* ── Componente principale ───────────────────────────────── */
 
 export default function Schieramento() {
   const rosa = useAppStore((s) => s.rosa);
@@ -70,22 +75,18 @@ export default function Schieramento() {
   const titolariIds = useAppStore((s) => s.titolariIds);
   const setTitolariIds = useAppStore((s) => s.setTitolariIds);
   const giornataCorrente = useAppStore((s) => s.giornataCorrente);
-  const aiCrediti = useAppStore((s) => s.aiCrediti);
 
   const [selezionatoSlot, setSelezionatoSlot] = useState(null);
   const [aiLoading, setAiLoading] = useState(false);
   const [aiRisultato, setAiRisultato] = useState(null);
   const [aiError, setAiError] = useState(null);
   const [apiKey, setApiKey] = useState('');
-  const [showApiKey, setShowApiKey] = useState(false);
 
   const config = MODULO_SLOTS[modulo] || MODULO_SLOTS['4-3-3'];
   const slotTotali = config.righe.flat().length;
 
-  // Titolari assegnati in ordine per slot
   const titolari = titolariIds.slice(0, slotTotali).map((id) => rosa.find((g) => g.id === id) || null);
   const panchina = rosa.filter((g) => !titolariIds.slice(0, slotTotali).includes(g.id));
-
   const punteggioAtteso = titolari.filter(Boolean).reduce((sum, g) => sum + g.votoMedia, 0);
 
   function assignToSlot(slotIdx, giocatoreId) {
@@ -95,7 +96,7 @@ export default function Schieramento() {
     const altroIdx = nuovi.findIndex((id, i) => id === giocatoreId && i !== slotIdx);
     if (altroIdx !== -1) nuovi[altroIdx] = prevInSlot;
     nuovi[slotIdx] = giocatoreId;
-    setTitolariIds(nuovi.filter((id, i) => i < slotTotali));
+    setTitolariIds(nuovi.filter((_, i) => i < slotTotali));
     setSelezionatoSlot(null);
   }
 
@@ -114,18 +115,35 @@ export default function Schieramento() {
       }));
       const testo = await analizzaSchieramento(schieramentoData, rosa, giornataCorrente, apiKey);
       setAiRisultato(testo);
-    } catch (err) {
+    } catch {
       setAiError('Analisi non disponibile al momento. Verifica la API key.');
     } finally {
       setAiLoading(false);
     }
   }
 
+  /* ── Empty state ─────────────────────────────────────── */
+  if (rosa.length === 0) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
+        <div className="empty-state">
+          <div className="empty-state-icon">🏟️</div>
+          <div className="empty-state-title">Rosa vuota</div>
+          <div className="empty-state-desc">
+            Aggiungi giocatori alla rosa per poter creare il tuo schieramento.
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  /* ── Layout principale ───────────────────────────────── */
   let slotCounter = 0;
 
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: 16 }}>
-      {/* Main: pitch + panchina */}
+
+      {/* Colonna principale: pitch + panchina */}
       <div>
         {/* Toolbar */}
         <div style={{ display: 'flex', gap: 10, marginBottom: 16, alignItems: 'center', flexWrap: 'wrap' }}>
@@ -137,33 +155,63 @@ export default function Schieramento() {
           >
             {moduli.map((m) => <option key={m} value={m}>{m}</option>)}
           </select>
+
           <div style={{
-            flex: 1, background: 'var(--bg-card)', borderRadius: 8, padding: '8px 16px',
-            border: '1px solid var(--border)', display: 'flex', gap: 16,
+            flex: 1, background: 'var(--bg-glass)', borderRadius: 8,
+            padding: '8px 16px', border: '1px solid var(--gold-border)',
+            display: 'flex', gap: 16, alignItems: 'center', backdropFilter: 'blur(4px)',
           }}>
             <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Punteggio atteso:</span>
-            <span style={{ fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: 18, color: 'var(--accent-green)' }}>
+            <span style={{ fontFamily: 'Barlow Condensed', fontWeight: 800, fontSize: 20, color: 'var(--gold)' }}>
               {punteggioAtteso.toFixed(1)}pt
             </span>
           </div>
-          <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-            {selezionatoSlot !== null ? 'Clicca un giocatore dalla panchina' : 'Clicca uno slot per modificare'}
+
+          <span style={{ fontSize: 12, color: selezionatoSlot !== null ? 'var(--purple)' : 'var(--text-muted)' }}>
+            {selezionatoSlot !== null ? '👆 Clicca un giocatore dalla panchina' : 'Clicca uno slot per modificare'}
           </span>
         </div>
 
-        {/* Pitch */}
+        {/* Pitch glassmorphism */}
         <div className="pitch" style={{ padding: '24px 16px', minHeight: 380 }}>
           {config.righe.map((riga, ri) => {
             const rigaSlot = riga.map((slot) => {
               const idx = slotCounter++;
               return { slot, idx };
             });
+
             return (
-              <div key={ri} style={{ display: 'flex', justifyContent: 'center', gap: 20, marginBottom: ri < config.righe.length - 1 ? 24 : 0 }}>
+              <div
+                key={ri}
+                style={{
+                  display: 'flex', justifyContent: 'center', gap: 20,
+                  marginBottom: ri < config.righe.length - 1 ? 24 : 0,
+                }}
+              >
                 {rigaSlot.map(({ slot, idx }) => {
                   const giocatore = titolari[idx];
                   const isSelected = selezionatoSlot === idx;
                   const compat = giocatore ? isCompatibile(giocatore.ruoloMantra, slot.ruolo) : true;
+
+                  const borderColor = isSelected
+                    ? 'var(--gold)'
+                    : giocatore
+                      ? (compat ? 'var(--gold-border)' : 'var(--red)')
+                      : 'rgba(168,85,247,0.25)';
+
+                  const bgColor = isSelected
+                    ? 'rgba(245,200,66,0.1)'
+                    : giocatore
+                      ? (compat ? 'rgba(245,200,66,0.06)' : 'rgba(248,113,113,0.1)')
+                      : 'rgba(168,85,247,0.03)';
+
+                  const ruoloColors = {
+                    Por: '#f97316', DD: 'var(--blue)', DS: 'var(--blue)', DC: 'var(--blue)',
+                    'M/C': 'var(--green)', C: 'var(--green)', 'T/A': 'var(--purple)', PC: 'var(--red)',
+                  };
+                  const ruoloColor = giocatore
+                    ? (ruoloColors[giocatore.ruoloMantra] || 'var(--gold)')
+                    : 'rgba(168,85,247,0.35)';
 
                   return (
                     <div
@@ -176,27 +224,42 @@ export default function Schieramento() {
                     >
                       <div style={{
                         width: 48, height: 48, borderRadius: '50%',
-                        background: giocatore ? (compat ? 'rgba(0,230,118,0.12)' : 'rgba(255,23,68,0.12)') : 'rgba(255,255,255,0.04)',
-                        border: `2px solid ${isSelected ? 'var(--accent-amber)' : giocatore ? (compat ? 'rgba(0,230,118,0.5)' : 'var(--accent-red)') : 'rgba(255,255,255,0.15)'}`,
+                        background: bgColor,
+                        border: `2px ${giocatore ? 'solid' : 'dashed'} ${borderColor}`,
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                         transition: 'all 0.15s', position: 'relative',
-                        boxShadow: isSelected ? '0 0 12px rgba(255,171,0,0.4)' : 'none',
+                        backdropFilter: 'blur(6px)',
+                        boxShadow: isSelected ? '0 0 14px rgba(245,200,66,0.4)' : giocatore && compat ? '0 0 8px rgba(245,200,66,0.1)' : 'none',
                       }}>
-                        {giocatore ? (
-                          <span style={{ fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: 10, color: compat ? 'var(--accent-green)' : 'var(--accent-red)' }}>
-                            {giocatore.ruoloMantra}
-                          </span>
-                        ) : (
-                          <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{slot.label}</span>
-                        )}
+                        <span style={{
+                          fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: giocatore ? 9 : 11,
+                          color: ruoloColor, letterSpacing: '0.03em',
+                        }}>
+                          {giocatore ? giocatore.ruoloMantra : slot.label}
+                        </span>
                         {giocatore?.infortunato && (
-                          <span style={{ position: 'absolute', top: -3, right: -3, width: 14, height: 14, background: 'var(--accent-red)', borderRadius: '50%', fontSize: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700 }}>✕</span>
+                          <span style={{
+                            position: 'absolute', top: -3, right: -3, width: 14, height: 14,
+                            background: 'var(--red)', borderRadius: '50%',
+                            fontSize: 7, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            color: '#fff', fontWeight: 700, border: '1px solid #07030f',
+                          }}>✕</span>
                         )}
                         {giocatore?.diffidato && !giocatore?.infortunato && (
-                          <span style={{ position: 'absolute', top: -3, right: -3, width: 14, height: 14, background: 'var(--accent-amber)', borderRadius: '50%', fontSize: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#000', fontWeight: 700 }}>!</span>
+                          <span style={{
+                            position: 'absolute', top: -3, right: -3, width: 14, height: 14,
+                            background: 'var(--amber)', borderRadius: '50%',
+                            fontSize: 7, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            color: '#000', fontWeight: 700, border: '1px solid #07030f',
+                          }}>!</span>
                         )}
                       </div>
-                      <span style={{ fontSize: 10, fontFamily: 'Barlow Condensed', fontWeight: 600, color: giocatore ? 'var(--text-primary)' : 'var(--text-muted)', textAlign: 'center', maxWidth: 60, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <span style={{
+                        fontSize: 10, fontFamily: 'Barlow Condensed', fontWeight: 600,
+                        color: giocatore ? 'var(--text-primary)' : 'var(--text-muted)',
+                        textAlign: 'center', maxWidth: 60,
+                        overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                      }}>
                         {giocatore ? giocatore.cognome : '—'}
                       </span>
                     </div>
@@ -208,80 +271,98 @@ export default function Schieramento() {
         </div>
 
         {/* Panchina */}
-        <div className="card" style={{ marginTop: 16 }}>
-          <div style={{ fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: 14, color: 'var(--text-muted)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 12 }}>
-            PANCHINA ({panchina.length})
+        <div className="glass-card" style={{ marginTop: 16 }}>
+          <div style={{
+            fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: 13,
+            color: 'var(--text-muted)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 12,
+          }}>
+            Panchina ({panchina.length})
+            {selezionatoSlot !== null && (
+              <span style={{ marginLeft: 10, color: 'var(--purple)', fontSize: 11, fontWeight: 400, textTransform: 'none', letterSpacing: 0 }}>
+                — seleziona un giocatore da schierare
+              </span>
+            )}
           </div>
-          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             {panchina.map((g) => (
               <div
                 key={g.id}
                 onClick={() => selezionatoSlot !== null && assignToSlot(selezionatoSlot, g.id)}
                 style={{
-                  background: selezionatoSlot !== null ? 'rgba(41,121,255,0.12)' : 'var(--bg-elevated)',
-                  border: `1px solid ${selezionatoSlot !== null ? 'rgba(41,121,255,0.4)' : 'var(--border)'}`,
-                  borderRadius: 8, padding: '6px 12px', cursor: selezionatoSlot !== null ? 'pointer' : 'default',
-                  display: 'flex', alignItems: 'center', gap: 8, transition: 'all 0.15s',
+                  background: selezionatoSlot !== null ? 'rgba(168,85,247,0.1)' : 'var(--bg-glass)',
+                  border: `1px solid ${selezionatoSlot !== null ? 'rgba(168,85,247,0.4)' : 'var(--gold-border)'}`,
+                  borderRadius: 8, padding: '6px 12px',
+                  cursor: selezionatoSlot !== null ? 'pointer' : 'default',
+                  display: 'flex', alignItems: 'center', gap: 8,
+                  transition: 'all 0.15s',
                   opacity: g.infortunato ? 0.5 : 1,
+                  backdropFilter: 'blur(4px)',
                 }}
               >
                 <span className="badge badge-muted" style={{ fontSize: 10 }}>{g.ruoloMantra}</span>
                 <span style={{ fontSize: 12, color: 'var(--text-primary)', fontWeight: 600 }}>{g.cognome}</span>
-                <span style={{ fontSize: 11, color: 'var(--accent-amber)', fontFamily: 'Barlow Condensed', fontWeight: 700 }}>{g.votoMedia.toFixed(1)}</span>
+                <span style={{ fontSize: 11, color: 'var(--gold)', fontFamily: 'Barlow Condensed', fontWeight: 700 }}>
+                  {g.votoMedia.toFixed(1)}
+                </span>
                 {g.infortunato && <span style={{ fontSize: 10 }}>🤕</span>}
                 {g.diffidato && !g.infortunato && <span style={{ fontSize: 10 }}>⚠️</span>}
               </div>
             ))}
+            {panchina.length === 0 && (
+              <span style={{ fontSize: 12, color: 'var(--text-muted)', fontStyle: 'italic' }}>
+                Tutti i giocatori sono già schierati.
+              </span>
+            )}
           </div>
         </div>
       </div>
 
       {/* Sidebar AI */}
-      <div>
-        <div className="card">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div className="glass-card">
           <div style={{ fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: 16, color: 'var(--text-primary)', marginBottom: 4 }}>
-            🤖 Ottimizza con AI
+            Ottimizza con AI
           </div>
           <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 16 }}>
-            Analisi schieramento e suggerimenti tattici
+            Analisi schieramento e suggerimenti tattici per la giornata {giornataCorrente}.
           </div>
 
           {/* API Key */}
           <div style={{ marginBottom: 12 }}>
-            <label style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'Barlow Condensed', letterSpacing: '0.06em', display: 'block', marginBottom: 4 }}>
+            <label style={{
+              fontSize: 11, color: 'var(--text-muted)', fontFamily: 'Barlow Condensed',
+              letterSpacing: '0.06em', display: 'block', marginBottom: 4,
+            }}>
               CLAUDE API KEY
             </label>
-            <div style={{ display: 'flex', gap: 6 }}>
-              <input
-                type={showApiKey ? 'text' : 'password'}
-                className="input-field"
-                placeholder="sk-ant-..."
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-              />
-              <button onClick={() => setShowApiKey((s) => !s)} className="btn-secondary" style={{ padding: '8px 10px', flexShrink: 0 }}>
-                {showApiKey ? '🙈' : '👁'}
-              </button>
-            </div>
+            <input
+              type="password"
+              className="input-field"
+              placeholder="sk-ant-..."
+              value={apiKey}
+              onChange={(e) => setApiKey(e.target.value)}
+            />
           </div>
 
           <button
             className="btn-ai"
             onClick={ottimizzaConAI}
-            disabled={aiLoading || aiCrediti === 0}
+            disabled={aiLoading}
             style={{ width: '100%', marginBottom: 12 }}
           >
-            {aiLoading ? '⏳ Analizzando...' : '⚡ Ottimizza Schieramento'}
+            {aiLoading ? (
+              <span style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center' }}>
+                <span className="spinner" /> Analizzando...
+              </span>
+            ) : '⚡ Ottimizza Schieramento'}
           </button>
 
-          {aiCrediti < 3 && (
-            <div style={{ fontSize: 11, color: 'var(--accent-amber)', marginBottom: 12, padding: '6px 10px', background: 'rgba(255,171,0,0.08)', borderRadius: 6, border: '1px solid rgba(255,171,0,0.2)' }}>
-              ⚠️ Solo {aiCrediti} crediti AI rimasti!
-            </div>
-          )}
-
           {aiError && (
-            <div style={{ fontSize: 12, color: 'var(--accent-red)', padding: '10px', background: 'rgba(255,23,68,0.08)', borderRadius: 8, marginBottom: 12 }}>
+            <div style={{
+              fontSize: 12, color: 'var(--red)', padding: '10px 12px',
+              background: 'rgba(248,113,113,0.08)', borderRadius: 8,
+              border: '1px solid rgba(248,113,113,0.2)', marginBottom: 12,
+            }}>
               {aiError}
             </div>
           )}
@@ -293,32 +374,36 @@ export default function Schieramento() {
           )}
 
           {!aiRisultato && !aiLoading && !aiError && (
-            <div style={{ fontSize: 12, color: 'var(--text-muted)', textAlign: 'center', padding: '20px 0' }}>
-              Clicca il pulsante per ricevere suggerimenti AI sullo schieramento
+            <div style={{ fontSize: 12, color: 'var(--text-muted)', textAlign: 'center', padding: '16px 0', fontStyle: 'italic' }}>
+              Inserisci la tua API key e clicca il pulsante per ricevere suggerimenti tattici.
             </div>
           )}
         </div>
 
-        {/* Legenda */}
-        <div className="card" style={{ marginTop: 16 }}>
-          <div style={{ fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: 13, color: 'var(--text-muted)', letterSpacing: '0.08em', marginBottom: 10 }}>
-            LEGENDA RUOLI
+        {/* Legenda ruoli */}
+        <div className="glass-card">
+          <div style={{
+            fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: 12,
+            color: 'var(--text-muted)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 12,
+          }}>
+            Legenda Ruoli
           </div>
           {[
-            { ruolo: 'Por', color: '#ff9800', desc: 'Portiere' },
-            { ruolo: 'DD/DS/DC', color: '#2979ff', desc: 'Difensori' },
-            { ruolo: 'M/C', color: '#00e676', desc: 'Centrocampisti' },
-            { ruolo: 'T/A', color: '#e040fb', desc: 'Trequarti/Ala' },
-            { ruolo: 'PC', color: '#ff1744', desc: 'Prima Punta' },
+            { ruolo: 'Por', color: '#f97316', desc: 'Portiere' },
+            { ruolo: 'DD / DS / DC', color: 'var(--blue)', desc: 'Difensori' },
+            { ruolo: 'M/C', color: 'var(--green)', desc: 'Centrocampisti' },
+            { ruolo: 'T/A', color: 'var(--purple)', desc: 'Trequarti / Ala' },
+            { ruolo: 'PC', color: 'var(--red)', desc: 'Prima Punta' },
           ].map((item) => (
-            <div key={item.ruolo} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-              <div style={{ width: 10, height: 10, borderRadius: '50%', background: item.color, flexShrink: 0 }} />
+            <div key={item.ruolo} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+              <div style={{ width: 10, height: 10, borderRadius: '50%', background: item.color, flexShrink: 0, boxShadow: `0 0 6px ${item.color}66` }} />
               <span style={{ fontFamily: 'Barlow Condensed', fontWeight: 600, fontSize: 13, color: 'var(--text-primary)' }}>{item.ruolo}</span>
               <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>— {item.desc}</span>
             </div>
           ))}
-          <div style={{ marginTop: 10, fontSize: 11, color: 'var(--accent-red)' }}>
-            🔴 Bordo rosso = ruolo incompatibile con lo slot
+          <div style={{ marginTop: 10, fontSize: 11, color: 'var(--red)', display: 'flex', alignItems: 'center', gap: 6 }}>
+            <div style={{ width: 10, height: 10, borderRadius: '50%', border: '2px solid var(--red)', flexShrink: 0 }} />
+            Bordo rosso = ruolo incompatibile con lo slot
           </div>
         </div>
       </div>

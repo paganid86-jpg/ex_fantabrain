@@ -1,58 +1,135 @@
 import { create } from 'zustand';
-import { rosa, classificaLega, calendarioGiornate, offerteMercato, trattative } from '../data/mockData';
+import { persist } from 'zustand/middleware';
 
-const useAppStore = create((set, get) => ({
-  // Navigazione
-  currentPage: 'dashboard',
-  setCurrentPage: (page) => set({ currentPage: page }),
+const useAppStore = create(
+  persist(
+    (set, get) => ({
+      // Navigazione
+      currentPage: 'dashboard',
+      setCurrentPage: (page) => set({ currentPage: page }),
 
-  // Dati utente
-  user: { name: 'Marco R.', plan: 'pro', league: 'Serie A Fantasy Monza' },
+      // Utente
+      user: { name: 'Allenatore', plan: 'pro', league: 'La mia lega' },
 
-  // Rosa
-  rosa,
-  giornataCorrente: 28,
+      // Rosa (vuota)
+      rosa: [],
+      giornataCorrente: 1,
 
-  // Lega
-  classifica: classificaLega,
-  calendario: calendarioGiornate,
+      // Lega
+      classifica: [],
+      calendario: [],
 
-  // Mercato
-  offerte: offerteMercato,
-  trattative,
+      // Mercato
+      offerte: [],
+      trattative: [],
 
-  // Schieramento corrente
-  modulo: '4-3-3',
-  setModulo: (modulo) => set({ modulo }),
-  titolariIds: [1, 3, 5, 7, 9, 10, 14, 16, 18, 19, 22],
-  setTitolariIds: (ids) => set({ titolariIds: ids }),
+      // Schieramento
+      modulo: '4-3-3',
+      titolariIds: [],
 
-  // AI
-  aiCrediti: 12,
-  aiConversazioni: {},
+      // AI
+      aiCrediti: 12,
+      aiConversazioni: {},
 
-  decrementaCrediti: () => set((state) => ({
-    aiCrediti: Math.max(0, state.aiCrediti - 1),
-  })),
+      // ── CRUD Rosa ──────────────────────────────────────────────
 
-  aggiungiMessaggio: (pageId, msg) => set((state) => ({
-    aiConversazioni: {
-      ...state.aiConversazioni,
-      [pageId]: [...(state.aiConversazioni[pageId] || []), msg],
-    },
-  })),
+      addGiocatore: (giocatore) =>
+        set((state) => ({
+          rosa: [...state.rosa, { ...giocatore, id: Date.now() }],
+        })),
 
-  resetConversazione: (pageId) => set((state) => ({
-    aiConversazioni: {
-      ...state.aiConversazioni,
-      [pageId]: [],
-    },
-  })),
+      updateGiocatore: (id, updates) =>
+        set((state) => ({
+          rosa: state.rosa.map((g) => (g.id === id ? { ...g, ...updates } : g)),
+        })),
 
-  // Aggiorna stato offerta
-  aggiornaOfferta: (id, nuovoStato) => set((state) => ({
-    offerte: state.offerte.map((o) => o.id === id ? { ...o, stato: nuovoStato } : o),
-  })),
-}));
+      removeGiocatore: (id) =>
+        set((state) => ({
+          rosa: state.rosa.filter((g) => g.id !== id),
+          titolariIds: state.titolariIds.filter((tid) => tid !== id),
+        })),
+
+      toggleInfortunato: (id) =>
+        set((state) => ({
+          rosa: state.rosa.map((g) =>
+            g.id === id ? { ...g, infortunato: !g.infortunato } : g
+          ),
+        })),
+
+      toggleDiffidato: (id) =>
+        set((state) => ({
+          rosa: state.rosa.map((g) =>
+            g.id === id ? { ...g, diffidato: !g.diffidato } : g
+          ),
+        })),
+
+      // ── Schieramento ───────────────────────────────────────────
+
+      setModulo: (modulo) => set({ modulo }),
+
+      setTitolariIds: (ids) => set({ titolariIds: ids }),
+
+      // ── AI ─────────────────────────────────────────────────────
+
+      decrementaCrediti: () =>
+        set((state) => ({
+          aiCrediti: Math.max(0, state.aiCrediti - 1),
+        })),
+
+      aggiungiMessaggio: (pageId, msg) =>
+        set((state) => ({
+          aiConversazioni: {
+            ...state.aiConversazioni,
+            [pageId]: [...(state.aiConversazioni[pageId] || []), msg],
+          },
+        })),
+
+      resetConversazione: (pageId) =>
+        set((state) => ({
+          aiConversazioni: {
+            ...state.aiConversazioni,
+            [pageId]: [],
+          },
+        })),
+
+      // ── Mercato ────────────────────────────────────────────────
+
+      aggiornaOfferta: (id, nuovoStato) =>
+        set((state) => ({
+          offerte: state.offerte.map((o) =>
+            o.id === id ? { ...o, stato: nuovoStato } : o
+          ),
+        })),
+
+      addOfferta: (offerta) =>
+        set((state) => ({
+          offerte: [...state.offerte, offerta],
+        })),
+
+      addTrattativa: (trattativa) =>
+        set((state) => ({
+          trattative: [...state.trattative, trattativa],
+        })),
+
+      // ── Utente ─────────────────────────────────────────────────
+
+      updateUser: (updates) =>
+        set((state) => ({
+          user: { ...state.user, ...updates },
+        })),
+
+      setGiornataCorrente: (n) => set({ giornataCorrente: n }),
+
+      // ── Classifica ─────────────────────────────────────────────
+
+      setClassifica: (classifica) => set({ classifica }),
+
+      setCalendario: (calendario) => set({ calendario }),
+    }),
+    {
+      name: 'fantabrain-store',
+    }
+  )
+);
 
 export default useAppStore;

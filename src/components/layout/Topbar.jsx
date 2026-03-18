@@ -2,61 +2,102 @@ import { useLocation } from 'react-router-dom';
 import useAppStore from '../../store/useAppStore';
 
 const pageTitles = {
-  '/': 'Dashboard',
-  '/ai-analisi': 'AI Analisi',
-  '/la-rosa': 'La Rosa',
+  '/':             'Dashboard',
+  '/ai-analisi':   'AI Analisi',
+  '/war-room':     'War Room',
+  '/la-rosa':      'La Rosa',
   '/schieramento': 'Schieramento',
-  '/classifica': 'Classifica',
-  '/calendario': 'Calendario',
-  '/mercato': 'Mercato',
-  '/scouting': 'Scouting',
-  '/war-room': 'War Room',
-  '/statistiche': 'Statistiche',
+  '/mercato':      'Mercato',
+  '/scouting':     'Scouting',
+  '/classifica':   'Classifica',
+  '/calendario':   'Calendario',
+  '/statistiche':  'Statistiche',
 };
 
 export default function Topbar({ onMenuClick }) {
-  const location = useLocation();
-  const user = useAppStore((s) => s.user);
+  const location        = useLocation();
+  const user            = useAppStore((s) => s.user);
   const giornataCorrente = useAppStore((s) => s.giornataCorrente);
-  const title = pageTitles[location.pathname] || 'FantaBrain AI';
+
+  const title = pageTitles[location.pathname] ?? 'FantaBrain AI';
 
   return (
     <header className="topbar">
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+
+      {/* ── Sinistra: hamburger + titolo ── */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
         <button
-          onClick={onMenuClick}
-          style={{
-            background: 'none', border: 'none', cursor: 'pointer',
-            color: 'var(--text-secondary)', fontSize: 20, padding: 4,
-            display: 'none',
-          }}
           className="hamburger-btn"
-          aria-label="Menu"
+          onClick={onMenuClick}
+          aria-label="Apri menu"
         >
           ☰
         </button>
+
         <div>
-          <span className="section-title" style={{ fontSize: 18 }}>{title}</span>
+          <span className="section-title" style={{ fontSize: 18 }}>
+            {title}
+          </span>
         </div>
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+      {/* ── Destra: giornata + lega ── */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+
+        {/* Badge giornata gold glass */}
         <div style={{
-          display: 'flex', alignItems: 'center', gap: 6,
-          background: 'var(--bg-elevated)', borderRadius: 8,
-          padding: '6px 12px', border: '1px solid var(--border)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 7,
+          background: 'rgba(245, 200, 66, 0.07)',
+          backdropFilter: 'blur(12px)',
+          borderRadius: 8,
+          padding: '5px 12px',
+          border: '1px solid rgba(245, 200, 66, 0.22)',
+          boxShadow: '0 0 10px rgba(245, 200, 66, 0.06)',
         }}>
-          <span style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'Barlow Condensed', letterSpacing: '0.08em' }}>GIORNATA</span>
-          <span style={{ fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: 16, color: 'var(--accent-amber)' }}>
+          <span style={{
+            fontFamily: "'Barlow Condensed', sans-serif",
+            fontSize: 10,
+            fontWeight: 700,
+            letterSpacing: '0.12em',
+            color: '#4d3870',
+            textTransform: 'uppercase',
+          }}>
+            GIORNATA
+          </span>
+          <span style={{
+            fontFamily: "'Barlow Condensed', sans-serif",
+            fontWeight: 800,
+            fontSize: 18,
+            lineHeight: 1,
+            color: '#f5c842',
+            textShadow: '0 0 10px rgba(245, 200, 66, 0.40)',
+          }}>
             {giornataCorrente}
           </span>
         </div>
+
+        {/* Nome lega muted */}
         <div style={{
-          fontSize: 12, color: 'var(--text-muted)',
-          maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+          fontSize: 12,
+          fontFamily: "'Barlow Condensed', sans-serif",
+          letterSpacing: '0.05em',
+          color: '#4d3870',
+          maxWidth: 160,
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 5,
         }}>
-          {user.league}
+          <span style={{ fontSize: 11, opacity: 0.6 }}>🏆</span>
+          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {user.league}
+          </span>
         </div>
+
       </div>
     </header>
   );
