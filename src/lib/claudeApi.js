@@ -23,42 +23,10 @@ Giornata corrente: ${giornata}
 Prossimo avversario: ${avversario || 'da definire'}`;
 }
 
-export async function callClaude({ systemPrompt, userMessage, maxTokens = 500, apiKey }) {
-  const key = apiKey || import.meta.env.VITE_CLAUDE_API_KEY;
+async function callApi({ systemPrompt, messages, maxTokens }) {
+  const key = import.meta.env.VITE_CLAUDE_API_KEY;
   if (!key) {
-    throw new Error('API key non configurata. Inserisci la tua chiave Claude API nelle impostazioni.');
-  }
-
-  const response = await fetch(API_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': key,
-      'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-direct-browser-access': 'true',
-    },
-    body: JSON.stringify({
-      model: MODEL,
-      max_tokens: maxTokens,
-      system: systemPrompt,
-      messages: [{ role: 'user', content: userMessage }],
-    }),
-  });
-
-  if (!response.ok) {
-    const err = await response.text();
-    throw new Error(`Claude API errore ${response.status}: ${err}`);
-  }
-
-  const data = await response.json();
-  useAppStore.getState().decrementaCrediti();
-  return data.content[0].text;
-}
-
-export async function chatClaude({ messages, systemPrompt, maxTokens = 600, apiKey }) {
-  const key = apiKey || import.meta.env.VITE_CLAUDE_API_KEY;
-  if (!key) {
-    throw new Error('API key non configurata.');
+    throw new Error('API key non configurata nel server.');
   }
 
   const response = await fetch(API_URL, {
@@ -87,55 +55,60 @@ export async function chatClaude({ messages, systemPrompt, maxTokens = 600, apiK
   return data.content[0].text;
 }
 
-export async function analizzaSchieramento(schieramento, rosa, giornata, apiKey) {
+export async function callClaude({ systemPrompt, userMessage, maxTokens = 500 }) {
+  return callApi({ systemPrompt, messages: [{ role: 'user', content: userMessage }], maxTokens });
+}
+
+export async function chatClaude({ messages, systemPrompt, maxTokens = 600 }) {
+  return callApi({ systemPrompt, messages, maxTokens });
+}
+
+export async function analizzaSchieramento(schieramento, rosa, giornata) {
   const systemPrompt = buildSystemPrompt(rosa, giornata, 'avversario della giornata');
   const userMessage = `Analizza questo schieramento per la giornata ${giornata}: ${JSON.stringify(schieramento)}. Considerando i prossimi avversari e le condizioni dei giocatori, suggerisci al massimo 3 modifiche concrete con motivazione breve. Sii diretto e usa i dati della rosa.`;
-  return callClaude({ systemPrompt, userMessage, maxTokens: 500, apiKey });
+  return callClaude({ systemPrompt, userMessage, maxTokens: 500 });
 }
 
-export async function valutaOfferta(offerta, rosa, apiKey) {
+export async function valutaOfferta(offerta, rosa) {
   const systemPrompt = buildSystemPrompt(rosa, 28, null);
   const userMessage = `Valuta questa offerta di mercato: ${JSON.stringify(offerta)}. Conviene accettare? Considera la qualità del giocatore offerto rispetto a quello richiesto, il calendario futuro e le esigenze della rosa. Dammi un consiglio chiaro (ACCETTA / RIFIUTA / CONTROPROPONI) con motivazione breve.`;
-  return callClaude({ systemPrompt, userMessage, maxTokens: 400, apiKey });
+  return callClaude({ systemPrompt, userMessage, maxTokens: 400 });
 }
 
-export async function reportScouting(giocatore, apiKey) {
+export async function reportScouting(giocatore) {
   const systemPrompt = `Sei FantaBrain AI, esperto di Fantacalcio Mantra Serie A. Parla in italiano. Sei conciso e diretto.`;
   const userMessage = `Genera un report scouting per ${giocatore.nome} ${giocatore.cognome} (${giocatore.squadra}, ${giocatore.ruoloMantra}) nel Fantacalcio Mantra. Dati: media voti ${giocatore.votoMedia}, ultimi 5: ${giocatore.votiUltimi5?.join(', ')}. Includi: punti di forza, debolezze, consiglio acquisto (SI/NO/FORSE) con motivazione. Max 150 parole.`;
-  return callClaude({ systemPrompt, userMessage, maxTokens: 300, apiKey });
+  return callClaude({ systemPrompt, userMessage, maxTokens: 300 });
 }
 
-export async function warRoomAnalisi(miaRosa, rosaAvversario, nomeAvversario, giornata, apiKey) {
+export async function warRoomAnalisi(miaRosa, rosaAvversario, nomeAvversario, giornata) {
   const systemPrompt = buildSystemPrompt(miaRosa, giornata, nomeAvversario);
 
   const step1 = await callClaude({
     systemPrompt,
     userMessage: `War Room Giornata ${giornata}. Analizza la rosa avversaria di ${nomeAvversario}: ${JSON.stringify(rosaAvversario?.slice(0, 5))}. Quali sono i loro punti di forza e debolezza principali?`,
     maxTokens: 250,
-    apiKey,
   });
 
   const step2 = await callClaude({
     systemPrompt,
     userMessage: `Dato che l'avversario ha queste caratteristiche: "${step1}". Quali miei giocatori hanno i match migliori contro di loro? Considera ruoli e rendimento recente.`,
     maxTokens: 250,
-    apiKey,
   });
 
   const step3 = await callClaude({
     systemPrompt,
     userMessage: `Basandoti sull'analisi "${step2}", suggerisci: 1) Il modulo ottimale 2) I 3 giocatori da assolutamente schierare 3) Un rischio da evitare. Sii diretto e pratico.`,
     maxTokens: 250,
-    apiKey,
   });
 
   return { analisiAvversario: step1, vantaggi: step2, pianoTattico: step3 };
 }
 
-export async function analizzaGiornata(titolari, partite, giornata, apiKey) {
+export async function analizzaGiornata(titolari, partite, giornata) {
   const systemPrompt = `Sei FantaBrain AI, esperto di Fantacalcio Mantra. Parla in italiano. Sii conciso.`;
   const userMessage = `Analizza la giornata ${giornata} per questi titolari: ${JSON.stringify(titolari.map(g => `${g.nome} ${g.cognome} (${g.squadra})`))}. Partite della giornata: ${JSON.stringify(partite)}. Dimmi chi ha i match migliori e chi rischia. Max 200 parole.`;
-  return callClaude({ systemPrompt, userMessage, maxTokens: 400, apiKey });
+  return callClaude({ systemPrompt, userMessage, maxTokens: 400 });
 }
 
 export { buildSystemPrompt };

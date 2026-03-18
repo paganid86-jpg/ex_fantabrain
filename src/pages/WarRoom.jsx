@@ -18,8 +18,6 @@ export default function WarRoom() {
 
   const [avversario, setAvversario] = useState(avversariLista[0] || '');
   const [avversarioLibero, setAvversarioLibero] = useState('');
-  const [apiKey, setApiKey] = useState('');
-  const [showApiKey, setShowApiKey] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [loadingStep, setLoadingStep] = useState(0);
@@ -42,12 +40,11 @@ export default function WarRoom() {
         [],
         nomeAvversario,
         giornataCorrente,
-        apiKey,
       );
       setLoadingStep(2);
       setRisultato({ analisiAvversario, vantaggi, pianoTattico });
     } catch {
-      setError('Analisi non disponibile al momento. Verifica la API key e i crediti AI.');
+      setError('Analisi non disponibile al momento. Riprova più tardi.');
     } finally {
       setLoading(false);
     }
@@ -99,32 +96,6 @@ export default function WarRoom() {
             )}
           </div>
 
-          {/* API Key */}
-          <div>
-            <label style={{
-              fontSize: 11, color: 'var(--text-muted)',
-              fontFamily: 'Barlow Condensed', letterSpacing: '0.08em',
-              display: 'block', marginBottom: 6, textTransform: 'uppercase',
-            }}>
-              Claude API Key
-            </label>
-            <div style={{ display: 'flex', gap: 6 }}>
-              <input
-                type={showApiKey ? 'text' : 'password'}
-                className="input-field"
-                placeholder="sk-ant-..."
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-              />
-              <button
-                onClick={() => setShowApiKey((s) => !s)}
-                className="btn-secondary"
-                style={{ padding: '8px 10px', flexShrink: 0 }}
-              >
-                {showApiKey ? '🙈' : '👁'}
-              </button>
-            </div>
-          </div>
         </div>
 
         {/* Avviso rosa vuota */}

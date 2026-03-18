@@ -3,29 +3,6 @@ import useAppStore from '../store/useAppStore';
 import { RUOLI_MANTRA } from '../data/mockData';
 import { valutaOfferta } from '../lib/claudeApi';
 
-function ApiKeyInput({ value, onChange }) {
-  const [show, setShow] = useState(false);
-  return (
-    <div style={{ display: 'flex', gap: 6 }}>
-      <input
-        type={show ? 'text' : 'password'}
-        className="input-field"
-        placeholder="sk-ant-..."
-        value={value}
-        onChange={onChange}
-        style={{ fontSize: 12, flex: 1 }}
-      />
-      <button
-        onClick={() => setShow((s) => !s)}
-        className="btn-secondary"
-        style={{ padding: '8px 10px', flexShrink: 0 }}
-      >
-        {show ? '🙈' : '👁'}
-      </button>
-    </div>
-  );
-}
-
 function TabOfferte() {
   const offerte = useAppStore((s) => s.offerte);
   const aggiornaOfferta = useAppStore((s) => s.aggiornaOfferta);
@@ -33,35 +10,22 @@ function TabOfferte() {
   const aiCrediti = useAppStore((s) => s.aiCrediti);
 
   const [aiStati, setAiStati] = useState({});
-  const [apiKey, setApiKey] = useState('');
 
   async function valutaConAI(offerta) {
     setAiStati((s) => ({ ...s, [offerta.id]: { loading: true, testo: null, error: null } }));
     try {
-      const testo = await valutaOfferta(offerta, rosa, apiKey);
+      const testo = await valutaOfferta(offerta, rosa);
       setAiStati((s) => ({ ...s, [offerta.id]: { loading: false, testo, error: null } }));
     } catch {
       setAiStati((s) => ({
         ...s,
-        [offerta.id]: { loading: false, testo: null, error: 'Analisi non disponibile. Verifica la API key.' },
+        [offerta.id]: { loading: false, testo: null, error: 'Analisi non disponibile. Riprova più tardi.' },
       }));
     }
   }
 
   return (
     <div>
-      {/* API Key */}
-      <div className="glass-card" style={{ padding: 14, marginBottom: 16 }}>
-        <div style={{
-          fontSize: 11, color: 'var(--gold)',
-          fontFamily: 'Barlow Condensed', letterSpacing: '0.06em',
-          textTransform: 'uppercase', marginBottom: 8,
-        }}>
-          🔑 Claude API Key (per valutazioni AI)
-        </div>
-        <ApiKeyInput value={apiKey} onChange={(e) => setApiKey(e.target.value)} />
-      </div>
-
       {offerte.length === 0 ? (
         <div className="empty-state" style={{ paddingTop: 60 }}>
           <div className="empty-state-icon">💰</div>
