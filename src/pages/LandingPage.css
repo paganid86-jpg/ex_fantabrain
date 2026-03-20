@@ -5,14 +5,14 @@
 
 /* ─── Reset & Base ─────────────────────────────────── */
 .landing {
-  font-family: 'Barlow', sans-serif;
+  font-family: 'DM Sans', sans-serif;
   font-size: 16px;
   line-height: 1.6;
-  color: #f0e8ff;
-  background-color: #07030f;
+  color: var(--text-primary, #F1F5F9);
+  background-color: var(--bg-deep, #050A14);
   background-image:
-    radial-gradient(ellipse 80% 50% at 20% 10%, rgba(168, 85, 247, 0.12) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 40% at 80% 90%, rgba(34, 197, 94, 0.06) 0%, transparent 55%);
+    radial-gradient(ellipse 80% 50% at 20% 10%, rgba(0, 212, 255, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 90%, rgba(6, 182, 212, 0.06) 0%, transparent 55%);
   min-height: 100vh;
   overflow-x: hidden;
 }
@@ -27,7 +27,7 @@
 .landing h2,
 .landing h3,
 .landing h4 {
-  font-family: 'Barlow Condensed', sans-serif;
+  font-family: 'Syne', sans-serif;
   line-height: 1.15;
 }
 
@@ -45,19 +45,19 @@
 }
 
 .landing .section-title {
-  font-family: 'Barlow Condensed', sans-serif;
+  font-family: 'Syne', sans-serif;
   font-size: 36px;
   font-weight: 800;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: #f0e8ff;
+  color: var(--text-primary);
   text-align: center;
   margin-bottom: 16px;
 }
 
 .landing .section-subtitle {
   font-size: 18px;
-  color: #9d7ec9;
+  color: var(--text-secondary);
   text-align: center;
   margin-bottom: 48px;
   max-width: 560px;
@@ -115,7 +115,7 @@
   gap: 8px;
   border: none;
   border-radius: 10px;
-  font-family: 'Barlow Condensed', sans-serif;
+  font-family: 'Syne', sans-serif;
   font-weight: 700;
   font-size: 18px;
   letter-spacing: 0.05em;
@@ -143,7 +143,7 @@
 /* Outlined */
 .landing .btn--outlined {
   background: transparent;
-  color: #f0e8ff;
+  color: var(--text-primary);
   border: 1.5px solid rgba(255,255,255,0.25);
 }
 .landing .btn--outlined:hover {
@@ -164,7 +164,7 @@
 /* Gold filled */
 .landing .btn--gold {
   background: linear-gradient(135deg, #f5c842 0%, #e8a800 100%);
-  color: #07030f;
+  color: var(--bg-deep);
 }
 .landing .btn--gold:hover {
   transform: translateY(-2px);
@@ -236,7 +236,7 @@
   width: 36px;
   height: 36px;
   border-radius: 9px;
-  background: linear-gradient(135deg, #a855f7 0%, #22c55e 100%);
+  background: linear-gradient(135deg, #00D4FF 0%, #06B6D4 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -245,10 +245,10 @@
 }
 
 .landing-nav__logo-text {
-  font-family: 'Barlow Condensed', sans-serif;
+  font-family: 'Syne', sans-serif;
   font-weight: 900;
   font-size: 22px;
-  color: #f0e8ff;
+  color: var(--text-primary);
   letter-spacing: 0.05em;
 }
 
@@ -278,7 +278,7 @@
   inset: 0;
   background:
     radial-gradient(ellipse 70% 60% at 50% 40%, rgba(34, 197, 94, 0.08) 0%, transparent 70%),
-    radial-gradient(ellipse 50% 40% at 80% 20%, rgba(168, 85, 247, 0.10) 0%, transparent 60%);
+    radial-gradient(ellipse 50% 40% at 80% 20%, rgba(0, 212, 255, 0.08) 0%, transparent 60%);
 }
 
 .landing-hero__content {
@@ -298,7 +298,7 @@
   border: 1px solid rgba(34, 197, 94, 0.30);
   border-radius: 999px;
   padding: 6px 16px;
-  font-family: 'Barlow Condensed', sans-serif;
+  font-family: 'Syne', sans-serif;
   font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -312,7 +312,7 @@
   font-weight: 900;
   letter-spacing: 0.02em;
   text-transform: uppercase;
-  color: #f0e8ff;
+  color: var(--text-primary);
   margin-bottom: 20px;
   line-height: 1.1;
 }
@@ -324,7 +324,7 @@
 
 .landing-hero__subheadline {
   font-size: 18px;
-  color: #9d7ec9;
+  color: var(--text-secondary);
   max-width: 560px;
   margin: 0 auto 36px;
   line-height: 1.65;
@@ -343,11 +343,11 @@
   align-items: center;
   gap: 8px;
   font-size: 15px;
-  color: #9d7ec9;
+  color: var(--text-secondary);
 }
 
 .hero-counter__number {
-  font-family: 'Barlow Condensed', sans-serif;
+  font-family: 'Syne', sans-serif;
   font-weight: 800;
   font-size: 18px;
   color: #22c55e;
@@ -360,12 +360,12 @@
   gap: 0;
   flex-wrap: wrap;
   font-size: 14px;
-  color: #4d3870;
+  color: var(--text-muted);
 }
 
 .landing-hero__stats-item {
   padding: 0 16px;
-  border-right: 1px solid rgba(77, 56, 112, 0.40);
+  border-right: 1px solid rgba(255, 255, 255, 0.10);
 }
 
 .landing-hero__stats-item:last-child {
@@ -380,18 +380,18 @@
 }
 
 .problem-lead {
-  font-family: 'Barlow Condensed', sans-serif;
+  font-family: 'Syne', sans-serif;
   font-size: 32px;
   font-weight: 800;
   text-align: center;
-  color: #f0e8ff;
+  color: var(--text-primary);
   margin-bottom: 12px;
   letter-spacing: 0.02em;
 }
 
 .problem-body {
   font-size: 18px;
-  color: #9d7ec9;
+  color: var(--text-secondary);
   text-align: center;
   max-width: 560px;
   margin: 0 auto 48px;
@@ -429,7 +429,7 @@
 .problem-card:nth-child(3) .problem-card__icon { animation-delay: 1s; }
 
 .problem-card__title {
-  font-family: 'Barlow Condensed', sans-serif;
+  font-family: 'Syne', sans-serif;
   font-size: 20px;
   font-weight: 800;
   letter-spacing: 0.05em;
@@ -440,7 +440,7 @@
 
 .problem-card__desc {
   font-size: 15px;
-  color: #9d7ec9;
+  color: var(--text-secondary);
   line-height: 1.55;
 }
 
@@ -448,7 +448,7 @@
   text-align: center;
   font-size: 20px;
   font-weight: 600;
-  color: #f0e8ff;
+  color: var(--text-primary);
   max-width: 600px;
   margin: 0 auto;
   line-height: 1.55;
@@ -502,12 +502,12 @@
 }
 
 .coach-mockup__title {
-  font-family: 'Barlow Condensed', sans-serif;
+  font-family: 'Syne', sans-serif;
   font-size: 18px;
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #f0e8ff;
+  color: var(--text-primary);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -524,8 +524,8 @@
 
 .coach-mockup__giornata {
   font-size: 12px;
-  color: #4d3870;
-  font-family: 'Barlow Condensed', sans-serif;
+  color: var(--text-muted);
+  font-family: 'Syne', sans-serif;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   margin-bottom: 16px;
@@ -556,16 +556,16 @@
 }
 
 .coach-player-name {
-  font-family: 'Barlow Condensed', sans-serif;
+  font-family: 'Syne', sans-serif;
   font-size: 18px;
   font-weight: 800;
-  color: #f0e8ff;
+  color: var(--text-primary);
   letter-spacing: 0.04em;
 }
 
 .coach-player-number {
   font-size: 12px;
-  color: #4d3870;
+  color: var(--text-muted);
   margin-left: 4px;
 }
 
@@ -575,7 +575,7 @@
   gap: 4px;
   padding: 3px 10px;
   border-radius: 6px;
-  font-family: 'Barlow Condensed', sans-serif;
+  font-family: 'Syne', sans-serif;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -597,7 +597,7 @@
 
 .coach-ai-text {
   font-size: 13px;
-  color: #9d7ec9;
+  color: var(--text-secondary);
   line-height: 1.55;
   margin-bottom: 12px;
 }
@@ -611,10 +611,10 @@
 
 .confidence-bar__label {
   font-size: 11px;
-  font-family: 'Barlow Condensed', sans-serif;
+  font-family: 'Syne', sans-serif;
   letter-spacing: 0.07em;
   text-transform: uppercase;
-  color: #4d3870;
+  color: var(--text-muted);
   white-space: nowrap;
   flex-shrink: 0;
 }
@@ -622,7 +622,7 @@
 .confidence-bar__track {
   flex: 1;
   height: 6px;
-  background: rgba(77, 56, 112, 0.35);
+  background: rgba(255, 255, 255, 0.08);
   border-radius: 999px;
   overflow: hidden;
 }
@@ -641,7 +641,7 @@
 }
 
 .confidence-bar__pct {
-  font-family: 'Barlow Condensed', sans-serif;
+  font-family: 'Syne', sans-serif;
   font-size: 14px;
   font-weight: 700;
   color: #22c55e;
@@ -660,7 +660,7 @@
   color: #fff;
   border: none;
   border-radius: 8px;
-  font-family: 'Barlow Condensed', sans-serif;
+  font-family: 'Syne', sans-serif;
   font-size: 14px;
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -675,7 +675,7 @@
 
 .demo-caption {
   font-size: 15px;
-  color: #4d3870;
+  color: var(--text-muted);
   text-align: center;
   margin-top: 20px;
   max-width: 420px;
@@ -700,8 +700,8 @@
   border-radius: 8px;
   border: 1.5px solid rgba(255,255,255,0.12);
   background: transparent;
-  color: #9d7ec9;
-  font-family: 'Barlow Condensed', sans-serif;
+  color: var(--text-secondary);
+  font-family: 'Syne', sans-serif;
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
@@ -769,7 +769,7 @@
   align-items: center;
   padding: 3px 10px;
   border-radius: 6px;
-  font-family: 'Barlow Condensed', sans-serif;
+  font-family: 'Syne', sans-serif;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -777,9 +777,9 @@
 }
 
 .pricing-badge--popular {
-  background: rgba(168, 85, 247, 0.15);
-  color: #a855f7;
-  border: 1px solid rgba(168, 85, 247, 0.25);
+  background: rgba(0, 212, 255, 0.10);
+  color: #00D4FF;
+  border: 1px solid rgba(0, 212, 255, 0.20);
 }
 
 .pricing-badge--complete {
@@ -801,20 +801,20 @@
 }
 
 .pricing-card__title {
-  font-family: 'Barlow Condensed', sans-serif;
+  font-family: 'Syne', sans-serif;
   font-size: 26px;
   font-weight: 800;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: #f0e8ff;
+  color: var(--text-primary);
   margin-bottom: 10px;
 }
 
 .pricing-card__price {
-  font-family: 'Barlow Condensed', sans-serif;
+  font-family: 'Syne', sans-serif;
   font-size: 36px;
   font-weight: 900;
-  color: #f0e8ff;
+  color: var(--text-primary);
   line-height: 1.1;
   margin-bottom: 6px;
 }
@@ -826,12 +826,12 @@
 .pricing-card__period {
   font-size: 18px;
   font-weight: 500;
-  color: #9d7ec9;
+  color: var(--text-secondary);
 }
 
 .pricing-card__annual-note {
   font-size: 14px;
-  color: #4d3870;
+  color: var(--text-muted);
   margin-top: 4px;
 }
 
@@ -862,7 +862,7 @@
 }
 
 .pricing-feature--check {
-  color: #f0e8ff;
+  color: var(--text-primary);
 }
 
 .pricing-feature--check .pricing-feature__icon {
@@ -870,17 +870,17 @@
 }
 
 .pricing-feature--partial {
-  color: #9d7ec9;
+  color: var(--text-secondary);
 }
 
 .pricing-feature--partial .pricing-feature__icon {
-  color: #9d7ec9;
+  color: var(--text-secondary);
 }
 
 .pricing-feature--cross {
-  color: #4d3870;
+  color: var(--text-muted);
   text-decoration: line-through;
-  text-decoration-color: rgba(77, 56, 112, 0.50);
+  text-decoration-color: rgba(255, 255, 255, 0.15);
 }
 
 .pricing-feature--cross .pricing-feature__icon {
@@ -897,21 +897,21 @@
 
 .pricing-card__note {
   font-size: 13px;
-  color: #4d3870;
+  color: var(--text-muted);
   text-align: center;
 }
 
 .pricing-disclaimer {
   text-align: center;
   font-size: 14px;
-  color: #4d3870;
+  color: var(--text-muted);
   margin-bottom: 6px;
 }
 
 .pricing-all-plans-note {
   text-align: center;
   font-size: 13px;
-  color: #4d3870;
+  color: var(--text-muted);
 }
 
 /* ─── Social Proof ─────────────────────────────────── */
@@ -927,7 +927,7 @@
 }
 
 .social-proof-counter__number {
-  font-family: 'Barlow Condensed', sans-serif;
+  font-family: 'Syne', sans-serif;
   font-size: 52px;
   font-weight: 900;
   color: #22c55e;
@@ -938,7 +938,7 @@
 
 .social-proof-counter__label {
   font-size: 14px;
-  color: #9d7ec9;
+  color: var(--text-secondary);
   display: block;
 }
 
@@ -952,7 +952,7 @@
 
 .social-proof-rating__label {
   font-size: 14px;
-  color: #9d7ec9;
+  color: var(--text-secondary);
   display: block;
 }
 
@@ -978,7 +978,7 @@
 .testimonial-card__quote {
   font-size: 16px;
   line-height: 1.65;
-  color: #f0e8ff;
+  color: var(--text-primary);
   margin-bottom: 16px;
   font-style: italic;
 }
@@ -992,10 +992,10 @@
 }
 
 .testimonial-card__author {
-  font-family: 'Barlow Condensed', sans-serif;
+  font-family: 'Syne', sans-serif;
   font-size: 14px;
   font-weight: 600;
-  color: #9d7ec9;
+  color: var(--text-secondary);
   letter-spacing: 0.04em;
 }
 
@@ -1039,8 +1039,8 @@
   padding: 18px 20px;
   background: none;
   border: none;
-  color: #f0e8ff;
-  font-family: 'Barlow', sans-serif;
+  color: var(--text-primary);
+  font-family: 'DM Sans', sans-serif;
   font-size: 16px;
   font-weight: 600;
   text-align: left;
@@ -1055,7 +1055,7 @@
 
 .faq-item__arrow {
   font-size: 12px;
-  color: #4d3870;
+  color: var(--text-muted);
   flex-shrink: 0;
 }
 
@@ -1066,7 +1066,7 @@
 .faq-item__answer p {
   padding-bottom: 18px;
   font-size: 15px;
-  color: #9d7ec9;
+  color: var(--text-secondary);
   line-height: 1.65;
 }
 
@@ -1085,25 +1085,25 @@
 }
 
 .second-cta-section__headline {
-  font-family: 'Barlow Condensed', sans-serif;
+  font-family: 'Syne', sans-serif;
   font-size: 42px;
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  color: #f0e8ff;
+  color: var(--text-primary);
   margin-bottom: 12px;
 }
 
 .second-cta-section__subheadline {
   font-size: 18px;
-  color: #9d7ec9;
+  color: var(--text-secondary);
   margin-bottom: 36px;
   line-height: 1.55;
 }
 
 .second-cta-section__reassurance {
   font-size: 15px;
-  color: #4d3870;
+  color: var(--text-muted);
   margin-top: 16px;
 }
 
@@ -1129,8 +1129,8 @@
   background: rgba(255,255,255,0.05);
   border: 1.5px solid rgba(255,255,255,0.10);
   border-radius: 10px;
-  color: #f0e8ff;
-  font-family: 'Barlow', sans-serif;
+  color: var(--text-primary);
+  font-family: 'DM Sans', sans-serif;
   font-size: 16px;
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
@@ -1143,7 +1143,7 @@
 }
 
 .waitlist-form__input::placeholder {
-  color: #4d3870;
+  color: var(--text-muted);
 }
 
 .waitlist-form__gdpr {
@@ -1151,7 +1151,7 @@
   align-items: flex-start;
   gap: 10px;
   font-size: 13px;
-  color: #9d7ec9;
+  color: var(--text-secondary);
   line-height: 1.5;
   cursor: pointer;
 }
@@ -1214,16 +1214,16 @@
 }
 
 .landing-footer__logo {
-  font-family: 'Barlow Condensed', sans-serif;
+  font-family: 'Syne', sans-serif;
   font-size: 28px;
   font-weight: 900;
-  color: #f0e8ff;
+  color: var(--text-primary);
   letter-spacing: 0.05em;
 }
 
 .landing-footer__tagline {
   font-size: 14px;
-  color: #4d3870;
+  color: var(--text-muted);
   margin-top: 6px;
 }
 
@@ -1236,17 +1236,17 @@
 
 .landing-footer__link {
   font-size: 14px;
-  color: #9d7ec9;
+  color: var(--text-secondary);
   text-decoration: none;
   transition: color 0.15s;
 }
 
 .landing-footer__link:hover {
-  color: #f0e8ff;
+  color: var(--text-primary);
 }
 
 .landing-footer__separator {
-  color: #4d3870;
+  color: var(--text-muted);
   font-size: 12px;
 }
 
@@ -1268,7 +1268,7 @@
 
 .landing-footer__pricing-note {
   font-size: 13px;
-  color: #4d3870;
+  color: var(--text-muted);
 }
 
 .landing-footer__bottom {
@@ -1284,7 +1284,7 @@
 .landing-footer__copyright,
 .landing-footer__disclaimer {
   font-size: 12px;
-  color: #4d3870;
+  color: var(--text-muted);
 }
 
 /* ─── Tracking placeholder styles ──────────────────── */

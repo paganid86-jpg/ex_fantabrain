@@ -215,7 +215,7 @@ export function DemoSection() {
                   <span className="coach-mockup__dot" aria-hidden="true" />
                   Coach AI
                 </span>
-                <span style={{ fontSize: 12, color: '#4d3870', fontFamily: "'Barlow Condensed', sans-serif", letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                <span style={{ fontSize: 12, color: 'var(--accent-primary)', fontFamily: "'Syne', sans-serif", letterSpacing: '0.08em', textTransform: 'uppercase' }}>
                   LIVE
                 </span>
               </div>

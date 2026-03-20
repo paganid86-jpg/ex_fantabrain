@@ -95,12 +95,12 @@ function WaitlistSection() {
         >
           <h2
             style={{
-              fontFamily: "'Barlow Condensed', sans-serif",
+              fontFamily: "'Syne', sans-serif",
               fontSize: 32,
-              fontWeight: 900,
+              fontWeight: 800,
               textTransform: 'uppercase',
               letterSpacing: '0.04em',
-              color: '#f0e8ff',
+              color: 'var(--text-primary)',
               marginBottom: 8,
             }}
           >
@@ -109,7 +109,7 @@ function WaitlistSection() {
           <p
             style={{
               fontSize: 16,
-              color: '#9d7ec9',
+              color: 'var(--text-secondary)',
               marginBottom: 28,
               lineHeight: 1.6,
             }}
