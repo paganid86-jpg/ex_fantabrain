@@ -2,16 +2,16 @@ import { NavLink } from 'react-router-dom';
 import useAppStore from '../../store/useAppStore';
 
 const navItems = [
-  { path: '/app',             label: 'Dashboard',     icon: '📊', group: null },
-  { path: '/app/ai-analisi',  label: 'AI Analisi',    icon: '🤖', group: 'AI' },
-  { path: '/app/war-room',    label: 'War Room',       icon: '⚔️', group: 'AI' },
-  { path: '/app/la-rosa',     label: 'La Rosa',        icon: '👥', group: 'Squadra' },
-  { path: '/app/schieramento',label: 'Schieramento',   icon: '🏟️', group: 'Squadra' },
-  { path: '/app/mercato',     label: 'Mercato',        icon: '💰', group: 'Squadra' },
-  { path: '/app/scouting',    label: 'Scouting',       icon: '🔍', group: 'Squadra' },
-  { path: '/app/classifica',  label: 'Classifica',     icon: '🏆', group: 'Lega' },
-  { path: '/app/calendario',  label: 'Calendario',     icon: '📅', group: 'Lega' },
-  { path: '/app/statistiche', label: 'Statistiche',    icon: '📈', group: 'Lega' },
+  { path: '/',              label: 'Dashboard',     icon: '📊', group: null },
+  { path: '/ai-analisi',   label: 'AI Analisi',    icon: '🤖', group: 'AI' },
+  { path: '/war-room',     label: 'War Room',       icon: '⚔️', group: 'AI' },
+  { path: '/la-rosa',      label: 'La Rosa',        icon: '👥', group: 'Squadra' },
+  { path: '/schieramento', label: 'Schieramento',   icon: '🏟️', group: 'Squadra' },
+  { path: '/mercato',      label: 'Mercato',        icon: '💰', group: 'Squadra' },
+  { path: '/scouting',     label: 'Scouting',       icon: '🔍', group: 'Squadra' },
+  { path: '/classifica',   label: 'Classifica',     icon: '🏆', group: 'Lega' },
+  { path: '/calendario',   label: 'Calendario',     icon: '📅', group: 'Lega' },
+  { path: '/statistiche',  label: 'Statistiche',    icon: '📈', group: 'Lega' },
 ];
 
 const groups = [null, 'AI', 'Squadra', 'Lega'];
@@ -104,7 +104,7 @@ export default function Sidebar({ mobileOpen, onClose }) {
                   <NavLink
                     key={item.path}
                     to={item.path}
-                    end={item.path === '/app'}
+                    end={item.path === '/'}
                     className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
                     onClick={onClose}
                   >

@@ -2,7 +2,6 @@ import { HashRouter, Routes, Route } from 'react-router-dom';
 import { useState } from 'react';
 import Sidebar from './components/layout/Sidebar';
 import Topbar from './components/layout/Topbar';
-import LandingPage from './pages/LandingPage';
 import Dashboard from './pages/Dashboard';
 import AIAnalisi from './pages/AIAnalisi';
 import LaRosa from './pages/LaRosa';
@@ -14,7 +13,6 @@ import Scouting from './pages/Scouting';
 import WarRoom from './pages/WarRoom';
 import Statistiche from './pages/Statistiche';
 
-/* ── Dashboard layout with sidebar + topbar ── */
 function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -47,10 +45,7 @@ export default function App() {
   return (
     <HashRouter>
       <Routes>
-        {/* Marketing landing page — conversion entry point */}
-        <Route path="/" element={<LandingPage />} />
-        {/* App dashboard — accessible at /#/app/... */}
-        <Route path="/app/*" element={<AppLayout />} />
+        <Route path="/*" element={<AppLayout />} />
       </Routes>
     </HashRouter>
   );
