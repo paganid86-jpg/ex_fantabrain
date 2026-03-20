@@ -145,7 +145,11 @@ const useAppStore = create(
       setCalendario: (calendario) => set({ calendario }),
     }),
     {
-      name: 'fantabrain-store-v2',
+      name: 'fantabrain-store-v3',
+      version: 1,
+      migrate: (persistedState) => {
+        return { ...persistedState, rosa: [] };
+      },
     }
   )
 );
