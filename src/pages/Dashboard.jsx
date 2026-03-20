@@ -540,28 +540,6 @@ export default function Dashboard() {
   const mediaGiornate = userRow?.puntimedia;
   const variazionePos = userRow?.ultimoTurno;
 
-  /* ── Empty state ─────────────────────────────────────── */
-  if (rosa.length === 0) {
-    return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
-        <div className="empty-state">
-          <div className="empty-state-icon">⚽</div>
-          <div className="empty-state-title">Nessun giocatore in rosa</div>
-          <div className="empty-state-desc">
-            Vai su La Rosa per aggiungere i tuoi giocatori e iniziare a giocare.
-          </div>
-          <button
-            className="btn-primary"
-            style={{ marginTop: 24 }}
-            onClick={() => navigate('/la-rosa')}
-          >
-            Vai alla Rosa
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   /* ── Layout principale ───────────────────────────────── */
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
@@ -636,28 +614,57 @@ export default function Dashboard() {
             </button>
           </div>
 
-          <div className="pitch" style={{
-            margin: 14,
-            padding: '20px 8px',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            gap: 18,
-            minHeight: 300,
-          }}>
-            {pitchRows.map((riga, ri) => (
-              <div key={ri} style={{
-                display: 'flex',
-                justifyContent: 'center',
-                gap: 16,
-                flexWrap: 'wrap',
+          {rosa.length === 0 ? (
+            <div style={{
+              margin: 14,
+              minHeight: 300,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 12,
+            }}>
+              <span style={{ fontSize: 36, opacity: 0.4 }}>⚽</span>
+              <div style={{
+                fontFamily: 'var(--font-display)',
+                fontWeight: 700,
+                fontSize: 15,
+                color: 'var(--text-muted)',
               }}>
-                {(riga.length > 0 ? riga : [null]).map((g, i) => (
-                  <PitchSlot key={i} giocatore={g} />
-                ))}
+                Nessun giocatore in rosa
               </div>
-            ))}
-          </div>
+              <button
+                className="btn-secondary"
+                style={{ fontSize: 12, marginTop: 4 }}
+                onClick={() => navigate('/la-rosa')}
+              >
+                Vai alla Rosa →
+              </button>
+            </div>
+          ) : (
+            <div className="pitch" style={{
+              margin: 14,
+              padding: '20px 8px',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              gap: 18,
+              minHeight: 300,
+            }}>
+              {pitchRows.map((riga, ri) => (
+                <div key={ri} style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  gap: 16,
+                  flexWrap: 'wrap',
+                }}>
+                  {(riga.length > 0 ? riga : [null]).map((g, i) => (
+                    <PitchSlot key={i} giocatore={g} />
+                  ))}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* AI Suggestions */}
