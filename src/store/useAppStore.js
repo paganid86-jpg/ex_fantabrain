@@ -1,23 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-const ROSA_DEMO = [
-  { id: 1,  cognome: 'Maignan',      nome: 'Mike',      ruoloMantra: 'Por', squadra: 'Milan',    votoMedia: 6.8, quotazione: 25, votiUltimi5: [7, 6, 7.5, 6.5, 7],   infortunato: false, diffidato: false },
-  { id: 2,  cognome: 'Di Lorenzo',   nome: 'Giovanni',  ruoloMantra: 'DD',  squadra: 'Napoli',   votoMedia: 6.6, quotazione: 18, votiUltimi5: [6.5, 7, 6, 6.5, 7],   infortunato: false, diffidato: true  },
-  { id: 3,  cognome: 'Bastoni',      nome: 'Alessandro',ruoloMantra: 'DC',  squadra: 'Inter',    votoMedia: 6.7, quotazione: 22, votiUltimi5: [6, 7, 6.5, 7, 6.5],   infortunato: false, diffidato: false },
-  { id: 4,  cognome: 'Hernandez',    nome: 'Theo',      ruoloMantra: 'DS',  squadra: 'Milan',    votoMedia: 7.1, quotazione: 30, votiUltimi5: [7.5, 8, 6.5, 7, 7],   infortunato: false, diffidato: false },
-  { id: 5,  cognome: 'Calhanoglu',   nome: 'Hakan',     ruoloMantra: 'M/C', squadra: 'Inter',    votoMedia: 7.2, quotazione: 28, votiUltimi5: [7, 8, 7.5, 6.5, 7.5], infortunato: false, diffidato: false },
-  { id: 6,  cognome: 'Barella',      nome: 'Nicolò',    ruoloMantra: 'C',   squadra: 'Inter',    votoMedia: 6.9, quotazione: 26, votiUltimi5: [7, 6.5, 7, 7, 7],     infortunato: true,  diffidato: false },
-  { id: 7,  cognome: 'Koopmeiners',  nome: 'Teun',      ruoloMantra: 'M/C', squadra: 'Juventus', votoMedia: 6.8, quotazione: 24, votiUltimi5: [6.5, 7, 7, 6.5, 7],   infortunato: false, diffidato: false },
-  { id: 8,  cognome: 'McTominay',    nome: 'Scott',     ruoloMantra: 'C',   squadra: 'Napoli',   votoMedia: 7.0, quotazione: 22, votiUltimi5: [7, 7.5, 6.5, 7, 7.5], infortunato: false, diffidato: false },
-  { id: 9,  cognome: 'Lautaro',      nome: 'Martínez',  ruoloMantra: 'PC',  squadra: 'Inter',    votoMedia: 7.5, quotazione: 40, votiUltimi5: [8, 7.5, 8.5, 7, 8],   infortunato: false, diffidato: false },
-  { id: 10, cognome: 'Retegui',      nome: 'Mateo',     ruoloMantra: 'PC',  squadra: 'Atalanta', votoMedia: 7.3, quotazione: 34, votiUltimi5: [7.5, 8, 7, 7.5, 7],   infortunato: false, diffidato: false },
-  { id: 11, cognome: 'Darmian',      nome: 'Matteo',    ruoloMantra: 'DD',  squadra: 'Inter',    votoMedia: 6.3, quotazione: 10, votiUltimi5: [6, 6.5, 6, 6.5, 6],   infortunato: false, diffidato: false },
-  { id: 12, cognome: 'Tomori',       nome: 'Fikayo',    ruoloMantra: 'DC',  squadra: 'Milan',    votoMedia: 6.5, quotazione: 15, votiUltimi5: [6.5, 7, 6, 6.5, 6.5], infortunato: false, diffidato: false },
-  { id: 13, cognome: 'Frattesi',     nome: 'Davide',    ruoloMantra: 'C',   squadra: 'Inter',    votoMedia: 6.7, quotazione: 16, votiUltimi5: [6, 7, 7, 6.5, 7],     infortunato: false, diffidato: false },
-  { id: 14, cognome: 'Lookman',      nome: 'Ademola',   ruoloMantra: 'T/A', squadra: 'Atalanta', votoMedia: 7.1, quotazione: 28, votiUltimi5: [7.5, 7, 7, 6.5, 7.5], infortunato: false, diffidato: false },
-  { id: 15, cognome: 'Zielinski',    nome: 'Piotr',     ruoloMantra: 'M/C', squadra: 'Inter',    votoMedia: 6.5, quotazione: 12, votiUltimi5: [6.5, 6, 7, 6, 7],     infortunato: false, diffidato: false },
-];
 
 const CLASSIFICA_DEMO = [
   { id: 1, nome: 'FC Drago', punti: 487, ultimoTurno: 78, puntimedia: 81.2 },
@@ -47,7 +30,7 @@ const useAppStore = create(
       user: { name: 'Allenatore', plan: 'pro', league: 'La mia lega' },
 
       // Rosa
-      rosa: ROSA_DEMO,
+      rosa: [],
       giornataCorrente: 15,
 
       // Lega

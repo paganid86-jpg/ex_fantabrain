@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: fantabrain-ai
+    env: node
+    buildCommand: npm install && npm run build
+    startCommand: node server.js
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: FOOTBALL_DATA_API_KEY
+        sync: false
+      - key: VITE_GROQ_API_KEY
+        sync: false

@@ -1,24 +1,15 @@
 // src/services/footballApi.js
 // Client HTTP per football-data.org API (piano Free — Serie A 2025/2026)
-// NOTA SICUREZZA: API key esposta nel frontend solo per MVP.
-// Prima di un deploy pubblico, spostare le chiamate dietro un backend/edge function.
+// In produzione le chiamate passano dal proxy Express (server.js) che aggiunge
+// l'header X-Auth-Token. In sviluppo usa il proxy Vite configurato in vite.config.js.
 
-const BASE_URL = import.meta.env.DEV
-  ? '/api/football'
-  : 'https://api.football-data.org/v4';
-
-const getApiKey = () => import.meta.env.VITE_FOOTBALL_DATA_API_KEY;
+const BASE_URL = '/api/football';
 
 // Rate limiting: max 10 req/min (piano Free football-data.org)
 let requestCount = 0;
 let resetTime = Date.now() + 60000;
 
 async function rateLimitedFetch(path) {
-  const apiKey = getApiKey();
-  if (!apiKey || apiKey === 'la_api_key_qui') {
-    throw new Error('VITE_FOOTBALL_DATA_API_KEY non configurata. Aggiungila nel file .env');
-  }
-
   const now = Date.now();
   if (now > resetTime) {
     requestCount = 0;
@@ -32,9 +23,7 @@ async function rateLimitedFetch(path) {
   }
   requestCount++;
 
-  const response = await fetch(`${BASE_URL}${path}`, {
-    headers: { 'X-Auth-Token': apiKey },
-  });
+  const response = await fetch(`${BASE_URL}${path}`);
 
   if (response.status === 429) {
     // Rate limit superato — attendi 60s e riprova
