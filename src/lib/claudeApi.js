@@ -3,7 +3,8 @@ import useAppStore from '../store/useAppStore';
 const MODEL = 'llama-3.3-70b-versatile';
 const API_URL = 'https://api.groq.com/openai/v1/chat/completions';
 
-function buildSystemPrompt(rosa, giornata, avversario) {
+// serieAContext: { currentMatchday, standings, scorers, nextMatches } — opzionale
+function buildSystemPrompt(rosa, giornata, avversario, serieAContext = null) {
   const rosaJson = JSON.stringify(
     rosa.map((g) => ({
       nome: `${g.nome} ${g.cognome}`,
@@ -16,11 +17,29 @@ function buildSystemPrompt(rosa, giornata, avversario) {
     }))
   );
 
+  let serieAStr = '';
+  if (serieAContext) {
+    const { currentMatchday, standings, scorers, nextMatches } = serieAContext;
+
+    if (standings?.length) {
+      const top5 = standings.slice(0, 5).map((t) => `${t.position}. ${t.name} (${t.points}pt)`).join(', ');
+      serieAStr += `\nClassifica Serie A (G${currentMatchday}): ${top5}`;
+    }
+    if (scorers?.length) {
+      const top5 = scorers.slice(0, 5).map((s) => `${s.name} (${s.teamName}): ${s.goals} gol`).join(', ');
+      serieAStr += `\nTop marcatori Serie A: ${top5}`;
+    }
+    if (nextMatches?.length) {
+      const partite = nextMatches.slice(0, 5).map((m) => `${m.homeTeam.name} vs ${m.awayTeam.name}`).join(', ');
+      serieAStr += `\nProssime partite Serie A G${currentMatchday}: ${partite}`;
+    }
+  }
+
   return `Sei FantaBrain AI, l'assistente intelligente per il Fantacalcio Mantra italiano. Parla sempre in italiano. Sei esperto di Serie A, ruoli Mantra (Por, DD, DS, DC, M/C, C, T/A, W, T, A, PC), e strategie di fantacalcio. Rispondi in modo conciso, diretto, e con consigli pratici e azionabili. Non essere generico: usa i dati reali della rosa che ti vengono forniti.
 
 Rosa attuale dell'utente: ${rosaJson}
 Giornata corrente: ${giornata}
-Prossimo avversario: ${avversario || 'da definire'}`;
+Prossimo avversario: ${avversario || 'da definire'}${serieAStr}`;
 }
 
 async function callApi({ systemPrompt, messages, maxTokens }) {

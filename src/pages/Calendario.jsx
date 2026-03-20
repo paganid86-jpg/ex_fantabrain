@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import useAppStore from '../store/useAppStore';
+import useSerieAStore from '../stores/useSerieAStore';
 import { analizzaGiornata } from '../lib/claudeApi';
+import { formatMatchDate } from '../services/footballDataMapper';
 
 export default function Calendario() {
   const rosa = useAppStore((s) => s.rosa);
@@ -14,6 +16,17 @@ export default function Calendario() {
   const [aiLoading, setAiLoading] = useState(false);
   const [aiRisultato, setAiRisultato] = useState(null);
   const [aiError, setAiError] = useState(null);
+
+  // Dati reali Serie A
+  const serieAMatchday     = useSerieAStore((s) => s.currentMatchday);
+  const loadingMatches     = useSerieAStore((s) => s.loading.matches);
+  const errorMatches       = useSerieAStore((s) => s.errors.matches);
+  const fetchSerieA        = useSerieAStore((s) => s.fetchAll);
+  const getNextMatches     = useSerieAStore((s) => s.getNextMatchdayMatches);
+
+  useEffect(() => { fetchSerieA(); }, [fetchSerieA]);
+
+  const nextSerieAMatches = getNextMatches();
 
   const titolari = titolariIds.map((id) => rosa.find((g) => g.id === id)).filter(Boolean);
 
@@ -292,6 +305,45 @@ export default function Calendario() {
               {aiRisultato}
             </div>
           )}
+        </div>
+
+        {/* Prossima giornata Serie A */}
+        <div className="glass-card" style={{ padding: 16 }}>
+          <div style={{ fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 14, color: 'var(--text-primary)', marginBottom: 10 }}>
+            ⚽ Serie A — G{serieAMatchday ?? '…'}
+          </div>
+          {loadingMatches && (
+            <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>caricamento…</div>
+          )}
+          {errorMatches && (
+            <div style={{ fontSize: 11, color: 'var(--red)' }}>
+              {errorMatches.includes('non configurata')
+                ? '⚙️ Aggiungi VITE_FOOTBALL_DATA_API_KEY nel .env'
+                : 'Errore dati Serie A'}
+            </div>
+          )}
+          {nextSerieAMatches.length === 0 && !loadingMatches && !errorMatches && (
+            <div style={{ fontSize: 12, color: 'var(--text-muted)', fontStyle: 'italic' }}>
+              Nessuna partita in programma
+            </div>
+          )}
+          {nextSerieAMatches.map((m) => {
+            const isLive = ['IN_PLAY', 'PAUSED'].includes(m.status);
+            return (
+              <div key={m.id} style={{ padding: '5px 0', borderBottom: '1px solid rgba(0,212,255,0.07)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12 }}>
+                  {m.homeTeam.crest && <img src={m.homeTeam.crest} alt="" style={{ width: 14, height: 14, objectFit: 'contain' }} />}
+                  <span style={{ flex: 1, color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {m.homeTeam.shortName} — {m.awayTeam.shortName}
+                  </span>
+                  {m.awayTeam.crest && <img src={m.awayTeam.crest} alt="" style={{ width: 14, height: 14, objectFit: 'contain' }} />}
+                </div>
+                <div style={{ fontSize: 10, color: isLive ? 'var(--green)' : 'var(--text-muted)', marginTop: 2, fontWeight: isLive ? 700 : 400 }}>
+                  {isLive ? 'LIVE' : formatMatchDate(m.date)}
+                </div>
+              </div>
+            );
+          })}
         </div>
 
         {/* Riepilogo stagione */}

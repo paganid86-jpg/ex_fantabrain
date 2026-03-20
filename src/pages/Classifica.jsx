@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import useAppStore from '../store/useAppStore';
+import useSerieAStore from '../stores/useSerieAStore';
 
 function MiniBarChart({ punti, max }) {
   return (
@@ -26,18 +27,21 @@ export default function Classifica() {
   const classifica = useAppStore((s) => s.classifica);
   const [modal, setModal] = useState(null);
   const [confronto, setConfronto] = useState(null);
+  const [vista, setVista] = useState('lega'); // 'lega' | 'seriea'
 
-  if (classifica.length === 0) {
-    return (
-      <div className="empty-state" style={{ paddingTop: 80 }}>
-        <div className="empty-state-icon">🏆</div>
-        <div className="empty-state-title">Classifica non disponibile</div>
-        <div className="empty-state-desc">
-          La classifica verrà popolata quando inizieranno le giornate.
-        </div>
-      </div>
-    );
-  }
+  // Dati reali Serie A
+  const serieAStandings = useSerieAStore((s) => s.standings);
+  const serieAMatchday  = useSerieAStore((s) => s.currentMatchday);
+  const loadingStandings = useSerieAStore((s) => s.loading.standings);
+  const errorStandings   = useSerieAStore((s) => s.errors.standings);
+  const fetchStandings   = useSerieAStore((s) => s.fetchStandings);
+
+  useEffect(() => {
+    if (vista === 'seriea') fetchStandings();
+  }, [vista, fetchStandings]);
+
+  // Se la lega è vuota, mostriamo solo il tab Serie A come default
+  const legaVuota = classifica.length === 0;
 
   const userRow = classifica.find((c) => c.isUser);
   const userPos = classifica.findIndex((c) => c.isUser) + 1;
@@ -58,6 +62,138 @@ export default function Classifica() {
 
   return (
     <div>
+      {/* Tab switcher */}
+      <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
+        {[
+          { val: 'lega',   label: '🏆 La mia Lega' },
+          { val: 'seriea', label: '⚽ Serie A Reale' },
+        ].map((t) => (
+          <button
+            key={t.val}
+            onClick={() => setVista(t.val)}
+            style={{
+              background: vista === t.val ? 'rgba(0,212,255,0.15)' : 'var(--bg-glass)',
+              border: `1px solid ${vista === t.val ? 'rgba(0,212,255,0.45)' : 'rgba(255,255,255,0.08)'}`,
+              color: vista === t.val ? 'var(--accent-primary)' : 'var(--text-secondary)',
+              borderRadius: 20, padding: '7px 20px',
+              fontFamily: 'Syne, sans-serif', fontWeight: 600, fontSize: 13,
+              cursor: 'pointer', transition: 'all 0.15s',
+            }}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      {/* ── VISTA SERIE A REALE ── */}
+      {vista === 'seriea' && (
+        <div>
+          <div style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 16 }}>
+            Classifica Serie A 2025/2026 · Giornata {serieAMatchday ?? '…'}
+          </div>
+
+          {loadingStandings && (
+            <div className="glass-card" style={{ textAlign: 'center', padding: 32, color: 'var(--text-muted)' }}>
+              Caricamento classifica reale…
+            </div>
+          )}
+
+          {errorStandings && (
+            <div className="glass-card" style={{ padding: 20 }}>
+              <div style={{ color: 'var(--red)', marginBottom: 8 }}>
+                {errorStandings.includes('non configurata')
+                  ? '⚙️ Configura VITE_FOOTBALL_DATA_API_KEY nel file .env per vedere la classifica reale.'
+                  : `Errore: ${errorStandings}`}
+              </div>
+              <button className="btn-secondary" style={{ fontSize: 12 }} onClick={() => fetchStandings(true)}>
+                Riprova
+              </button>
+            </div>
+          )}
+
+          {serieAStandings && !loadingStandings && (
+            <div className="glass-card" style={{ padding: 0, overflow: 'hidden' }}>
+              <div style={{ overflowX: 'auto' }}>
+                <table className="data-table">
+                  <thead>
+                    <tr>
+                      <th style={{ width: 36 }}>Pos</th>
+                      <th>Squadra</th>
+                      <th>G</th>
+                      <th>V</th>
+                      <th>P</th>
+                      <th>S</th>
+                      <th>GF</th>
+                      <th>GS</th>
+                      <th>DR</th>
+                      <th>Pt</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {serieAStandings.map((team, i) => (
+                      <tr key={team.id}>
+                        <td>
+                          <div style={{
+                            width: 26, height: 26, borderRadius: '50%',
+                            background: i < 4 ? 'var(--gold)' : i >= 17 ? 'var(--red)' : 'rgba(255,255,255,0.06)',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: 12,
+                            color: i < 4 || i >= 17 ? '#000' : 'var(--text-muted)',
+                          }}>
+                            {team.position}
+                          </div>
+                        </td>
+                        <td>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            {team.crest && (
+                              <img src={team.crest} alt="" style={{ width: 20, height: 20, objectFit: 'contain' }} />
+                            )}
+                            <span style={{ fontWeight: 600, fontSize: 13, color: 'var(--text-primary)' }}>
+                              {team.name}
+                            </span>
+                          </div>
+                        </td>
+                        <td style={{ color: 'var(--text-muted)' }}>{team.played}</td>
+                        <td style={{ color: 'var(--green)', fontFamily: 'Syne, sans-serif', fontWeight: 700 }}>{team.won}</td>
+                        <td style={{ color: 'var(--amber)', fontFamily: 'Syne, sans-serif', fontWeight: 700 }}>{team.drawn}</td>
+                        <td style={{ color: 'var(--red)', fontFamily: 'Syne, sans-serif', fontWeight: 700 }}>{team.lost}</td>
+                        <td>{team.goalsFor}</td>
+                        <td>{team.goalsAgainst}</td>
+                        <td style={{ color: team.goalDifference > 0 ? 'var(--green)' : team.goalDifference < 0 ? 'var(--red)' : 'var(--text-muted)' }}>
+                          {team.goalDifference > 0 ? '+' : ''}{team.goalDifference}
+                        </td>
+                        <td>
+                          <span style={{ fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: 16, color: 'var(--text-primary)' }}>
+                            {team.points}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div style={{ padding: '10px 16px', fontSize: 11, color: 'var(--text-muted)', borderTop: '1px solid rgba(0,212,255,0.08)' }}>
+                🟡 Champions League · 🔴 Retrocessione · Dati: football-data.org
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── VISTA LEGA FANTACALCIO ── */}
+      {vista === 'lega' && (
+      <div>
+      {legaVuota ? (
+        <div className="empty-state" style={{ paddingTop: 60 }}>
+          <div className="empty-state-icon">🏆</div>
+          <div className="empty-state-title">Classifica lega non disponibile</div>
+          <div className="empty-state-desc">
+            La classifica verrà popolata quando inizieranno le giornate.<br />
+            Nel frattempo, esplora la <strong>classifica Serie A reale</strong> qui sopra!
+          </div>
+        </div>
+      ) : (
+      <div>
       {/* KPI */}
       <div style={{ display: 'flex', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}>
         {kpiItems.map((k) => (
@@ -274,6 +410,10 @@ export default function Classifica() {
             </div>
           </div>
         </div>
+      )}
+      </div>
+      )}
+      </div>
       )}
     </div>
   );
