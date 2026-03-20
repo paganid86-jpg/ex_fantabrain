@@ -43,8 +43,9 @@ export default function WarRoom() {
       );
       setLoadingStep(2);
       setRisultato({ analisiAvversario, vantaggi, pianoTattico });
-    } catch {
-      setError('Analisi non disponibile al momento. Riprova più tardi.');
+    } catch (err) {
+      console.error('War Room AI error:', err);
+      setError(`Analisi non disponibile: ${err.message}`);
     } finally {
       setLoading(false);
     }
