@@ -24,14 +24,14 @@ export function LandingNav() {
   return (
     <nav className={`landing-nav${scrolled ? ' scrolled' : ''}`} role="navigation" aria-label="Navigazione principale">
       <div className="landing-nav__inner">
-        <a href="/" className="landing-nav__logo" aria-label="FantaAI - Homepage">
+        <a href="/" className="landing-nav__logo" aria-label="Fanta Brain - Homepage">
           <div className="landing-nav__logo-icon" aria-hidden="true">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
               <path d="M10 2L13 8H19L14 12L16 18L10 14L4 18L6 12L1 8H7L10 2Z" fill="white" fillOpacity="0.9"/>
             </svg>
           </div>
           <span className="landing-nav__logo-text">
-            Fanta<span>AI</span>
+            Fanta<span>Brain</span>
           </span>
         </a>
 
@@ -183,7 +183,7 @@ export function ProblemSection() {
         </div>
 
         <p className="problem-solution">
-          FantaAI mette fine alla roulette:{' '}
+          Fanta Brain mette fine alla roulette:{' '}
           <strong>il Coach AI studia i dati al posto tuo</strong>{' '}
           e ti dice chi schierare, chi lasciare in panchina e chi prendere al mercato.
         </p>

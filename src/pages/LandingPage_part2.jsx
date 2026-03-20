@@ -243,7 +243,7 @@ export function FAQSection() {
   const faqs = [
     {
       q: 'Funziona anche per la mia lega classica con il voto di fantacalcio.it?',
-      a: 'Sì, FantaAI supporta tutte le leghe Mantra e Classic. Basta inserire la tua lega al momento della registrazione e il Coach si adatta al tuo sistema di punteggio.',
+      a: 'Sì, Fanta Brain supporta tutte le leghe Mantra e Classic. Basta inserire la tua lega al momento della registrazione e il Coach si adatta al tuo sistema di punteggio.',
     },
     {
       q: 'Il Coach AI è davvero utile o è solo marketing?',
@@ -263,7 +263,7 @@ export function FAQSection() {
     },
     {
       q: 'Funziona anche per la Champions League?',
-      a: 'Non ancora — ma è nella nostra roadmap per la stagione 2025/26. Per ora FantaAI è ottimizzato per la Serie A. Ti avviseremo non appena sarà disponibile.',
+      a: 'Non ancora — ma è nella nostra roadmap per la stagione 2025/26. Per ora Fanta Brain è ottimizzato per la Serie A. Ti avviseremo non appena sarà disponibile.',
     },
   ];
 
@@ -374,7 +374,7 @@ export function WaitlistForm({ position = 'hero' }) {
     return (
       <div className="waitlist-form waitlist-form--success" role="alert">
         <p className="waitlist-form__success-message">
-          ✅ Sei dentro! Ti avvisiamo non appena FantaAI è disponibile.
+          ✅ Sei dentro! Ti avvisiamo non appena Fanta Brain è disponibile.
         </p>
       </div>
     );
@@ -420,7 +420,7 @@ export function WaitlistForm({ position = 'hero' }) {
           <a href="/privacy" className="waitlist-form__link">
             Privacy Policy
           </a>
-          . Acconsento al trattamento dei dati per ricevere aggiornamenti su FantaAI.
+          . Acconsento al trattamento dei dati per ricevere aggiornamenti su Fanta Brain.
         </span>
       </label>
 
@@ -480,7 +480,7 @@ export function LandingFooter() {
       <div className="container">
         <div className="landing-footer__top">
           <div className="landing-footer__brand">
-            <span className="landing-footer__logo">FantaAI</span>
+            <span className="landing-footer__logo">Fanta Brain</span>
             <p className="landing-footer__tagline">
               Il primo Coach AI per il fantacalcio italiano
             </p>
@@ -503,11 +503,11 @@ export function LandingFooter() {
 
         <div className="landing-footer__middle">
           <a
-            href="mailto:info@fantaai.it"
+            href="mailto:info@fantabrain.it"
             className="landing-footer__email"
-            aria-label="Invia email a FantaAI"
+            aria-label="Invia email a Fanta Brain"
           >
-            info@fantaai.it
+            info@fantabrain.it
           </a>
           <p className="landing-footer__pricing-note">
             Prezzi IVA inclusa — disdici in qualsiasi momento
@@ -516,10 +516,10 @@ export function LandingFooter() {
 
         <div className="landing-footer__bottom">
           <p className="landing-footer__copyright">
-            © 2025 FantaAI — Tutti i diritti riservati
+            © 2025 Fanta Brain — Tutti i diritti riservati
           </p>
           <p className="landing-footer__disclaimer">
-            FantaAI non è affiliata con la Lega Serie A o fantacalcio.it
+            Fanta Brain non è affiliata con la Lega Serie A o fantacalcio.it
           </p>
         </div>
       </div>

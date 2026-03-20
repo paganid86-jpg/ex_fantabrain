@@ -1,5 +1,5 @@
 /**
- * FantaAI — Landing Page
+ * Fanta Brain — Landing Page
  * Marketing landing page for waitlist conversion
  * Mobile-first · Dark theme · Green CTA
  *
