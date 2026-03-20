@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import useAppStore from '../store/useAppStore';
+import useSerieAStore from '../stores/useSerieAStore';
 import { chatClaude, buildSystemPrompt } from '../lib/claudeApi';
 
 const PROMPT_RAPIDI = [
@@ -62,6 +63,12 @@ export default function AIAnalisi() {
   const aggiungiMessaggio = useAppStore((s) => s.aggiungiMessaggio);
   const resetConversazione = useAppStore((s) => s.resetConversazione);
 
+  // Contesto Serie A reale per arricchire il prompt AI
+  const serieAStandings = useSerieAStore((s) => s.standings);
+  const serieAMatchday  = useSerieAStore((s) => s.currentMatchday);
+  const serieAScorers   = useSerieAStore((s) => s.scorers);
+  const getNextMatches  = useSerieAStore((s) => s.getNextMatchdayMatches);
+
   const PAGE_ID = 'ai-analisi';
   const messaggi = aiConversazioni[PAGE_ID] || [];
 
@@ -74,7 +81,16 @@ export default function AIAnalisi() {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messaggi, loading]);
 
-  const systemPrompt = buildSystemPrompt(rosa, giornataCorrente, 'avversario');
+  const serieAContext = (serieAStandings || serieAScorers.length > 0)
+    ? {
+        currentMatchday: serieAMatchday ?? giornataCorrente,
+        standings: serieAStandings,
+        scorers: serieAScorers,
+        nextMatches: getNextMatches(),
+      }
+    : null;
+
+  const systemPrompt = buildSystemPrompt(rosa, giornataCorrente, 'avversario', serieAContext);
 
   async function invia(testo) {
     const msg = testo || input.trim();

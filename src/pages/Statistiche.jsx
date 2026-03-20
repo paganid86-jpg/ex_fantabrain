@@ -1,4 +1,6 @@
+import { useEffect } from 'react';
 import useAppStore from '../store/useAppStore';
+import useSerieAStore from '../stores/useSerieAStore';
 
 function BarChart({ data, max, height = 80, labels }) {
   const m = max || Math.max(...data, 1);
@@ -52,6 +54,14 @@ export default function Statistiche() {
   const rosa = useAppStore((s) => s.rosa);
   const classifica = useAppStore((s) => s.classifica);
   const calendario = useAppStore((s) => s.calendario);
+
+  // Dati reali Serie A
+  const scorers        = useSerieAStore((s) => s.scorers);
+  const loadingScorers = useSerieAStore((s) => s.loading.scorers);
+  const errorScorers   = useSerieAStore((s) => s.errors.scorers);
+  const fetchScorers   = useSerieAStore((s) => s.fetchScorers);
+
+  useEffect(() => { fetchScorers(); }, [fetchScorers]);
 
   const userRow = classifica.find((c) => c.isUser);
 
@@ -349,6 +359,77 @@ export default function Statistiche() {
           </div>
         </div>
       )}
+
+      {/* ── TOP SCORER SERIE A REALE ── */}
+      <div className="glass-card" style={{ padding: 16, marginTop: 16 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+          <div className="section-title" style={{ fontSize: 14 }}>
+            ⚽ Top Marcatori Serie A 2025/2026
+          </div>
+          {loadingScorers && (
+            <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>caricamento…</span>
+          )}
+          {!loadingScorers && !errorScorers && scorers.length > 0 && (
+            <button
+              className="btn-secondary"
+              style={{ fontSize: 11, padding: '3px 8px' }}
+              onClick={() => fetchScorers(true)}
+            >
+              Aggiorna
+            </button>
+          )}
+        </div>
+
+        {errorScorers && (
+          <div style={{ fontSize: 12, color: 'var(--red)' }}>
+            {errorScorers.includes('non configurata')
+              ? '⚙️ Configura VITE_FOOTBALL_DATA_API_KEY nel file .env'
+              : `Errore: ${errorScorers}`}
+          </div>
+        )}
+
+        {!loadingScorers && scorers.length === 0 && !errorScorers && (
+          <div style={{ fontSize: 12, color: 'var(--text-muted)', fontStyle: 'italic' }}>
+            Dati marcatori non disponibili
+          </div>
+        )}
+
+        {scorers.length > 0 && (
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
+            {scorers.slice(0, 20).map((s, i) => (
+              <div key={s.playerId} style={{
+                display: 'flex', alignItems: 'center', gap: 8,
+                padding: '6px 0', borderBottom: '1px solid rgba(0,212,255,0.07)',
+              }}>
+                <div style={{
+                  width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
+                  background: i < 3 ? 'var(--gold)' : 'rgba(255,255,255,0.06)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: 11,
+                  color: i < 3 ? '#000' : 'var(--text-muted)',
+                }}>{i + 1}</div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {s.name}
+                  </div>
+                  <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>
+                    {s.teamName} · {s.played}G
+                  </div>
+                </div>
+                <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                  <div style={{ fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: 16, color: 'var(--green)' }}>
+                    {s.goals}
+                    <span style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 400, marginLeft: 2 }}>gol</span>
+                  </div>
+                  {s.assists > 0 && (
+                    <div style={{ fontSize: 10, color: 'var(--blue)' }}>{s.assists} ass</div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

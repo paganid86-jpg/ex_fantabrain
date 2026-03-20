@@ -1,7 +1,10 @@
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAppStore from '../store/useAppStore';
+import useSerieAStore from '../stores/useSerieAStore';
 import RankItem from '../components/ui/RankItem';
 import AlertItem from '../components/ui/AlertItem';
+import { formatMatchDate, statusLabel } from '../services/footballDataMapper';
 
 /* ── Sub-componenti ──────────────────────────────────────── */
 
@@ -478,6 +481,22 @@ function BarChartGiornate({ giornate }) {
 export default function Dashboard() {
   const navigate = useNavigate();
   const rosa = useAppStore((s) => s.rosa);
+
+  // Dati reali Serie A
+  const serieAStandings    = useSerieAStore((s) => s.standings);
+  const serieAMatchday     = useSerieAStore((s) => s.currentMatchday);
+  const serieALoading      = useSerieAStore((s) => s.loading);
+  const serieAErrors       = useSerieAStore((s) => s.errors);
+  const fetchAll           = useSerieAStore((s) => s.fetchAll);
+  const getNextMatchday    = useSerieAStore((s) => s.getNextMatchdayMatches);
+  const getLastResults     = useSerieAStore((s) => s.getLastResults);
+
+  useEffect(() => {
+    fetchAll();
+  }, [fetchAll]);
+
+  const nextMatches  = getNextMatchday();
+  const lastResults  = getLastResults(5);
   const classifica = useAppStore((s) => s.classifica);
   const calendario = useAppStore((s) => s.calendario);
   const giornataCorrente = useAppStore((s) => s.giornataCorrente);
@@ -880,6 +899,136 @@ export default function Dashboard() {
               ))}
             </div>
           )}
+        </div>
+      </div>
+
+      {/* ── SERIE A LIVE ─────────────────────────────────── */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+        {/* Classifica Serie A (top 8) */}
+        <div className="glass-card">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+            <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 15, color: 'var(--text-primary)', letterSpacing: '0.02em' }}>
+              ⚽ SERIE A — GIORNATA {serieAMatchday ?? '…'}
+            </span>
+            {serieALoading.standings && (
+              <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>caricamento…</span>
+            )}
+          </div>
+
+          {serieAErrors.standings && (
+            <div style={{ fontSize: 12, color: 'var(--red)', marginBottom: 8 }}>
+              {serieAErrors.standings.includes('non configurata')
+                ? '⚙️ Aggiungi VITE_FOOTBALL_DATA_API_KEY nel file .env'
+                : `Errore: ${serieAErrors.standings}`}
+            </div>
+          )}
+
+          {!serieAStandings && !serieALoading.standings && !serieAErrors.standings && (
+            <div style={{ fontSize: 12, color: 'var(--text-muted)', fontStyle: 'italic' }}>
+              Classifica non disponibile — controlla la connessione.
+            </div>
+          )}
+
+          {serieAStandings?.slice(0, 8).map((team, i) => (
+            <div key={team.id} style={{
+              display: 'flex', alignItems: 'center', gap: 8,
+              padding: '6px 0',
+              borderBottom: '1px solid rgba(0,212,255,0.07)',
+            }}>
+              <div style={{
+                width: 20, height: 20, borderRadius: '50%', flexShrink: 0,
+                background: i < 3 ? 'var(--gold)' : 'var(--bg-elevated)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 11,
+                color: i < 3 ? 'var(--bg-deep)' : 'var(--text-muted)',
+              }}>
+                {team.position}
+              </div>
+              {team.crest && (
+                <img src={team.crest} alt="" style={{ width: 18, height: 18, objectFit: 'contain', flexShrink: 0 }} />
+              )}
+              <span style={{ flex: 1, fontSize: 13, color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {team.shortName}
+              </span>
+              <span style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 15, color: 'var(--text-primary)', flexShrink: 0 }}>
+                {team.points}
+              </span>
+              <span style={{ fontSize: 11, color: 'var(--text-muted)', flexShrink: 0, minWidth: 28, textAlign: 'right' }}>
+                {team.played}G
+              </span>
+            </div>
+          ))}
+        </div>
+
+        {/* Prossime partite + Ultimi risultati */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          {/* Prossima giornata */}
+          <div className="glass-card" style={{ flex: 1 }}>
+            <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 14, color: 'var(--text-primary)', marginBottom: 10, letterSpacing: '0.02em' }}>
+              📅 PROSSIMA GIORNATA
+            </div>
+            {serieALoading.matches && (
+              <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>caricamento…</div>
+            )}
+            {nextMatches.length === 0 && !serieALoading.matches && (
+              <div style={{ fontSize: 12, color: 'var(--text-muted)', fontStyle: 'italic' }}>
+                Nessuna partita in programma
+              </div>
+            )}
+            {nextMatches.slice(0, 5).map((m) => (
+              <div key={m.id} style={{
+                display: 'flex', alignItems: 'center', gap: 6,
+                padding: '5px 0', borderBottom: '1px solid rgba(0,212,255,0.07)',
+                fontSize: 12,
+              }}>
+                {m.homeTeam.crest && <img src={m.homeTeam.crest} alt="" style={{ width: 14, height: 14, objectFit: 'contain' }} />}
+                <span style={{ flex: 1, color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {m.homeTeam.shortName} vs {m.awayTeam.shortName}
+                </span>
+                {m.awayTeam.crest && <img src={m.awayTeam.crest} alt="" style={{ width: 14, height: 14, objectFit: 'contain' }} />}
+                <span style={{ fontSize: 10, color: 'var(--text-muted)', flexShrink: 0, marginLeft: 4 }}>
+                  {['IN_PLAY', 'PAUSED'].includes(m.status)
+                    ? <span style={{ color: 'var(--green)', fontWeight: 700 }}>LIVE</span>
+                    : formatMatchDate(m.date).split(',')[0]}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          {/* Ultimi risultati */}
+          <div className="glass-card" style={{ flex: 1 }}>
+            <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 14, color: 'var(--text-primary)', marginBottom: 10, letterSpacing: '0.02em' }}>
+              🏁 ULTIMI RISULTATI
+            </div>
+            {lastResults.length === 0 && !serieALoading.matches && (
+              <div style={{ fontSize: 12, color: 'var(--text-muted)', fontStyle: 'italic' }}>
+                Nessun risultato disponibile
+              </div>
+            )}
+            {lastResults.slice(0, 5).map((m) => (
+              <div key={m.id} style={{
+                display: 'flex', alignItems: 'center', gap: 6,
+                padding: '5px 0', borderBottom: '1px solid rgba(0,212,255,0.07)',
+                fontSize: 12,
+              }}>
+                {m.homeTeam.crest && <img src={m.homeTeam.crest} alt="" style={{ width: 14, height: 14, objectFit: 'contain' }} />}
+                <span style={{ flex: 1, color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {m.homeTeam.shortName}
+                </span>
+                <span style={{
+                  fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 13,
+                  color: m.winner === 'DRAW' ? 'var(--amber)' : 'var(--text-primary)',
+                  flexShrink: 0, margin: '0 4px',
+                }}>
+                  {m.score.home} - {m.score.away}
+                </span>
+                <span style={{ flex: 1, textAlign: 'right', color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {m.awayTeam.shortName}
+                </span>
+                {m.awayTeam.crest && <img src={m.awayTeam.crest} alt="" style={{ width: 14, height: 14, objectFit: 'contain' }} />}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
