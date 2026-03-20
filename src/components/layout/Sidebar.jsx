@@ -2,16 +2,16 @@ import { NavLink } from 'react-router-dom';
 import useAppStore from '../../store/useAppStore';
 
 const navItems = [
-  { path: '/',            label: 'Dashboard',     icon: '📊', group: null },
-  { path: '/ai-analisi',  label: 'AI Analisi',    icon: '🤖', group: 'AI' },
-  { path: '/war-room',    label: 'War Room',       icon: '⚔️', group: 'AI' },
-  { path: '/la-rosa',     label: 'La Rosa',        icon: '👥', group: 'Squadra' },
-  { path: '/schieramento',label: 'Schieramento',   icon: '🏟️', group: 'Squadra' },
-  { path: '/mercato',     label: 'Mercato',        icon: '💰', group: 'Squadra' },
-  { path: '/scouting',    label: 'Scouting',       icon: '🔍', group: 'Squadra' },
-  { path: '/classifica',  label: 'Classifica',     icon: '🏆', group: 'Lega' },
-  { path: '/calendario',  label: 'Calendario',     icon: '📅', group: 'Lega' },
-  { path: '/statistiche', label: 'Statistiche',    icon: '📈', group: 'Lega' },
+  { path: '/app',             label: 'Dashboard',     icon: '📊', group: null },
+  { path: '/app/ai-analisi',  label: 'AI Analisi',    icon: '🤖', group: 'AI' },
+  { path: '/app/war-room',    label: 'War Room',       icon: '⚔️', group: 'AI' },
+  { path: '/app/la-rosa',     label: 'La Rosa',        icon: '👥', group: 'Squadra' },
+  { path: '/app/schieramento',label: 'Schieramento',   icon: '🏟️', group: 'Squadra' },
+  { path: '/app/mercato',     label: 'Mercato',        icon: '💰', group: 'Squadra' },
+  { path: '/app/scouting',    label: 'Scouting',       icon: '🔍', group: 'Squadra' },
+  { path: '/app/classifica',  label: 'Classifica',     icon: '🏆', group: 'Lega' },
+  { path: '/app/calendario',  label: 'Calendario',     icon: '📅', group: 'Lega' },
+  { path: '/app/statistiche', label: 'Statistiche',    icon: '📈', group: 'Lega' },
 ];
 
 const groups = [null, 'AI', 'Squadra', 'Lega'];
@@ -29,13 +29,21 @@ export default function Sidebar({ mobileOpen, onClose }) {
           style={{
             position: 'fixed',
             inset: 0,
-            background: 'rgba(7, 3, 15, 0.72)',
+            background: 'rgba(5, 10, 20, 0.72)',
             zIndex: 39,
           }}
         />
       )}
 
-      <aside className={`sidebar${mobileOpen ? ' open' : ''}`}>
+      <aside
+        className={`sidebar${mobileOpen ? ' open' : ''}`}
+        style={{
+          background: 'rgba(5, 10, 20, 0.88)',
+          backdropFilter: 'blur(24px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(24px) saturate(180%)',
+          borderRight: '1px solid var(--border-glass)',
+        }}
+      >
 
         {/* ── Logo ── */}
         <div className="sidebar-logo">
@@ -43,37 +51,37 @@ export default function Sidebar({ mobileOpen, onClose }) {
             <div style={{
               width: 38,
               height: 38,
-              borderRadius: 10,
-              background: 'linear-gradient(135deg, #a855f7 0%, #f5c842 100%)',
+              borderRadius: 'var(--radius-sm)',
+              background: 'linear-gradient(135deg, #00D4FF, #06B6D4)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontFamily: "'Barlow Condensed', sans-serif",
+              fontFamily: 'var(--font-display)',
               fontWeight: 900,
               fontSize: 16,
-              color: '#07030f',
+              color: 'var(--bg-deep)',
               letterSpacing: '0.02em',
               flexShrink: 0,
-              boxShadow: '0 0 18px rgba(168, 85, 247, 0.40)',
+              boxShadow: '0 0 18px rgba(0, 212, 255, 0.40)',
             }}>
-              FB
+              FA
             </div>
             <div>
               <div style={{
-                fontFamily: "'Barlow Condensed', sans-serif",
+                fontFamily: 'var(--font-display)',
                 fontWeight: 900,
                 fontSize: 17,
-                color: '#f0e8ff',
+                color: 'var(--text-primary)',
                 letterSpacing: '0.07em',
                 lineHeight: 1.1,
               }}>
-                FANTABRAIN
+                FANTAAI
               </div>
               <div style={{
-                fontFamily: "'Barlow Condensed', sans-serif",
+                fontFamily: 'var(--font-display)',
                 fontWeight: 600,
                 fontSize: 10,
-                color: '#f5c842',
+                color: 'var(--accent-primary)',
                 letterSpacing: '0.14em',
                 marginTop: 2,
               }}>
@@ -96,7 +104,7 @@ export default function Sidebar({ mobileOpen, onClose }) {
                   <NavLink
                     key={item.path}
                     to={item.path}
-                    end={item.path === '/'}
+                    end={item.path === '/app'}
                     className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
                     onClick={onClose}
                   >
@@ -113,44 +121,48 @@ export default function Sidebar({ mobileOpen, onClose }) {
 
         {/* ── Footer crediti + utente ── */}
         <div style={{
-          padding: '14px 12px 18px',
-          borderTop: '1px solid rgba(245, 200, 66, 0.10)',
+          padding: 'var(--space-sm) var(--space-sm) var(--space-md)',
+          borderTop: '1px solid var(--border-glass)',
           display: 'flex',
           flexDirection: 'column',
-          gap: 10,
+          gap: 'var(--space-sm)',
         }}>
           {/* Crediti AI */}
           <div style={{
-            background: 'rgba(255, 255, 255, 0.04)',
-            backdropFilter: 'blur(12px)',
-            borderRadius: 10,
+            background: 'var(--bg-glass)',
+            backdropFilter: 'blur(12px) saturate(180%)',
+            WebkitBackdropFilter: 'blur(12px) saturate(180%)',
+            borderRadius: 'var(--radius-md)',
             padding: '10px 14px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            border: '1px solid rgba(245, 200, 66, 0.12)',
+            border: '1px solid var(--border-glass)',
+            boxShadow: aiCrediti < 3
+              ? '0 0 12px rgba(239, 68, 68, 0.12)'
+              : '0 0 12px rgba(0, 212, 255, 0.10)',
           }}>
             <div>
               <div style={{
-                fontFamily: "'Barlow Condensed', sans-serif",
+                fontFamily: 'var(--font-display)',
                 fontSize: 10,
                 fontWeight: 700,
                 letterSpacing: '0.12em',
-                color: '#4d3870',
+                color: 'var(--text-muted)',
                 textTransform: 'uppercase',
                 marginBottom: 2,
               }}>
                 CREDITI AI
               </div>
               <div style={{
-                fontFamily: "'Barlow Condensed', sans-serif",
+                fontFamily: 'var(--font-display)',
                 fontSize: 22,
                 fontWeight: 800,
                 lineHeight: 1,
-                color: aiCrediti < 3 ? '#f87171' : '#f5c842',
+                color: aiCrediti < 3 ? 'var(--danger)' : 'var(--accent-primary)',
                 textShadow: aiCrediti < 3
-                  ? '0 0 12px rgba(248, 113, 113, 0.40)'
-                  : '0 0 12px rgba(245, 200, 66, 0.35)',
+                  ? '0 0 12px rgba(239, 68, 68, 0.40)'
+                  : '0 0 12px rgba(0, 212, 255, 0.35)',
               }}>
                 {aiCrediti}
               </div>
@@ -168,17 +180,17 @@ export default function Sidebar({ mobileOpen, onClose }) {
             <div style={{
               width: 32,
               height: 32,
-              borderRadius: '50%',
-              background: 'linear-gradient(135deg, #a855f7 0%, #f5c842 100%)',
+              borderRadius: 'var(--radius-full)',
+              background: 'linear-gradient(135deg, #00D4FF, #06B6D4)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontFamily: "'Barlow Condensed', sans-serif",
+              fontFamily: 'var(--font-display)',
               fontWeight: 800,
               fontSize: 14,
-              color: '#07030f',
+              color: 'var(--bg-deep)',
               flexShrink: 0,
-              boxShadow: '0 0 10px rgba(168, 85, 247, 0.30)',
+              boxShadow: '0 0 10px rgba(0, 212, 255, 0.30)',
             }}>
               {user.name.charAt(0).toUpperCase()}
             </div>
@@ -186,7 +198,8 @@ export default function Sidebar({ mobileOpen, onClose }) {
               <div style={{
                 fontSize: 13,
                 fontWeight: 600,
-                color: '#f0e8ff',
+                fontFamily: 'var(--font-display)',
+                color: 'var(--text-primary)',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
                 whiteSpace: 'nowrap',
@@ -195,9 +208,9 @@ export default function Sidebar({ mobileOpen, onClose }) {
               </div>
               <div style={{
                 fontSize: 10,
-                fontFamily: "'Barlow Condensed', sans-serif",
+                fontFamily: 'var(--font-body)',
                 letterSpacing: '0.08em',
-                color: '#4d3870',
+                color: 'var(--text-muted)',
                 textTransform: 'uppercase',
               }}>
                 {user.plan}

@@ -68,7 +68,7 @@ export default function WarRoom() {
           <div>
             <label style={{
               fontSize: 11, color: 'var(--text-muted)',
-              fontFamily: 'Barlow Condensed', letterSpacing: '0.08em',
+              fontFamily: 'Syne, sans-serif', letterSpacing: '0.08em',
               display: 'block', marginBottom: 6, textTransform: 'uppercase',
             }}>
               Avversario · Giornata {giornataCorrente}
@@ -102,8 +102,8 @@ export default function WarRoom() {
         {rosa.length === 0 && (
           <div style={{
             marginBottom: 14, padding: '10px 14px',
-            background: 'rgba(168,85,247,0.08)',
-            border: '1px solid rgba(168,85,247,0.2)',
+            background: 'rgba(0,212,255,0.08)',
+            border: '1px solid rgba(0,212,255,0.2)',
             borderRadius: 8, fontSize: 12, color: 'var(--text-secondary)',
           }}>
             ℹ️ Aggiungi giocatori per un'analisi personalizzata. Puoi comunque eseguire un'analisi generica.
@@ -130,7 +130,7 @@ export default function WarRoom() {
             disabled={loading || aiCrediti === 0 || !nomeAvversario.trim()}
             style={{
               padding: '14px 40px', fontSize: 16,
-              letterSpacing: '0.06em', fontFamily: 'Barlow Condensed',
+              letterSpacing: '0.06em', fontFamily: 'Syne, sans-serif',
               fontWeight: 700, minWidth: 240,
             }}
           >
@@ -214,8 +214,8 @@ export default function WarRoom() {
                 titolo: '🗺️ Piano Tattico',
                 contenuto: risultato.pianoTattico,
                 color: 'var(--gold)',
-                bg: 'rgba(245,200,66,0.05)',
-                border: 'rgba(245,200,66,0.2)',
+                bg: 'rgba(245, 158, 11,0.05)',
+                border: 'rgba(245, 158, 11,0.2)',
               },
             ].map((sezione) => (
               <div
@@ -228,7 +228,7 @@ export default function WarRoom() {
                 }}
               >
                 <div style={{
-                  fontFamily: 'Barlow Condensed', fontWeight: 700,
+                  fontFamily: 'Syne, sans-serif', fontWeight: 700,
                   fontSize: 15, color: sezione.color,
                   marginBottom: 12, letterSpacing: '0.03em',
                 }}>

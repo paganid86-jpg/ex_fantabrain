@@ -62,7 +62,7 @@ function GiocatoreCard({ g, onGeneraReport, reportStato, onSeleziona, isSelezion
         </div>
         <div style={{ textAlign: 'right', flexShrink: 0, marginLeft: 8 }}>
           <div style={{
-            fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: 16, color: 'var(--amber)',
+            fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 16, color: 'var(--amber)',
           }}>
             {g.quotazione}M
           </div>
@@ -74,10 +74,10 @@ function GiocatoreCard({ g, onGeneraReport, reportStato, onSeleziona, isSelezion
         <div>
           <div style={{
             fontSize: 10, color: 'var(--text-muted)',
-            fontFamily: 'Barlow Condensed', letterSpacing: '0.06em',
+            fontFamily: 'Syne, sans-serif', letterSpacing: '0.06em',
           }}>MEDIA</div>
           <div style={{
-            fontFamily: 'Barlow Condensed', fontWeight: 800, fontSize: 20,
+            fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: 20,
             color: g.votoMedia >= 7 ? 'var(--green)' : 'var(--amber)',
           }}>
             {g.votoMedia.toFixed(1)}
@@ -86,7 +86,7 @@ function GiocatoreCard({ g, onGeneraReport, reportStato, onSeleziona, isSelezion
         <div style={{ flex: 1 }}>
           <div style={{
             fontSize: 10, color: 'var(--text-muted)',
-            fontFamily: 'Barlow Condensed', letterSpacing: '0.06em', marginBottom: 4,
+            fontFamily: 'Syne, sans-serif', letterSpacing: '0.06em', marginBottom: 4,
           }}>ULTIMI 5</div>
           <VotiPallini voti={g.votiUltimi5} />
         </div>
@@ -129,7 +129,7 @@ function GiocatoreCard({ g, onGeneraReport, reportStato, onSeleziona, isSelezion
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
             <span style={{
               fontSize: 10, color: 'var(--text-muted)',
-              fontFamily: 'Barlow Condensed', letterSpacing: '0.06em',
+              fontFamily: 'Syne, sans-serif', letterSpacing: '0.06em',
             }}>REPORT SCOUTING AI</span>
             {reportStato.consiglio && (
               <span className={`badge badge-${reportStato.consiglio === 'SI' ? 'green' : reportStato.consiglio === 'NO' ? 'red' : 'amber'}`}>
@@ -267,7 +267,7 @@ export default function Scouting() {
               </div>
             </div>
             <div style={{
-              fontFamily: 'Barlow Condensed', fontWeight: 700,
+              fontFamily: 'Syne, sans-serif', fontWeight: 700,
               fontSize: 18, color: 'var(--text-muted)',
             }}>VS</div>
             <div style={{ textAlign: 'right' }}>
@@ -300,12 +300,12 @@ export default function Scouting() {
                   display: 'grid', gridTemplateColumns: '1fr auto 1fr',
                   gap: 16, alignItems: 'center',
                   marginTop: 10, padding: '6px 0',
-                  borderTop: '1px solid rgba(168,85,247,0.1)',
+                  borderTop: '1px solid rgba(0,212,255,0.1)',
                 }}
               >
                 <div style={{
                   textAlign: 'left',
-                  fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: 16,
+                  fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 16,
                   color: aWins ? 'var(--green)' : 'var(--text-secondary)',
                 }}>{row.a}</div>
                 <div style={{
@@ -313,7 +313,7 @@ export default function Scouting() {
                 }}>{row.label}</div>
                 <div style={{
                   textAlign: 'right',
-                  fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: 16,
+                  fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 16,
                   color: !aWins ? 'var(--green)' : 'var(--text-secondary)',
                 }}>{row.b}</div>
               </div>

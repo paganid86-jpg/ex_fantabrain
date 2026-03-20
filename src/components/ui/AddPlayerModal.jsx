@@ -20,7 +20,7 @@ function FormField({ label, children, error }) {
     <div style={{ marginBottom: 14 }}>
       <label style={{
         display: 'block',
-        fontFamily: "'Barlow Condensed', sans-serif",
+        fontFamily: "'Syne', sans-serif",
         fontSize: 11,
         fontWeight: 700,
         letterSpacing: '0.10em',
@@ -105,7 +105,7 @@ export default function AddPlayerModal({ onClose, giocatoreEsistente }) {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
           <div>
             <div style={{
-              fontFamily: "'Barlow Condensed', sans-serif",
+              fontFamily: "'Syne', sans-serif",
               fontWeight: 800,
               fontSize: 22,
               color: 'var(--text-primary)',
@@ -135,7 +135,7 @@ export default function AddPlayerModal({ onClose, giocatoreEsistente }) {
             borderRadius: 10, padding: '6px 14px', marginBottom: 20,
           }}>
             <div style={{ width: 10, height: 10, borderRadius: '50%', background: selectedColor, boxShadow: `0 0 8px ${selectedColor}` }} />
-            <span style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: 14, color: selectedColor }}>
+            <span style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: 14, color: selectedColor }}>
               {form.ruoloMantra}
             </span>
           </div>
@@ -207,7 +207,7 @@ export default function AddPlayerModal({ onClose, giocatoreEsistente }) {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8 }}>
             {form.votiUltimi5.map((v, i) => (
               <div key={i} style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: 10, color: 'var(--text-muted)', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 4 }}>
+                <div style={{ fontSize: 10, color: 'var(--text-muted)', fontFamily: "'Syne', sans-serif", marginBottom: 4 }}>
                   G-{5 - i}
                 </div>
                 <input
@@ -241,7 +241,7 @@ export default function AddPlayerModal({ onClose, giocatoreEsistente }) {
                 border: `1px solid ${form[field] ? color : 'rgba(255,255,255,0.08)'}`,
                 background: form[field] ? `${color}18` : 'rgba(255,255,255,0.03)',
                 color: form[field] ? color : 'var(--text-muted)',
-                fontFamily: "'Barlow Condensed', sans-serif",
+                fontFamily: "'Syne', sans-serif",
                 fontWeight: 600,
                 fontSize: 13,
                 cursor: 'pointer',

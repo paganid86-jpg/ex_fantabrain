@@ -7,37 +7,67 @@ import AlertItem from '../components/ui/AlertItem';
 
 function KpiCard({ label, value, sub, color, icon }) {
   return (
-    <div className="glass-card" style={{
-      flex: '1 1 200px',
-      borderTop: `3px solid ${color}`,
-      display: 'flex', flexDirection: 'column', gap: 4,
-    }}>
+    <div
+      className="glass-card"
+      style={{
+        flex: '1 1 200px',
+        borderTop: `3px solid ${color}`,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 4,
+      }}
+    >
       <div style={{
-        display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
       }}>
         <div style={{
-          fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: 11,
-          color: 'var(--text-muted)', letterSpacing: '0.08em', textTransform: 'uppercase',
+          fontFamily: 'var(--font-display)',
+          fontWeight: 700,
+          fontSize: 11,
+          color: 'var(--text-muted)',
+          letterSpacing: '0.08em',
+          textTransform: 'uppercase',
         }}>
           {label}
         </div>
         <span style={{ fontSize: 22, opacity: 0.35 }}>{icon}</span>
       </div>
       <div style={{
-        fontFamily: 'Barlow Condensed', fontWeight: 900, fontSize: 42,
-        color, lineHeight: 1, marginTop: 4,
+        fontFamily: 'var(--font-display)',
+        fontWeight: 900,
+        fontSize: 42,
+        color,
+        lineHeight: 1,
+        marginTop: 4,
       }}>
         {value}
       </div>
-      <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 2 }}>{sub}</div>
+      <div style={{
+        fontSize: 12,
+        fontFamily: 'var(--font-body)',
+        color: 'var(--text-muted)',
+        marginTop: 2,
+      }}>
+        {sub}
+      </div>
     </div>
   );
 }
 
 const RUOLO_COLORS = {
-  Por: '#f97316', DD: 'var(--blue)', DS: 'var(--blue)', DC: 'var(--blue)',
-  'M/C': 'var(--green)', C: 'var(--green)', 'T/A': 'var(--purple)',
-  W: 'var(--purple)', T: 'var(--purple)', A: 'var(--purple)', PC: 'var(--red)',
+  Por: '#f97316',
+  DD: 'var(--blue)',
+  DS: 'var(--blue)',
+  DC: 'var(--blue)',
+  'M/C': 'var(--success)',
+  C: 'var(--success)',
+  'T/A': 'var(--accent-primary)',
+  W: 'var(--accent-primary)',
+  T: 'var(--accent-primary)',
+  A: 'var(--accent-primary)',
+  PC: 'var(--danger)',
 };
 
 function PitchSlot({ giocatore }) {
@@ -45,13 +75,26 @@ function PitchSlot({ giocatore }) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
         <div style={{
-          width: 50, height: 50, borderRadius: '50%',
-          border: '2px dashed rgba(168,85,247,0.2)',
-          background: 'rgba(168,85,247,0.03)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: 18, color: 'rgba(168,85,247,0.3)',
-        }}>+</div>
-        <span style={{ fontSize: 10, color: 'var(--text-muted)', fontFamily: 'Barlow Condensed' }}>VUOTO</span>
+          width: 50,
+          height: 50,
+          borderRadius: '50%',
+          border: '2px dashed rgba(0, 212, 255, 0.20)',
+          background: 'rgba(0, 212, 255, 0.03)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: 18,
+          color: 'rgba(0, 212, 255, 0.30)',
+        }}>
+          +
+        </div>
+        <span style={{
+          fontSize: 10,
+          color: 'var(--text-muted)',
+          fontFamily: 'var(--font-display)',
+        }}>
+          VUOTO
+        </span>
       </div>
     );
   }
@@ -62,55 +105,105 @@ function PitchSlot({ giocatore }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
       <div style={{
-        width: 50, height: 50, borderRadius: '50%',
+        width: 50,
+        height: 50,
+        borderRadius: '50%',
         background: `${color}18`,
         border: `2px solid ${color}`,
         boxShadow: `0 0 14px ${color}30`,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
         position: 'relative',
         backdropFilter: 'blur(6px)',
       }}>
         <span style={{
-          fontFamily: 'Barlow Condensed', fontWeight: 800, fontSize: 13, color,
+          fontFamily: 'var(--font-display)',
+          fontWeight: 800,
+          fontSize: 13,
+          color,
         }}>
           {initials}
         </span>
         {giocatore.infortunato && (
           <span style={{
-            position: 'absolute', top: -2, right: -2,
-            width: 14, height: 14, borderRadius: '50%',
-            background: 'var(--red)', fontSize: 7,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            color: '#fff', fontWeight: 700, border: '1px solid #07030f',
-          }}>✕</span>
+            position: 'absolute',
+            top: -2,
+            right: -2,
+            width: 14,
+            height: 14,
+            borderRadius: '50%',
+            background: 'var(--danger)',
+            fontSize: 7,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'var(--text-primary)',
+            fontWeight: 700,
+            border: '1px solid var(--bg-deep)',
+          }}>
+            ✕
+          </span>
         )}
         {giocatore.diffidato && !giocatore.infortunato && (
           <span style={{
-            position: 'absolute', top: -2, right: -2,
-            width: 14, height: 14, borderRadius: '50%',
-            background: 'var(--amber)', fontSize: 7,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            color: '#000', fontWeight: 700, border: '1px solid #07030f',
-          }}>!</span>
+            position: 'absolute',
+            top: -2,
+            right: -2,
+            width: 14,
+            height: 14,
+            borderRadius: '50%',
+            background: 'var(--amber)',
+            fontSize: 7,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'var(--bg-deep)',
+            fontWeight: 700,
+            border: '1px solid var(--bg-deep)',
+          }}>
+            !
+          </span>
         )}
         {giocatore.votoMedia >= 7.5 && (
           <span style={{
-            position: 'absolute', bottom: -2, right: -2,
-            width: 14, height: 14, borderRadius: '50%',
-            background: 'var(--gold)', fontSize: 7,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            color: '#000', fontWeight: 800, border: '1px solid #07030f',
-          }}>{giocatore.votoMedia.toFixed(1)}</span>
+            position: 'absolute',
+            bottom: -2,
+            right: -2,
+            width: 14,
+            height: 14,
+            borderRadius: '50%',
+            background: 'var(--gold)',
+            fontSize: 7,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'var(--bg-deep)',
+            fontWeight: 800,
+            border: '1px solid var(--bg-deep)',
+          }}>
+            {giocatore.votoMedia.toFixed(1)}
+          </span>
         )}
       </div>
       <span style={{
-        fontSize: 10, fontFamily: 'Barlow Condensed', fontWeight: 600,
-        color: 'var(--text-primary)', textAlign: 'center',
-        maxWidth: 56, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+        fontSize: 10,
+        fontFamily: 'var(--font-display)',
+        fontWeight: 600,
+        color: 'var(--text-primary)',
+        textAlign: 'center',
+        maxWidth: 56,
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
       }}>
         {giocatore.cognome}
       </span>
-      <span style={{ fontSize: 9, color: 'var(--text-muted)', fontFamily: 'Barlow Condensed' }}>
+      <span style={{
+        fontSize: 9,
+        color: 'var(--text-muted)',
+        fontFamily: 'var(--font-display)',
+      }}>
         {giocatore.ruoloMantra}
       </span>
     </div>
@@ -144,7 +237,7 @@ function AISuggestionsPanel({ rosa, giornataCorrente, aiCrediti }) {
         title: `Sostituisci ${g.cognome}`,
         sub: `${g.ruoloMantra} · ${g.squadra} · infortunato`,
         delta: -5,
-        color: 'var(--red)',
+        color: 'var(--danger)',
       });
     });
   }
@@ -178,44 +271,66 @@ function AISuggestionsPanel({ rosa, giornataCorrente, aiCrediti }) {
       title: `${g.cognome} in gran forma`,
       sub: `${g.ruoloMantra} · ${g.squadra} · schieralo titolare`,
       delta: Math.round((g.votoMedia - 6) * 5) || 6,
-      color: 'var(--green)',
+      color: 'var(--success)',
     });
   }
 
   if (suggestions.length === 0) {
     suggestions.push(
-      { icon: '✅', title: 'Rosa al completo', sub: 'Nessun infortunato o diffidato', delta: 0, color: 'var(--green)' },
+      { icon: '✅', title: 'Rosa al completo', sub: 'Nessun infortunato o diffidato', delta: 0, color: 'var(--success)' },
       { icon: '📊', title: 'Analizza il calendario', sub: 'Controlla i prossimi avversari', delta: 0, color: 'var(--blue)' },
-      { icon: '💡', title: 'Ottimizza lo schieramento', sub: 'Usa la pagina Schieramento per l\'AI', delta: 0, color: 'var(--purple)' },
+      { icon: '💡', title: 'Ottimizza lo schieramento', sub: "Usa la pagina Schieramento per l'AI", delta: 0, color: 'var(--accent-primary)' },
     );
     intro = `Ho analizzato la tua rosa per la giornata ${giornataCorrente}. Tutto in ordine — usa i consigli qui sotto per ottimizzare!`;
   }
 
   return (
-    <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+    <div
+      className="glass-card glass-card--accent"
+      style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
+    >
       {/* Header */}
       <div style={{
-        display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14,
-        paddingBottom: 12, borderBottom: '1px solid var(--gold-border)',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 8,
+        marginBottom: 14,
+        paddingBottom: 12,
+        borderBottom: '1px solid var(--border-glass)',
       }}>
         <span style={{
-          width: 8, height: 8, borderRadius: '50%',
-          background: 'var(--green)', flexShrink: 0,
-          boxShadow: '0 0 6px var(--green)',
+          width: 8,
+          height: 8,
+          borderRadius: '50%',
+          background: 'var(--success)',
+          flexShrink: 0,
+          boxShadow: '0 0 6px var(--success)',
         }} />
         <span style={{
-          fontFamily: 'Barlow Condensed', fontWeight: 800, fontSize: 14,
-          color: 'var(--text-primary)', letterSpacing: '0.04em',
+          fontFamily: 'var(--font-display)',
+          fontWeight: 800,
+          fontSize: 14,
+          color: 'var(--text-primary)',
+          letterSpacing: '0.04em',
         }}>
           FANTABRAIN AI · GIORNATA {giornataCorrente}
         </span>
-        <span className={`badge ${aiCrediti < 3 ? 'badge-red' : 'badge-gold'}`} style={{ marginLeft: 'auto', fontSize: 10 }}>
+        <span
+          className={`badge ${aiCrediti < 3 ? 'badge-red' : 'badge-gold'}`}
+          style={{ marginLeft: 'auto', fontSize: 10 }}
+        >
           {aiCrediti} analisi
         </span>
       </div>
 
       {/* Intro text */}
-      <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.65, marginBottom: 16 }}>
+      <div style={{
+        fontSize: 13,
+        fontFamily: 'var(--font-body)',
+        color: 'var(--text-secondary)',
+        lineHeight: 1.65,
+        marginBottom: 16,
+      }}>
         {intro}
       </div>
 
@@ -223,33 +338,58 @@ function AISuggestionsPanel({ rosa, giornataCorrente, aiCrediti }) {
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8, flex: 1 }}>
         {suggestions.slice(0, 3).map((s, i) => (
           <div key={i} style={{
-            display: 'flex', alignItems: 'center', gap: 10,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 10,
             background: 'rgba(255,255,255,0.03)',
-            border: '1px solid rgba(255,255,255,0.07)',
-            borderRadius: 10, padding: '10px 14px',
+            border: '1px solid var(--border-glass)',
+            borderRadius: 'var(--radius-md)',
+            padding: '10px 14px',
             backdropFilter: 'blur(4px)',
           }}>
             <span style={{
-              width: 32, height: 32, borderRadius: '50%',
+              width: 32,
+              height: 32,
+              borderRadius: '50%',
               background: `${s.color}15`,
               border: `1px solid ${s.color}40`,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 15, flexShrink: 0,
-            }}>{s.icon}</span>
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: 15,
+              flexShrink: 0,
+            }}>
+              {s.icon}
+            </span>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{
-                fontSize: 13, fontWeight: 600, color: 'var(--text-primary)',
-                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-              }}>{s.title}</div>
+                fontSize: 13,
+                fontWeight: 600,
+                fontFamily: 'var(--font-body)',
+                color: 'var(--text-primary)',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}>
+                {s.title}
+              </div>
               <div style={{
-                fontSize: 11, color: 'var(--text-muted)',
-                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-              }}>{s.sub}</div>
+                fontSize: 11,
+                fontFamily: 'var(--font-body)',
+                color: 'var(--text-muted)',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}>
+                {s.sub}
+              </div>
             </div>
             {s.delta !== 0 && (
               <span style={{
-                fontFamily: 'Barlow Condensed', fontWeight: 800, fontSize: 16,
-                color: s.delta > 0 ? 'var(--green)' : 'var(--red)',
+                fontFamily: 'var(--font-display)',
+                fontWeight: 800,
+                fontSize: 16,
+                color: s.delta > 0 ? 'var(--success)' : 'var(--danger)',
                 flexShrink: 0,
               }}>
                 {s.delta > 0 ? '+' : ''}{s.delta}
@@ -279,21 +419,30 @@ function BarChartGiornate({ giornate }) {
           const isBelow = g.puntiUser < media;
           return (
             <div key={i} style={{
-              flex: 1, display: 'flex', flexDirection: 'column',
-              alignItems: 'center', height: '100%', justifyContent: 'flex-end',
+              flex: 1,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              height: '100%',
+              justifyContent: 'flex-end',
             }}>
               <span style={{
-                fontSize: 9, fontFamily: 'Barlow Condensed', fontWeight: 700,
-                color: 'var(--text-muted)', marginBottom: 3,
-              }}>{g.puntiUser}</span>
+                fontSize: 9,
+                fontFamily: 'var(--font-display)',
+                fontWeight: 700,
+                color: 'var(--text-muted)',
+                marginBottom: 3,
+              }}>
+                {g.puntiUser}
+              </span>
               <div
                 title={`G${g.giornata}: ${g.puntiUser}pt`}
                 style={{
                   width: '100%',
                   height: `${h}%`,
                   background: isBelow
-                    ? 'linear-gradient(180deg, #ef4444, #b91c1c)'
-                    : 'linear-gradient(180deg, var(--green), #059669)',
+                    ? 'linear-gradient(180deg, var(--danger), rgba(239, 68, 68, 0.45))'
+                    : 'linear-gradient(180deg, var(--accent-primary), rgba(0, 212, 255, 0.35))',
                   borderRadius: '3px 3px 0 0',
                   minHeight: 4,
                   transition: 'opacity 0.2s',
@@ -309,9 +458,12 @@ function BarChartGiornate({ giornate }) {
       <div style={{ display: 'flex', gap: 6 }}>
         {ultimi.map((g, i) => (
           <div key={i} style={{
-            flex: 1, textAlign: 'center',
-            fontSize: 9, fontFamily: 'Barlow Condensed',
-            color: 'var(--text-muted)', paddingTop: 4,
+            flex: 1,
+            textAlign: 'center',
+            fontSize: 9,
+            fontFamily: 'var(--font-display)',
+            color: 'var(--text-muted)',
+            paddingTop: 4,
           }}>
             G{g.giornata}
           </div>
@@ -401,7 +553,7 @@ export default function Dashboard() {
           label="Posizione in Lega"
           value={posizione > 0 ? `${posizione}°` : '—'}
           sub={posizione > 0 ? `↑ rispetto all'ultima giornata` : 'Classifica non disponibile'}
-          color="var(--green)"
+          color="var(--success)"
           icon="🥉"
         />
         <KpiCard
@@ -422,7 +574,7 @@ export default function Dashboard() {
           label="Infortuni Rosa"
           value={infortunati.length}
           sub={infortunati.length > 0 ? infortunati.map((g) => g.cognome).join(' · ') : 'Nessun infortunato'}
-          color={infortunati.length > 0 ? 'var(--red)' : 'var(--green)'}
+          color={infortunati.length > 0 ? 'var(--danger)' : 'var(--success)'}
           icon="🤕"
         />
       </div>
@@ -434,16 +586,24 @@ export default function Dashboard() {
           <div style={{
             padding: '14px 18px',
             borderBottom: '1px solid var(--gold-border)',
-            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <span style={{
-                width: 10, height: 10, borderRadius: 2,
-                background: 'var(--green)', display: 'inline-block',
+                width: 10,
+                height: 10,
+                borderRadius: 2,
+                background: 'var(--success)',
+                display: 'inline-block',
               }} />
               <span style={{
-                fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: 15,
-                color: 'var(--text-primary)', letterSpacing: '0.02em',
+                fontFamily: 'var(--font-display)',
+                fontWeight: 700,
+                fontSize: 15,
+                color: 'var(--text-primary)',
+                letterSpacing: '0.02em',
               }}>
                 SCHIERAMENTO ATTUALE — {modulo}
               </span>
@@ -458,13 +618,20 @@ export default function Dashboard() {
           </div>
 
           <div className="pitch" style={{
-            margin: 14, padding: '20px 8px',
-            display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
-            gap: 18, minHeight: 300,
+            margin: 14,
+            padding: '20px 8px',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            gap: 18,
+            minHeight: 300,
           }}>
             {pitchRows.map((riga, ri) => (
               <div key={ri} style={{
-                display: 'flex', justifyContent: 'center', gap: 16, flexWrap: 'wrap',
+                display: 'flex',
+                justifyContent: 'center',
+                gap: 16,
+                flexWrap: 'wrap',
               }}>
                 {(riga.length > 0 ? riga : [null]).map((g, i) => (
                   <PitchSlot key={i} giocatore={g} />
@@ -483,12 +650,17 @@ export default function Dashboard() {
         {/* Classifica Lega */}
         <div className="glass-card">
           <div style={{
-            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
             marginBottom: 14,
           }}>
             <span style={{
-              fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: 15,
-              color: 'var(--text-primary)', letterSpacing: '0.02em',
+              fontFamily: 'var(--font-display)',
+              fontWeight: 700,
+              fontSize: 15,
+              color: 'var(--text-primary)',
+              letterSpacing: '0.02em',
             }}>
               🏆 CLASSIFICA LEGA
             </span>
@@ -502,8 +674,11 @@ export default function Dashboard() {
           </div>
           {classifica.length === 0 ? (
             <div style={{
-              padding: '24px 0', textAlign: 'center',
-              color: 'var(--text-muted)', fontSize: 13, fontStyle: 'italic',
+              padding: '24px 0',
+              textAlign: 'center',
+              color: 'var(--text-muted)',
+              fontSize: 13,
+              fontStyle: 'italic',
             }}>
               Classifica non ancora disponibile
             </div>
@@ -517,51 +692,93 @@ export default function Dashboard() {
                   : null;
               return (
                 <div key={team.id} style={{
-                  display: 'flex', alignItems: 'center', gap: 10,
-                  padding: '8px 10px', borderRadius: 8,
-                  background: team.isUser ? 'rgba(0,230,118,0.06)' : 'transparent',
-                  border: team.isUser ? '1px solid rgba(0,230,118,0.15)' : '1px solid transparent',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 10,
+                  padding: '8px 10px',
+                  borderRadius: 'var(--radius-sm)',
+                  background: team.isUser
+                    ? 'rgba(0, 212, 255, 0.06)'
+                    : 'transparent',
+                  border: team.isUser
+                    ? '1px solid rgba(0, 212, 255, 0.18)'
+                    : '1px solid transparent',
+                  boxShadow: team.isUser
+                    ? '0 0 14px rgba(0, 212, 255, 0.08)'
+                    : 'none',
                   marginBottom: 2,
                 }}>
-                  {/* Position */}
+                  {/* Position badge */}
                   <div style={{
-                    width: 26, height: 26, borderRadius: '50%', flexShrink: 0,
+                    width: 26,
+                    height: 26,
+                    borderRadius: '50%',
+                    flexShrink: 0,
                     background: i < 3 ? 'var(--gold)' : 'var(--bg-elevated)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontFamily: 'Barlow Condensed', fontWeight: 800, fontSize: 13,
-                    color: i < 3 ? '#000' : 'var(--text-muted)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontFamily: 'var(--font-display)',
+                    fontWeight: 800,
+                    fontSize: 13,
+                    color: i < 3 ? 'var(--bg-deep)' : 'var(--text-muted)',
+                    boxShadow: i < 3 ? 'var(--shadow-gold)' : 'none',
                   }}>
                     {i + 1}
                   </div>
                   {/* Avatar */}
                   <div style={{
-                    width: 30, height: 30, borderRadius: '50%', flexShrink: 0,
-                    background: team.isUser ? 'rgba(0,230,118,0.15)' : 'var(--bg-elevated)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontFamily: 'Barlow Condensed', fontWeight: 800, fontSize: 13,
-                    color: team.isUser ? 'var(--green)' : 'var(--text-muted)',
+                    width: 30,
+                    height: 30,
+                    borderRadius: '50%',
+                    flexShrink: 0,
+                    background: team.isUser
+                      ? 'rgba(0, 212, 255, 0.15)'
+                      : 'var(--bg-elevated)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontFamily: 'var(--font-display)',
+                    fontWeight: 800,
+                    fontSize: 13,
+                    color: team.isUser ? 'var(--accent-primary)' : 'var(--text-muted)',
                   }}>
                     {(team.nome || '?')[0].toUpperCase()}
                   </div>
                   {/* Name */}
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{
-                      fontSize: 13, fontWeight: 600,
-                      color: team.isUser ? 'var(--gold)' : 'var(--text-primary)',
-                      display: 'flex', alignItems: 'center', gap: 4,
-                      overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                      fontSize: 13,
+                      fontWeight: 600,
+                      fontFamily: 'var(--font-body)',
+                      color: team.isUser ? 'var(--accent-primary)' : 'var(--text-primary)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 4,
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
                     }}>
                       {team.nome}
                       {team.isUser && <span style={{ fontSize: 12 }}>⚡</span>}
                     </div>
                     {subText && (
-                      <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{subText}</div>
+                      <div style={{
+                        fontSize: 11,
+                        fontFamily: 'var(--font-body)',
+                        color: 'var(--text-muted)',
+                      }}>
+                        {subText}
+                      </div>
                     )}
                   </div>
                   {/* Points */}
                   <div style={{
-                    fontFamily: 'Barlow Condensed', fontWeight: 800, fontSize: 18,
-                    color: 'var(--text-primary)', flexShrink: 0,
+                    fontFamily: 'var(--font-display)',
+                    fontWeight: 800,
+                    fontSize: 18,
+                    color: 'var(--text-primary)',
+                    flexShrink: 0,
                   }}>
                     {team.punti}
                   </div>
@@ -574,12 +791,17 @@ export default function Dashboard() {
         {/* Alert & Notizie */}
         <div className="glass-card">
           <div style={{
-            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
             marginBottom: 14,
           }}>
             <span style={{
-              fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: 15,
-              color: 'var(--text-primary)', letterSpacing: '0.02em',
+              fontFamily: 'var(--font-display)',
+              fontWeight: 700,
+              fontSize: 15,
+              color: 'var(--text-primary)',
+              letterSpacing: '0.02em',
             }}>
               🔔 ALERT & NOTIZIE
             </span>
@@ -594,8 +816,11 @@ export default function Dashboard() {
 
           {alerts.length === 0 ? (
             <div style={{
-              padding: '16px 0', textAlign: 'center',
-              color: 'var(--text-muted)', fontSize: 13, fontStyle: 'italic',
+              padding: '16px 0',
+              textAlign: 'center',
+              color: 'var(--text-muted)',
+              fontSize: 13,
+              fontStyle: 'italic',
             }}>
               Nessun alert attivo. Tutti i giocatori sono disponibili.
             </div>
@@ -608,22 +833,49 @@ export default function Dashboard() {
           {alerts.length === 0 && (
             <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
               {[
-                { dot: 'var(--green)', title: 'AI Pronto', desc: `Analisi G${giornataCorrente} disponibile — vai su AI Analisi`, time: 'ora' },
-                { dot: 'var(--blue)', title: 'Schieramento', desc: 'Ottimizza la tua formazione con l\'AI', time: '—' },
+                { dot: 'var(--success)', title: 'AI Pronto', desc: `Analisi G${giornataCorrente} disponibile — vai su AI Analisi`, time: 'ora' },
+                { dot: 'var(--blue)', title: 'Schieramento', desc: "Ottimizza la tua formazione con l'AI", time: '—' },
               ].map((item, i) => (
                 <div key={i} style={{
-                  display: 'flex', gap: 10, alignItems: 'flex-start',
-                  padding: '8px 0', borderBottom: '1px solid rgba(30,45,69,0.4)',
+                  display: 'flex',
+                  gap: 10,
+                  alignItems: 'flex-start',
+                  padding: '8px 0',
+                  borderBottom: '1px solid var(--border-subtle)',
                 }}>
                   <span style={{
-                    width: 8, height: 8, borderRadius: '50%',
-                    background: item.dot, flexShrink: 0, marginTop: 4,
+                    width: 8,
+                    height: 8,
+                    borderRadius: '50%',
+                    background: item.dot,
+                    flexShrink: 0,
+                    marginTop: 4,
                   }} />
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>{item.title}</div>
-                    <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{item.desc}</div>
+                    <div style={{
+                      fontSize: 13,
+                      fontWeight: 600,
+                      fontFamily: 'var(--font-body)',
+                      color: 'var(--text-primary)',
+                    }}>
+                      {item.title}
+                    </div>
+                    <div style={{
+                      fontSize: 11,
+                      fontFamily: 'var(--font-body)',
+                      color: 'var(--text-muted)',
+                    }}>
+                      {item.desc}
+                    </div>
                   </div>
-                  <span style={{ fontSize: 11, color: 'var(--text-muted)', flexShrink: 0 }}>{item.time}</span>
+                  <span style={{
+                    fontSize: 11,
+                    fontFamily: 'var(--font-body)',
+                    color: 'var(--text-muted)',
+                    flexShrink: 0,
+                  }}>
+                    {item.time}
+                  </span>
                 </div>
               ))}
             </div>
@@ -635,23 +887,52 @@ export default function Dashboard() {
       {calendario.some((g) => g.giocata && g.puntiUser != null) && (
         <div className="glass-card">
           <div style={{
-            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
             marginBottom: 16,
           }}>
             <span style={{
-              fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: 15,
-              color: 'var(--text-primary)', letterSpacing: '0.02em',
+              fontFamily: 'var(--font-display)',
+              fontWeight: 700,
+              fontSize: 15,
+              color: 'var(--text-primary)',
+              letterSpacing: '0.02em',
             }}>
               📈 ANDAMENTO PUNTI — ULTIME 8 GIORNATE
             </span>
             <div style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                <span style={{ width: 10, height: 10, borderRadius: 2, background: 'var(--green)', display: 'inline-block' }} />
-                <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>Tu</span>
+                <span style={{
+                  width: 10,
+                  height: 10,
+                  borderRadius: 2,
+                  background: 'var(--accent-primary)',
+                  display: 'inline-block',
+                }} />
+                <span style={{
+                  fontSize: 11,
+                  fontFamily: 'var(--font-body)',
+                  color: 'var(--text-muted)',
+                }}>
+                  Tu
+                </span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                <span style={{ width: 10, height: 10, borderRadius: 2, background: 'var(--red)', display: 'inline-block' }} />
-                <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>Sotto media</span>
+                <span style={{
+                  width: 10,
+                  height: 10,
+                  borderRadius: 2,
+                  background: 'var(--danger)',
+                  display: 'inline-block',
+                }} />
+                <span style={{
+                  fontSize: 11,
+                  fontFamily: 'var(--font-body)',
+                  color: 'var(--text-muted)',
+                }}>
+                  Sotto media
+                </span>
               </div>
             </div>
           </div>

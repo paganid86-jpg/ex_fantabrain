@@ -16,7 +16,7 @@ function BarChart({ data, max, height = 80, labels }) {
             title={`${labels ? labels[i] : `G${i + 1}`}: ${v}pt`}
             style={{
               width: '100%',
-              background: 'linear-gradient(180deg, var(--purple) 0%, var(--gold) 100%)',
+              background: 'linear-gradient(180deg, var(--accent-primary) 0%, var(--gold) 100%)',
               borderRadius: '2px 2px 0 0',
               height: `${Math.max((v / m) * 100, 2)}%`,
               opacity: 0.75,
@@ -143,11 +143,11 @@ export default function Statistiche() {
           <div key={k.label} className="glass-card" style={{ flex: 1, minWidth: 100, padding: '14px 18px' }}>
             <div style={{
               fontSize: 10, color: 'var(--text-muted)',
-              fontFamily: 'Barlow Condensed', letterSpacing: '0.1em',
+              fontFamily: 'Syne, sans-serif', letterSpacing: '0.1em',
               textTransform: 'uppercase', marginBottom: 4,
             }}>{k.label}</div>
             <div style={{
-              fontFamily: 'Barlow Condensed', fontWeight: 800,
+              fontFamily: 'Syne, sans-serif', fontWeight: 800,
               fontSize: 24, color: k.color,
             }}>{k.value}</div>
             {k.sub && (
@@ -191,13 +191,13 @@ export default function Statistiche() {
                 <div key={g.id} style={{
                   display: 'flex', alignItems: 'center', gap: 10,
                   padding: '7px 0',
-                  borderBottom: '1px solid rgba(168,85,247,0.08)',
+                  borderBottom: '1px solid rgba(0,212,255,0.08)',
                 }}>
                   <div style={{
                     width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
                     background: i < 3 ? 'var(--gold)' : 'rgba(255,255,255,0.06)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontFamily: 'Barlow Condensed', fontWeight: 800, fontSize: 11,
+                    fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: 11,
                     color: i < 3 ? '#000' : 'var(--text-muted)',
                   }}>{i + 1}</div>
                   <span className="badge badge-muted" style={{ fontSize: 9, flexShrink: 0 }}>
@@ -211,7 +211,7 @@ export default function Statistiche() {
                     {g.cognome}
                   </span>
                   <span style={{
-                    fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: 15,
+                    fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 15,
                     color: g.votoMedia >= 7 ? 'var(--green)' : 'var(--amber)',
                   }}>
                     {g.votoMedia.toFixed(1)}
@@ -236,7 +236,7 @@ export default function Statistiche() {
                     <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
                       <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{r.count} gioc.</span>
                       <span style={{
-                        fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: 16,
+                        fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 16,
                         color: r.media ? barColor : 'var(--text-muted)',
                       }}>
                         {r.media ?? '—'}
@@ -272,7 +272,7 @@ export default function Statistiche() {
                 return (
                   <div key={g.id} style={{
                     display: 'flex', alignItems: 'center', gap: 10,
-                    padding: '6px 0', borderBottom: '1px solid rgba(168,85,247,0.08)',
+                    padding: '6px 0', borderBottom: '1px solid rgba(0,212,255,0.08)',
                   }}>
                     <span className="badge badge-muted" style={{ fontSize: 9, flexShrink: 0 }}>
                       {g.ruoloMantra}
@@ -282,14 +282,14 @@ export default function Statistiche() {
                     </span>
                     <div style={{ textAlign: 'right' }}>
                       <div style={{
-                        fontFamily: 'Barlow Condensed', fontWeight: 700,
+                        fontFamily: 'Syne, sans-serif', fontWeight: 700,
                         fontSize: 14, color: 'var(--green)',
                       }}>{media3}</div>
                       <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>media 3</div>
                     </div>
                     <div style={{ textAlign: 'right' }}>
                       <div style={{
-                        fontFamily: 'Barlow Condensed', fontWeight: 700,
+                        fontFamily: 'Syne, sans-serif', fontWeight: 700,
                         fontSize: 14, color: 'var(--text-secondary)',
                       }}>{g.votoMedia.toFixed(1)}</div>
                       <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>stagione</div>
@@ -320,7 +320,7 @@ export default function Statistiche() {
                 return (
                   <div key={g.id} style={{
                     display: 'flex', alignItems: 'center', gap: 10,
-                    padding: '6px 0', borderBottom: '1px solid rgba(168,85,247,0.08)',
+                    padding: '6px 0', borderBottom: '1px solid rgba(0,212,255,0.08)',
                   }}>
                     <span className="badge badge-muted" style={{ fontSize: 9, flexShrink: 0 }}>
                       {g.ruoloMantra}
@@ -330,14 +330,14 @@ export default function Statistiche() {
                     </span>
                     <div style={{ textAlign: 'right' }}>
                       <div style={{
-                        fontFamily: 'Barlow Condensed', fontWeight: 700,
+                        fontFamily: 'Syne, sans-serif', fontWeight: 700,
                         fontSize: 14, color: 'var(--red)',
                       }}>{media3}</div>
                       <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>media 3</div>
                     </div>
                     <div style={{ textAlign: 'right' }}>
                       <div style={{
-                        fontFamily: 'Barlow Condensed', fontWeight: 700,
+                        fontFamily: 'Syne, sans-serif', fontWeight: 700,
                         fontSize: 14, color: 'var(--text-secondary)',
                       }}>{g.votoMedia.toFixed(1)}</div>
                       <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>stagione</div>

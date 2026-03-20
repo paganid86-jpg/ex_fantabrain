@@ -10,7 +10,7 @@ function MiniBarChart({ punti, max }) {
           title={`${p}pt`}
           style={{
             flex: 1,
-            background: 'var(--purple)',
+            background: 'var(--accent-primary)',
             opacity: 0.55,
             borderRadius: '1px 1px 0 0',
             height: `${Math.max((p / max) * 100, 8)}%`,
@@ -51,7 +51,7 @@ export default function Classifica() {
 
   const kpiItems = [
     { label: 'Posizione', value: `${userPos}°`, color: 'var(--gold)' },
-    { label: 'Punti Totali', value: userRow?.punti ?? '—', color: 'var(--purple)' },
+    { label: 'Punti Totali', value: userRow?.punti ?? '—', color: 'var(--accent-primary)' },
     { label: 'V / P / S', value: `${userRow?.vittorie ?? 0} / ${userRow?.pareggi ?? 0} / ${userRow?.sconfitte ?? 0}`, color: 'var(--blue)' },
     { label: 'Media', value: userRow ? `${userRow.puntimedia?.toFixed(1)}pt` : '—', color: 'var(--green)' },
   ];
@@ -64,11 +64,11 @@ export default function Classifica() {
           <div key={k.label} className="glass-card" style={{ flex: 1, minWidth: 100, padding: '14px 18px' }}>
             <div style={{
               fontSize: 10, color: 'var(--text-muted)',
-              fontFamily: 'Barlow Condensed', letterSpacing: '0.1em',
+              fontFamily: 'Syne, sans-serif', letterSpacing: '0.1em',
               textTransform: 'uppercase', marginBottom: 4,
             }}>{k.label}</div>
             <div style={{
-              fontFamily: 'Barlow Condensed', fontWeight: 800,
+              fontFamily: 'Syne, sans-serif', fontWeight: 800,
               fontSize: 26, color: k.color,
             }}>{k.value}</div>
           </div>
@@ -103,7 +103,7 @@ export default function Classifica() {
                         width: 26, height: 26, borderRadius: '50%',
                         background: i < 3 ? 'var(--gold)' : 'rgba(255,255,255,0.06)',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontFamily: 'Barlow Condensed', fontWeight: 800, fontSize: 12,
+                        fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: 12,
                         color: i < 3 ? '#000' : 'var(--text-muted)',
                       }}>{i + 1}</div>
                     </td>
@@ -119,25 +119,25 @@ export default function Classifica() {
                         )}
                       </span>
                     </td>
-                    <td style={{ color: 'var(--green)', fontFamily: 'Barlow Condensed', fontWeight: 700 }}>
+                    <td style={{ color: 'var(--green)', fontFamily: 'Syne, sans-serif', fontWeight: 700 }}>
                       {team.vittorie}
                     </td>
-                    <td style={{ color: 'var(--amber)', fontFamily: 'Barlow Condensed', fontWeight: 700 }}>
+                    <td style={{ color: 'var(--amber)', fontFamily: 'Syne, sans-serif', fontWeight: 700 }}>
                       {team.pareggi}
                     </td>
-                    <td style={{ color: 'var(--red)', fontFamily: 'Barlow Condensed', fontWeight: 700 }}>
+                    <td style={{ color: 'var(--red)', fontFamily: 'Syne, sans-serif', fontWeight: 700 }}>
                       {team.sconfitte}
                     </td>
                     <td>
                       <span style={{
-                        fontFamily: 'Barlow Condensed', fontWeight: 800,
+                        fontFamily: 'Syne, sans-serif', fontWeight: 800,
                         fontSize: 16, color: 'var(--text-primary)',
                       }}>{team.punti}</span>
                     </td>
-                    <td style={{ fontFamily: 'Barlow Condensed', fontWeight: 700 }}>
+                    <td style={{ fontFamily: 'Syne, sans-serif', fontWeight: 700 }}>
                       {team.puntimedia?.toFixed(1)}
                     </td>
-                    <td style={{ fontFamily: 'Barlow Condensed', fontWeight: 700, color: 'var(--blue)' }}>
+                    <td style={{ fontFamily: 'Syne, sans-serif', fontWeight: 700, color: 'var(--blue)' }}>
                       {team.ultimoTurno}
                     </td>
                     <td style={{ width: 80 }}>
@@ -199,16 +199,16 @@ export default function Classifica() {
                 <div key={row.label} style={{ display: 'contents' }}>
                   <div style={{
                     textAlign: 'right',
-                    fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: 20,
+                    fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 20,
                     color: aWins ? 'var(--green)' : 'var(--text-secondary)',
                   }}>{row.a}</div>
                   <div style={{
                     textAlign: 'center', fontSize: 11, color: 'var(--text-muted)',
-                    fontFamily: 'Barlow Condensed', letterSpacing: '0.06em', whiteSpace: 'nowrap',
+                    fontFamily: 'Syne, sans-serif', letterSpacing: '0.06em', whiteSpace: 'nowrap',
                   }}>{row.label}</div>
                   <div style={{
                     textAlign: 'left',
-                    fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: 20,
+                    fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 20,
                     color: !aWins ? 'var(--green)' : 'var(--text-secondary)',
                   }}>{row.b}</div>
                 </div>
@@ -225,7 +225,7 @@ export default function Classifica() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
               <div>
                 <div style={{
-                  fontFamily: 'Barlow Condensed', fontWeight: 800,
+                  fontFamily: 'Syne, sans-serif', fontWeight: 800,
                   fontSize: 22, color: 'var(--text-primary)',
                 }}>{modal.nome}</div>
                 <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>Dettaglio stagione</div>
@@ -252,11 +252,11 @@ export default function Classifica() {
                 }}>
                   <div style={{
                     fontSize: 10, color: 'var(--text-muted)',
-                    fontFamily: 'Barlow Condensed', letterSpacing: '0.08em',
+                    fontFamily: 'Syne, sans-serif', letterSpacing: '0.08em',
                     textTransform: 'uppercase', marginBottom: 4,
                   }}>{s.label}</div>
                   <div style={{
-                    fontFamily: 'Barlow Condensed', fontWeight: 800,
+                    fontFamily: 'Syne, sans-serif', fontWeight: 800,
                     fontSize: 22, color: s.color,
                   }}>{s.value}</div>
                 </div>
@@ -264,7 +264,7 @@ export default function Classifica() {
             </div>
 
             <div style={{
-              fontFamily: 'Barlow Condensed', fontSize: 12, color: 'var(--text-muted)',
+              fontFamily: 'Syne, sans-serif', fontSize: 12, color: 'var(--text-muted)',
               letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 8,
             }}>
               Forma ultimi 5 turni

@@ -161,12 +161,12 @@ export default function Schieramento() {
             display: 'flex', gap: 16, alignItems: 'center', backdropFilter: 'blur(4px)',
           }}>
             <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Punteggio atteso:</span>
-            <span style={{ fontFamily: 'Barlow Condensed', fontWeight: 800, fontSize: 20, color: 'var(--gold)' }}>
+            <span style={{ fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: 20, color: 'var(--gold)' }}>
               {punteggioAtteso.toFixed(1)}pt
             </span>
           </div>
 
-          <span style={{ fontSize: 12, color: selezionatoSlot !== null ? 'var(--purple)' : 'var(--text-muted)' }}>
+          <span style={{ fontSize: 12, color: selezionatoSlot !== null ? 'var(--accent-primary)' : 'var(--text-muted)' }}>
             {selezionatoSlot !== null ? '👆 Clicca un giocatore dalla panchina' : 'Clicca uno slot per modificare'}
           </span>
         </div>
@@ -196,21 +196,21 @@ export default function Schieramento() {
                     ? 'var(--gold)'
                     : giocatore
                       ? (compat ? 'var(--gold-border)' : 'var(--red)')
-                      : 'rgba(168,85,247,0.25)';
+                      : 'rgba(0,212,255,0.25)';
 
                   const bgColor = isSelected
-                    ? 'rgba(245,200,66,0.1)'
+                    ? 'rgba(245, 158, 11,0.1)'
                     : giocatore
-                      ? (compat ? 'rgba(245,200,66,0.06)' : 'rgba(248,113,113,0.1)')
-                      : 'rgba(168,85,247,0.03)';
+                      ? (compat ? 'rgba(245, 158, 11,0.06)' : 'rgba(248,113,113,0.1)')
+                      : 'rgba(0,212,255,0.03)';
 
                   const ruoloColors = {
                     Por: '#f97316', DD: 'var(--blue)', DS: 'var(--blue)', DC: 'var(--blue)',
-                    'M/C': 'var(--green)', C: 'var(--green)', 'T/A': 'var(--purple)', PC: 'var(--red)',
+                    'M/C': 'var(--green)', C: 'var(--green)', 'T/A': 'var(--accent-primary)', PC: 'var(--red)',
                   };
                   const ruoloColor = giocatore
                     ? (ruoloColors[giocatore.ruoloMantra] || 'var(--gold)')
-                    : 'rgba(168,85,247,0.35)';
+                    : 'rgba(0,212,255,0.35)';
 
                   return (
                     <div
@@ -228,10 +228,10 @@ export default function Schieramento() {
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                         transition: 'all 0.15s', position: 'relative',
                         backdropFilter: 'blur(6px)',
-                        boxShadow: isSelected ? '0 0 14px rgba(245,200,66,0.4)' : giocatore && compat ? '0 0 8px rgba(245,200,66,0.1)' : 'none',
+                        boxShadow: isSelected ? '0 0 14px rgba(245, 158, 11,0.4)' : giocatore && compat ? '0 0 8px rgba(245, 158, 11,0.1)' : 'none',
                       }}>
                         <span style={{
-                          fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: giocatore ? 9 : 11,
+                          fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: giocatore ? 9 : 11,
                           color: ruoloColor, letterSpacing: '0.03em',
                         }}>
                           {giocatore ? giocatore.ruoloMantra : slot.label}
@@ -241,7 +241,7 @@ export default function Schieramento() {
                             position: 'absolute', top: -3, right: -3, width: 14, height: 14,
                             background: 'var(--red)', borderRadius: '50%',
                             fontSize: 7, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            color: '#fff', fontWeight: 700, border: '1px solid #07030f',
+                            color: '#fff', fontWeight: 700, border: '1px solid var(--bg-deep)',
                           }}>✕</span>
                         )}
                         {giocatore?.diffidato && !giocatore?.infortunato && (
@@ -249,12 +249,12 @@ export default function Schieramento() {
                             position: 'absolute', top: -3, right: -3, width: 14, height: 14,
                             background: 'var(--amber)', borderRadius: '50%',
                             fontSize: 7, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            color: '#000', fontWeight: 700, border: '1px solid #07030f',
+                            color: '#000', fontWeight: 700, border: '1px solid var(--bg-deep)',
                           }}>!</span>
                         )}
                       </div>
                       <span style={{
-                        fontSize: 10, fontFamily: 'Barlow Condensed', fontWeight: 600,
+                        fontSize: 10, fontFamily: 'Syne, sans-serif', fontWeight: 600,
                         color: giocatore ? 'var(--text-primary)' : 'var(--text-muted)',
                         textAlign: 'center', maxWidth: 60,
                         overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
@@ -272,12 +272,12 @@ export default function Schieramento() {
         {/* Panchina */}
         <div className="glass-card" style={{ marginTop: 16 }}>
           <div style={{
-            fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: 13,
+            fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 13,
             color: 'var(--text-muted)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 12,
           }}>
             Panchina ({panchina.length})
             {selezionatoSlot !== null && (
-              <span style={{ marginLeft: 10, color: 'var(--purple)', fontSize: 11, fontWeight: 400, textTransform: 'none', letterSpacing: 0 }}>
+              <span style={{ marginLeft: 10, color: 'var(--accent-primary)', fontSize: 11, fontWeight: 400, textTransform: 'none', letterSpacing: 0 }}>
                 — seleziona un giocatore da schierare
               </span>
             )}
@@ -288,8 +288,8 @@ export default function Schieramento() {
                 key={g.id}
                 onClick={() => selezionatoSlot !== null && assignToSlot(selezionatoSlot, g.id)}
                 style={{
-                  background: selezionatoSlot !== null ? 'rgba(168,85,247,0.1)' : 'var(--bg-glass)',
-                  border: `1px solid ${selezionatoSlot !== null ? 'rgba(168,85,247,0.4)' : 'var(--gold-border)'}`,
+                  background: selezionatoSlot !== null ? 'rgba(0,212,255,0.1)' : 'var(--bg-glass)',
+                  border: `1px solid ${selezionatoSlot !== null ? 'rgba(0,212,255,0.4)' : 'var(--gold-border)'}`,
                   borderRadius: 8, padding: '6px 12px',
                   cursor: selezionatoSlot !== null ? 'pointer' : 'default',
                   display: 'flex', alignItems: 'center', gap: 8,
@@ -300,7 +300,7 @@ export default function Schieramento() {
               >
                 <span className="badge badge-muted" style={{ fontSize: 10 }}>{g.ruoloMantra}</span>
                 <span style={{ fontSize: 12, color: 'var(--text-primary)', fontWeight: 600 }}>{g.cognome}</span>
-                <span style={{ fontSize: 11, color: 'var(--gold)', fontFamily: 'Barlow Condensed', fontWeight: 700 }}>
+                <span style={{ fontSize: 11, color: 'var(--gold)', fontFamily: 'Syne, sans-serif', fontWeight: 700 }}>
                   {g.votoMedia.toFixed(1)}
                 </span>
                 {g.infortunato && <span style={{ fontSize: 10 }}>🤕</span>}
@@ -319,7 +319,7 @@ export default function Schieramento() {
       {/* Sidebar AI */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         <div className="glass-card">
-          <div style={{ fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: 16, color: 'var(--text-primary)', marginBottom: 4 }}>
+          <div style={{ fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 16, color: 'var(--text-primary)', marginBottom: 4 }}>
             Ottimizza con AI
           </div>
           <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 16 }}>
@@ -365,7 +365,7 @@ export default function Schieramento() {
         {/* Legenda ruoli */}
         <div className="glass-card">
           <div style={{
-            fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: 12,
+            fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 12,
             color: 'var(--text-muted)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 12,
           }}>
             Legenda Ruoli
@@ -374,12 +374,12 @@ export default function Schieramento() {
             { ruolo: 'Por', color: '#f97316', desc: 'Portiere' },
             { ruolo: 'DD / DS / DC', color: 'var(--blue)', desc: 'Difensori' },
             { ruolo: 'M/C', color: 'var(--green)', desc: 'Centrocampisti' },
-            { ruolo: 'T/A', color: 'var(--purple)', desc: 'Trequarti / Ala' },
+            { ruolo: 'T/A', color: 'var(--accent-primary)', desc: 'Trequarti / Ala' },
             { ruolo: 'PC', color: 'var(--red)', desc: 'Prima Punta' },
           ].map((item) => (
             <div key={item.ruolo} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
               <div style={{ width: 10, height: 10, borderRadius: '50%', background: item.color, flexShrink: 0, boxShadow: `0 0 6px ${item.color}66` }} />
-              <span style={{ fontFamily: 'Barlow Condensed', fontWeight: 600, fontSize: 13, color: 'var(--text-primary)' }}>{item.ruolo}</span>
+              <span style={{ fontFamily: 'Syne, sans-serif', fontWeight: 600, fontSize: 13, color: 'var(--text-primary)' }}>{item.ruolo}</span>
               <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>— {item.desc}</span>
             </div>
           ))}

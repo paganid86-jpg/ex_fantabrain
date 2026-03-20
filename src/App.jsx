@@ -2,6 +2,7 @@ import { HashRouter, Routes, Route } from 'react-router-dom';
 import { useState } from 'react';
 import Sidebar from './components/layout/Sidebar';
 import Topbar from './components/layout/Topbar';
+import LandingPage from './pages/LandingPage';
 import Dashboard from './pages/Dashboard';
 import AIAnalisi from './pages/AIAnalisi';
 import LaRosa from './pages/LaRosa';
@@ -13,31 +14,44 @@ import Scouting from './pages/Scouting';
 import WarRoom from './pages/WarRoom';
 import Statistiche from './pages/Statistiche';
 
-export default function App() {
+/* ── Dashboard layout with sidebar + topbar ── */
+function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <HashRouter>
-      <div className="app-layout">
-        <Sidebar mobileOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-        <div className="main-content">
-          <Topbar onMenuClick={() => setSidebarOpen((o) => !o)} />
-          <div className="page-content">
-            <Routes>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/ai-analisi" element={<AIAnalisi />} />
-              <Route path="/la-rosa" element={<LaRosa />} />
-              <Route path="/schieramento" element={<Schieramento />} />
-              <Route path="/classifica" element={<Classifica />} />
-              <Route path="/calendario" element={<Calendario />} />
-              <Route path="/mercato" element={<Mercato />} />
-              <Route path="/scouting" element={<Scouting />} />
-              <Route path="/war-room" element={<WarRoom />} />
-              <Route path="/statistiche" element={<Statistiche />} />
-            </Routes>
-          </div>
+    <div className="app-layout">
+      <Sidebar mobileOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <div className="main-content">
+        <Topbar onMenuClick={() => setSidebarOpen((o) => !o)} />
+        <div className="page-content">
+          <Routes>
+            <Route index element={<Dashboard />} />
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="ai-analisi" element={<AIAnalisi />} />
+            <Route path="la-rosa" element={<LaRosa />} />
+            <Route path="schieramento" element={<Schieramento />} />
+            <Route path="classifica" element={<Classifica />} />
+            <Route path="calendario" element={<Calendario />} />
+            <Route path="mercato" element={<Mercato />} />
+            <Route path="scouting" element={<Scouting />} />
+            <Route path="war-room" element={<WarRoom />} />
+            <Route path="statistiche" element={<Statistiche />} />
+          </Routes>
         </div>
       </div>
+    </div>
+  );
+}
+
+export default function App() {
+  return (
+    <HashRouter>
+      <Routes>
+        {/* Marketing landing page — conversion entry point */}
+        <Route path="/" element={<LandingPage />} />
+        {/* App dashboard — accessible at /#/app/... */}
+        <Route path="/app/*" element={<AppLayout />} />
+      </Routes>
     </HashRouter>
   );
 }
