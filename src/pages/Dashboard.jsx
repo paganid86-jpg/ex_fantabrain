@@ -16,7 +16,7 @@ function KpiCard({ label, value, sub, color, icon }) {
         display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start',
       }}>
         <div style={{
-          fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: 11,
+          fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 11,
           color: 'var(--text-muted)', letterSpacing: '0.08em', textTransform: 'uppercase',
         }}>
           {label}
@@ -24,20 +24,20 @@ function KpiCard({ label, value, sub, color, icon }) {
         <span style={{ fontSize: 22, opacity: 0.35 }}>{icon}</span>
       </div>
       <div style={{
-        fontFamily: 'Barlow Condensed', fontWeight: 900, fontSize: 42,
+        fontFamily: 'Syne, sans-serif', fontWeight: 900, fontSize: 42,
         color, lineHeight: 1, marginTop: 4,
       }}>
         {value}
       </div>
-      <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 2 }}>{sub}</div>
+      <div style={{ fontSize: 12, fontFamily: 'DM Sans, sans-serif', color: 'var(--text-muted)', marginTop: 2 }}>{sub}</div>
     </div>
   );
 }
 
 const RUOLO_COLORS = {
   Por: '#f97316', DD: 'var(--blue)', DS: 'var(--blue)', DC: 'var(--blue)',
-  'M/C': 'var(--green)', C: 'var(--green)', 'T/A': 'var(--purple)',
-  W: 'var(--purple)', T: 'var(--purple)', A: 'var(--purple)', PC: 'var(--red)',
+  'M/C': 'var(--green)', C: 'var(--green)', 'T/A': 'var(--accent-primary)',
+  W: 'var(--accent-primary)', T: 'var(--accent-primary)', A: 'var(--accent-primary)', PC: 'var(--red)',
 };
 
 function PitchSlot({ giocatore }) {
@@ -46,12 +46,12 @@ function PitchSlot({ giocatore }) {
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
         <div style={{
           width: 50, height: 50, borderRadius: '50%',
-          border: '2px dashed rgba(168,85,247,0.2)',
-          background: 'rgba(168,85,247,0.03)',
+          border: '2px dashed rgba(0, 212, 255, 0.20)',
+          background: 'rgba(0, 212, 255, 0.03)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: 18, color: 'rgba(168,85,247,0.3)',
+          fontSize: 18, color: 'rgba(0, 212, 255, 0.30)',
         }}>+</div>
-        <span style={{ fontSize: 10, color: 'var(--text-muted)', fontFamily: 'Barlow Condensed' }}>VUOTO</span>
+        <span style={{ fontSize: 10, color: 'var(--text-muted)', fontFamily: 'Syne, sans-serif' }}>VUOTO</span>
       </div>
     );
   }
@@ -71,7 +71,7 @@ function PitchSlot({ giocatore }) {
         backdropFilter: 'blur(6px)',
       }}>
         <span style={{
-          fontFamily: 'Barlow Condensed', fontWeight: 800, fontSize: 13, color,
+          fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: 13, color,
         }}>
           {initials}
         </span>
@@ -104,13 +104,13 @@ function PitchSlot({ giocatore }) {
         )}
       </div>
       <span style={{
-        fontSize: 10, fontFamily: 'Barlow Condensed', fontWeight: 600,
+        fontSize: 10, fontFamily: 'Syne, sans-serif', fontWeight: 600,
         color: 'var(--text-primary)', textAlign: 'center',
         maxWidth: 56, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
       }}>
         {giocatore.cognome}
       </span>
-      <span style={{ fontSize: 9, color: 'var(--text-muted)', fontFamily: 'Barlow Condensed' }}>
+      <span style={{ fontSize: 9, color: 'var(--text-muted)', fontFamily: 'Syne, sans-serif' }}>
         {giocatore.ruoloMantra}
       </span>
     </div>
@@ -186,7 +186,7 @@ function AISuggestionsPanel({ rosa, giornataCorrente, aiCrediti }) {
     suggestions.push(
       { icon: '✅', title: 'Rosa al completo', sub: 'Nessun infortunato o diffidato', delta: 0, color: 'var(--green)' },
       { icon: '📊', title: 'Analizza il calendario', sub: 'Controlla i prossimi avversari', delta: 0, color: 'var(--blue)' },
-      { icon: '💡', title: 'Ottimizza lo schieramento', sub: 'Usa la pagina Schieramento per l\'AI', delta: 0, color: 'var(--purple)' },
+      { icon: '💡', title: 'Ottimizza lo schieramento', sub: 'Usa la pagina Schieramento per l\'AI', delta: 0, color: 'var(--accent-primary)' },
     );
     intro = `Ho analizzato la tua rosa per la giornata ${giornataCorrente}. Tutto in ordine — usa i consigli qui sotto per ottimizzare!`;
   }
@@ -196,7 +196,7 @@ function AISuggestionsPanel({ rosa, giornataCorrente, aiCrediti }) {
       {/* Header */}
       <div style={{
         display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14,
-        paddingBottom: 12, borderBottom: '1px solid var(--gold-border)',
+        paddingBottom: 12, borderBottom: '1px solid var(--border-glass)',
       }}>
         <span style={{
           width: 8, height: 8, borderRadius: '50%',
@@ -204,7 +204,7 @@ function AISuggestionsPanel({ rosa, giornataCorrente, aiCrediti }) {
           boxShadow: '0 0 6px var(--green)',
         }} />
         <span style={{
-          fontFamily: 'Barlow Condensed', fontWeight: 800, fontSize: 14,
+          fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: 14,
           color: 'var(--text-primary)', letterSpacing: '0.04em',
         }}>
           FANTABRAIN AI · GIORNATA {giornataCorrente}
@@ -248,7 +248,7 @@ function AISuggestionsPanel({ rosa, giornataCorrente, aiCrediti }) {
             </div>
             {s.delta !== 0 && (
               <span style={{
-                fontFamily: 'Barlow Condensed', fontWeight: 800, fontSize: 16,
+                fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: 16,
                 color: s.delta > 0 ? 'var(--green)' : 'var(--red)',
                 flexShrink: 0,
               }}>
@@ -283,7 +283,7 @@ function BarChartGiornate({ giornate }) {
               alignItems: 'center', height: '100%', justifyContent: 'flex-end',
             }}>
               <span style={{
-                fontSize: 9, fontFamily: 'Barlow Condensed', fontWeight: 700,
+                fontSize: 9, fontFamily: 'Syne, sans-serif', fontWeight: 700,
                 color: 'var(--text-muted)', marginBottom: 3,
               }}>{g.puntiUser}</span>
               <div
@@ -293,7 +293,7 @@ function BarChartGiornate({ giornate }) {
                   height: `${h}%`,
                   background: isBelow
                     ? 'linear-gradient(180deg, #ef4444, #b91c1c)'
-                    : 'linear-gradient(180deg, var(--green), #059669)',
+                    : 'linear-gradient(180deg, var(--accent-primary), rgba(0,212,255,0.35))',
                   borderRadius: '3px 3px 0 0',
                   minHeight: 4,
                   transition: 'opacity 0.2s',
@@ -310,7 +310,7 @@ function BarChartGiornate({ giornate }) {
         {ultimi.map((g, i) => (
           <div key={i} style={{
             flex: 1, textAlign: 'center',
-            fontSize: 9, fontFamily: 'Barlow Condensed',
+            fontSize: 9, fontFamily: 'Syne, sans-serif',
             color: 'var(--text-muted)', paddingTop: 4,
           }}>
             G{g.giornata}
@@ -442,7 +442,7 @@ export default function Dashboard() {
                 background: 'var(--green)', display: 'inline-block',
               }} />
               <span style={{
-                fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: 15,
+                fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 15,
                 color: 'var(--text-primary)', letterSpacing: '0.02em',
               }}>
                 SCHIERAMENTO ATTUALE — {modulo}
@@ -487,7 +487,7 @@ export default function Dashboard() {
             marginBottom: 14,
           }}>
             <span style={{
-              fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: 15,
+              fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 15,
               color: 'var(--text-primary)', letterSpacing: '0.02em',
             }}>
               🏆 CLASSIFICA LEGA
@@ -528,7 +528,7 @@ export default function Dashboard() {
                     width: 26, height: 26, borderRadius: '50%', flexShrink: 0,
                     background: i < 3 ? 'var(--gold)' : 'var(--bg-elevated)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontFamily: 'Barlow Condensed', fontWeight: 800, fontSize: 13,
+                    fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: 13,
                     color: i < 3 ? '#000' : 'var(--text-muted)',
                   }}>
                     {i + 1}
@@ -538,7 +538,7 @@ export default function Dashboard() {
                     width: 30, height: 30, borderRadius: '50%', flexShrink: 0,
                     background: team.isUser ? 'rgba(0,230,118,0.15)' : 'var(--bg-elevated)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontFamily: 'Barlow Condensed', fontWeight: 800, fontSize: 13,
+                    fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: 13,
                     color: team.isUser ? 'var(--green)' : 'var(--text-muted)',
                   }}>
                     {(team.nome || '?')[0].toUpperCase()}
@@ -560,7 +560,7 @@ export default function Dashboard() {
                   </div>
                   {/* Points */}
                   <div style={{
-                    fontFamily: 'Barlow Condensed', fontWeight: 800, fontSize: 18,
+                    fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: 18,
                     color: 'var(--text-primary)', flexShrink: 0,
                   }}>
                     {team.punti}
@@ -578,7 +578,7 @@ export default function Dashboard() {
             marginBottom: 14,
           }}>
             <span style={{
-              fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: 15,
+              fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 15,
               color: 'var(--text-primary)', letterSpacing: '0.02em',
             }}>
               🔔 ALERT & NOTIZIE
@@ -639,14 +639,14 @@ export default function Dashboard() {
             marginBottom: 16,
           }}>
             <span style={{
-              fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: 15,
+              fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 15,
               color: 'var(--text-primary)', letterSpacing: '0.02em',
             }}>
               📈 ANDAMENTO PUNTI — ULTIME 8 GIORNATE
             </span>
             <div style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                <span style={{ width: 10, height: 10, borderRadius: 2, background: 'var(--green)', display: 'inline-block' }} />
+                <span style={{ width: 10, height: 10, borderRadius: 2, background: 'var(--accent-primary)', display: 'inline-block' }} />
                 <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>Tu</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>

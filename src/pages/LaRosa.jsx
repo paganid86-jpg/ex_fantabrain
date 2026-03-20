@@ -48,7 +48,7 @@ function DettaglioGiocatore({ giocatore, onModifica, onRimuovi, onClose }) {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
         <div>
-          <div style={{ fontFamily: 'Barlow Condensed', fontWeight: 800, fontSize: 22, color: 'var(--text-primary)', lineHeight: 1.1 }}>
+          <div style={{ fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: 22, color: 'var(--text-primary)', lineHeight: 1.1 }}>
             {giocatore.nome} {giocatore.cognome}
           </div>
           <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: 2 }}>{giocatore.squadra}</div>
@@ -80,12 +80,12 @@ function DettaglioGiocatore({ giocatore, onModifica, onRimuovi, onClose }) {
           <div key={item.label} style={{
             background: 'var(--bg-glass)',
             borderRadius: 8, padding: '10px 12px',
-            border: '1px solid rgba(168,85,247,0.1)',
+            border: '1px solid rgba(0,212,255,0.1)',
           }}>
-            <div style={{ fontSize: 10, color: 'var(--text-muted)', fontFamily: 'Barlow Condensed', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 4 }}>
+            <div style={{ fontSize: 10, color: 'var(--text-muted)', fontFamily: 'Syne, sans-serif', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 4 }}>
               {item.label}
             </div>
-            <div style={{ fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: 18, color: 'var(--text-primary)' }}>
+            <div style={{ fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 18, color: 'var(--text-primary)' }}>
               {item.value}
             </div>
           </div>
@@ -94,7 +94,7 @@ function DettaglioGiocatore({ giocatore, onModifica, onRimuovi, onClose }) {
 
       {/* Grafico voti */}
       <div style={{ marginBottom: 16 }}>
-        <div style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'Barlow Condensed', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 10 }}>
+        <div style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'Syne, sans-serif', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 10 }}>
           Andamento Voti (Ultimi 5)
         </div>
         <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6, height: 70 }}>
@@ -106,7 +106,7 @@ function DettaglioGiocatore({ giocatore, onModifica, onRimuovi, onClose }) {
             const heightPct = v > 0 ? ((v - 4) / 6) * 100 : 4;
             return (
               <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, height: '100%', justifyContent: 'flex-end' }}>
-                <div style={{ fontSize: 9, color, fontFamily: 'Barlow Condensed', fontWeight: 700 }}>
+                <div style={{ fontSize: 9, color, fontFamily: 'Syne, sans-serif', fontWeight: 700 }}>
                   {v > 0 ? v : 'SV'}
                 </div>
                 <div style={{
@@ -256,10 +256,10 @@ export default function LaRosa() {
             display: 'flex', alignItems: 'center', gap: 6,
             backdropFilter: 'blur(4px)',
           }}>
-            <span style={{ fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: 16, color: 'var(--gold)' }}>
+            <span style={{ fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 16, color: 'var(--gold)' }}>
               {k.count}
             </span>
-            <span style={{ fontSize: 12, color: 'var(--text-secondary)', fontFamily: 'Barlow Condensed' }}>{k.ruolo}</span>
+            <span style={{ fontSize: 12, color: 'var(--text-secondary)', fontFamily: 'Syne, sans-serif' }}>{k.ruolo}</span>
           </div>
         ))}
       </div>
@@ -323,8 +323,8 @@ export default function LaRosa() {
                     onClick={() => setSelezionato(selezionato?.id === g.id ? null : g)}
                     style={{
                       cursor: 'pointer',
-                      background: selezionato?.id === g.id ? 'rgba(168,85,247,0.06)' : undefined,
-                      borderLeft: selezionato?.id === g.id ? '2px solid var(--purple)' : '2px solid transparent',
+                      background: selezionato?.id === g.id ? 'rgba(0,212,255,0.06)' : undefined,
+                      borderLeft: selezionato?.id === g.id ? '2px solid var(--accent-primary)' : '2px solid transparent',
                     }}
                   >
                     <td>
@@ -335,13 +335,13 @@ export default function LaRosa() {
                     </td>
                     <td style={{ color: 'var(--text-secondary)' }}>{g.squadra}</td>
                     <td>
-                      <span style={{ fontFamily: 'Barlow Condensed', fontWeight: 700, color: 'var(--gold)' }}>
+                      <span style={{ fontFamily: 'Syne, sans-serif', fontWeight: 700, color: 'var(--gold)' }}>
                         {g.quotazione}M
                       </span>
                     </td>
                     <td>
                       <span style={{
-                        fontFamily: 'Barlow Condensed', fontWeight: 700,
+                        fontFamily: 'Syne, sans-serif', fontWeight: 700,
                         color: g.votoMedia >= 7 ? 'var(--green)' : g.votoMedia >= 6 ? 'var(--amber)' : 'var(--red)',
                       }}>
                         {g.votoMedia.toFixed(1)}
@@ -355,12 +355,12 @@ export default function LaRosa() {
                           title="Modifica"
                           onClick={() => setEditPlayer(g)}
                           style={{
-                            background: 'rgba(168,85,247,0.12)', border: '1px solid rgba(168,85,247,0.25)',
+                            background: 'rgba(0,212,255,0.12)', border: '1px solid rgba(0,212,255,0.25)',
                             borderRadius: 6, padding: '4px 8px', cursor: 'pointer', fontSize: 13,
-                            color: 'var(--purple)', transition: 'all 0.15s',
+                            color: 'var(--accent-primary)', transition: 'all 0.15s',
                           }}
-                          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(168,85,247,0.22)'; }}
-                          onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(168,85,247,0.12)'; }}
+                          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(0,212,255,0.22)'; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(0,212,255,0.12)'; }}
                         >✏️</button>
                         <button
                           title="Rimuovi"

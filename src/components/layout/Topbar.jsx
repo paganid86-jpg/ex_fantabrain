@@ -15,14 +15,22 @@ const pageTitles = {
 };
 
 export default function Topbar({ onMenuClick }) {
-  const location        = useLocation();
-  const user            = useAppStore((s) => s.user);
+  const location         = useLocation();
+  const user             = useAppStore((s) => s.user);
   const giornataCorrente = useAppStore((s) => s.giornataCorrente);
 
-  const title = pageTitles[location.pathname] ?? 'FantaBrain AI';
+  const title = pageTitles[location.pathname] ?? 'FantaAI';
 
   return (
-    <header className="topbar">
+    <header
+      className="topbar"
+      style={{
+        background: 'rgba(5, 10, 20, 0.78)',
+        backdropFilter: 'blur(24px) saturate(180%)',
+        WebkitBackdropFilter: 'blur(24px) saturate(180%)',
+        borderBottom: '1px solid var(--border-glass)',
+      }}
+    >
 
       {/* ── Sinistra: hamburger + titolo ── */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -34,56 +42,64 @@ export default function Topbar({ onMenuClick }) {
           ☰
         </button>
 
-        <div>
-          <span className="section-title" style={{ fontSize: 18 }}>
-            {title}
-          </span>
-        </div>
+        <span
+          className="section-title"
+          style={{
+            fontFamily: 'var(--font-display)',
+            fontWeight: 700,
+            fontSize: 18,
+            color: 'var(--text-primary)',
+            letterSpacing: '0.02em',
+          }}
+        >
+          {title}
+        </span>
       </div>
 
       {/* ── Destra: giornata + lega ── */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
 
-        {/* Badge giornata gold glass */}
+        {/* Badge giornata — glass con accent cyan */}
         <div style={{
           display: 'flex',
           alignItems: 'center',
           gap: 7,
-          background: 'rgba(245, 200, 66, 0.07)',
+          background: 'rgba(0, 212, 255, 0.07)',
           backdropFilter: 'blur(12px)',
-          borderRadius: 8,
+          WebkitBackdropFilter: 'blur(12px)',
+          borderRadius: 'var(--radius-sm)',
           padding: '5px 12px',
-          border: '1px solid rgba(245, 200, 66, 0.22)',
-          boxShadow: '0 0 10px rgba(245, 200, 66, 0.06)',
+          border: '1px solid var(--border-accent)',
+          boxShadow: '0 0 10px rgba(0, 212, 255, 0.08)',
         }}>
           <span style={{
-            fontFamily: "'Barlow Condensed', sans-serif",
+            fontFamily: 'var(--font-display)',
             fontSize: 10,
             fontWeight: 700,
             letterSpacing: '0.12em',
-            color: '#4d3870',
+            color: 'var(--text-muted)',
             textTransform: 'uppercase',
           }}>
             GIORNATA
           </span>
           <span style={{
-            fontFamily: "'Barlow Condensed', sans-serif",
+            fontFamily: 'var(--font-display)',
             fontWeight: 800,
             fontSize: 18,
             lineHeight: 1,
-            color: '#f5c842',
-            textShadow: '0 0 10px rgba(245, 200, 66, 0.40)',
+            color: 'var(--accent-primary)',
+            textShadow: '0 0 10px rgba(0, 212, 255, 0.40)',
           }}>
             {giornataCorrente}
           </span>
         </div>
 
-        {/* Nome lega muted */}
+        {/* Nome lega */}
         <div style={{
           fontSize: 12,
-          fontFamily: "'Barlow Condensed', sans-serif",
+          fontFamily: 'var(--font-body)',
           letterSpacing: '0.05em',
-          color: '#4d3870',
+          color: 'var(--text-muted)',
           maxWidth: 160,
           overflow: 'hidden',
           textOverflow: 'ellipsis',

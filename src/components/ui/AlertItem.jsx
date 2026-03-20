@@ -17,7 +17,7 @@ export default function AlertItem({ tipo, messaggio, giocatore }) {
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
           <span style={{
-            fontFamily: 'Barlow Condensed', fontSize: 10, fontWeight: 700,
+            fontFamily: 'Syne, sans-serif', fontSize: 10, fontWeight: 700,
             letterSpacing: '0.08em', color: cfg.color, textTransform: 'uppercase',
           }}>{cfg.label}</span>
           {giocatore && (

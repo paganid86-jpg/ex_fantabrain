@@ -30,7 +30,7 @@ export default function PlayerToken({ giocatore, size = 'sm', onClick, selected 
         transition: 'border-color 0.2s',
         boxShadow: selected ? `0 0 12px ${color}44` : 'none',
       }}>
-        <span style={{ fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: sz * 0.27, color }}>
+        <span style={{ fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: sz * 0.27, color }}>
           {ruolo}
         </span>
         {isInf && (
@@ -54,7 +54,7 @@ export default function PlayerToken({ giocatore, size = 'sm', onClick, selected 
       </div>
       {giocatore && (
         <div style={{
-          fontSize: size === 'lg' ? 12 : 10, fontFamily: 'Barlow Condensed',
+          fontSize: size === 'lg' ? 12 : 10, fontFamily: 'Syne, sans-serif',
           fontWeight: 600, color: 'var(--text-primary)', textAlign: 'center',
           maxWidth: sz + 16, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
         }}>

@@ -25,21 +25,21 @@ function MessageBubble({ msg }) {
           width: 32,
           height: 32,
           borderRadius: '50%',
-          background: 'linear-gradient(135deg, var(--purple), var(--cyan))',
+          background: 'linear-gradient(135deg, var(--accent-primary), #06B6D4)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           fontSize: 16,
           flexShrink: 0,
-          boxShadow: '0 0 14px rgba(168,85,247,0.45)',
+          boxShadow: '0 0 14px rgba(0,212,255,0.45)',
         }}>🤖</div>
       )}
       <div style={{
         maxWidth: '78%',
         background: isUser
-          ? 'rgba(245,200,66,0.08)'
+          ? 'rgba(245, 158, 11, 0.08)'
           : 'var(--bg-glass)',
-        border: `1px solid ${isUser ? 'rgba(245,200,66,0.25)' : 'rgba(168,85,247,0.2)'}`,
+        border: `1px solid ${isUser ? 'var(--gold-border)' : 'rgba(0,212,255,0.2)'}`,
         borderRadius: isUser ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
         padding: '10px 16px',
         fontSize: 13,
@@ -111,15 +111,15 @@ export default function AIAnalisi() {
         {/* Header chat */}
         <div style={{
           padding: '14px 20px',
-          borderBottom: '1px solid var(--gold-border)',
+          borderBottom: '1px solid var(--border-glass)',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          background: 'rgba(245,200,66,0.03)',
+          background: 'rgba(0, 212, 255, 0.03)',
         }}>
           <div>
             <div style={{
-              fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: 17,
+              fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 17,
               color: 'var(--text-primary)', letterSpacing: '0.02em',
             }}>
               🤖 Chat FantaBrain AI
@@ -168,14 +168,14 @@ export default function AIAnalisi() {
             <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, marginBottom: 14 }}>
               <div style={{
                 width: 32, height: 32, borderRadius: '50%',
-                background: 'linear-gradient(135deg, var(--purple), var(--cyan))',
+                background: 'linear-gradient(135deg, var(--accent-primary), #06B6D4)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontSize: 16, flexShrink: 0,
-                boxShadow: '0 0 14px rgba(168,85,247,0.45)',
+                boxShadow: '0 0 14px rgba(0,212,255,0.45)',
               }}>🤖</div>
               <div style={{
                 background: 'var(--bg-glass)',
-                border: '1px solid rgba(168,85,247,0.2)',
+                border: '1px solid rgba(0,212,255,0.2)',
                 borderRadius: '18px 18px 18px 4px',
                 padding: '14px 18px',
                 display: 'flex', gap: 6, alignItems: 'center',
@@ -184,7 +184,7 @@ export default function AIAnalisi() {
                 {[0, 1, 2].map((idx) => (
                   <div key={idx} style={{
                     width: 7, height: 7, borderRadius: '50%',
-                    background: 'var(--purple)',
+                    background: 'var(--accent-primary)',
                     animation: `dotPulse 1.2s ease-in-out ${idx * 0.2}s infinite`,
                   }} />
                 ))}
@@ -208,7 +208,7 @@ export default function AIAnalisi() {
         </div>
 
         {/* Bottom bar: prompt rapidi + input */}
-        <div className="glass-elevated" style={{ padding: '12px 16px', borderTop: '1px solid var(--gold-border)' }}>
+        <div className="glass-elevated" style={{ padding: '12px 16px', borderTop: '1px solid var(--border-glass)' }}>
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 }}>
             {PROMPT_RAPIDI.map((p) => (
               <button
@@ -216,26 +216,26 @@ export default function AIAnalisi() {
                 onClick={() => invia(p.label)}
                 disabled={loading || aiCrediti === 0}
                 style={{
-                  background: 'rgba(168,85,247,0.06)',
-                  border: '1px solid rgba(168,85,247,0.2)',
+                  background: 'rgba(0,212,255,0.06)',
+                  border: '1px solid rgba(0,212,255,0.2)',
                   borderRadius: 20,
                   padding: '4px 12px',
                   fontSize: 11,
                   color: 'var(--text-secondary)',
                   cursor: 'pointer',
                   transition: 'all 0.15s',
-                  fontFamily: 'Barlow',
+                  fontFamily: 'DM Sans, sans-serif',
                   whiteSpace: 'nowrap',
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = 'var(--purple)';
-                  e.currentTarget.style.color = 'var(--purple)';
-                  e.currentTarget.style.background = 'rgba(168,85,247,0.14)';
+                  e.currentTarget.style.borderColor = 'var(--accent-primary)';
+                  e.currentTarget.style.color = 'var(--accent-primary)';
+                  e.currentTarget.style.background = 'rgba(0,212,255,0.14)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = 'rgba(168,85,247,0.2)';
+                  e.currentTarget.style.borderColor = 'rgba(0,212,255,0.2)';
                   e.currentTarget.style.color = 'var(--text-secondary)';
-                  e.currentTarget.style.background = 'rgba(168,85,247,0.06)';
+                  e.currentTarget.style.background = 'rgba(0,212,255,0.06)';
                 }}
               >
                 {p.icon} {p.label}
@@ -271,7 +271,7 @@ export default function AIAnalisi() {
         {/* Rosa contestuale */}
         <div className="glass-card" style={{ padding: 16, flex: 1 }}>
           <div style={{
-            fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: 13,
+            fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 13,
             color: 'var(--text-primary)', letterSpacing: '0.04em',
             textTransform: 'uppercase', marginBottom: 12,
           }}>
@@ -288,7 +288,7 @@ export default function AIAnalisi() {
                 <div key={g.id} style={{
                   display: 'flex', alignItems: 'center', gap: 8,
                   padding: '5px 0',
-                  borderBottom: '1px solid rgba(168,85,247,0.08)',
+                  borderBottom: '1px solid rgba(0,212,255,0.08)',
                   opacity: g.infortunato ? 0.45 : 1,
                 }}>
                   <span className="badge badge-muted" style={{ fontSize: 9, padding: '1px 5px', flexShrink: 0 }}>
@@ -301,7 +301,7 @@ export default function AIAnalisi() {
                     {g.cognome}
                   </span>
                   <span style={{
-                    fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: 12,
+                    fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 12,
                     color: g.votoMedia >= 7 ? 'var(--green)' : g.votoMedia >= 6 ? 'var(--text-secondary)' : 'var(--red)',
                   }}>
                     {g.votoMedia.toFixed(1)}
