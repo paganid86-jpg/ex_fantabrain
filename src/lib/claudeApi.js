@@ -1,7 +1,7 @@
 import useAppStore from '../store/useAppStore';
 
-const MODEL = 'claude-sonnet-4-20250514';
-const API_URL = 'https://api.anthropic.com/v1/messages';
+const MODEL = 'llama-3.3-70b-versatile';
+const API_URL = 'https://api.groq.com/openai/v1/chat/completions';
 
 function buildSystemPrompt(rosa, giornata, avversario) {
   const rosaJson = JSON.stringify(
@@ -24,35 +24,37 @@ Prossimo avversario: ${avversario || 'da definire'}`;
 }
 
 async function callApi({ systemPrompt, messages, maxTokens }) {
-  const key = import.meta.env.VITE_CLAUDE_API_KEY;
+  const key = import.meta.env.VITE_GROQ_API_KEY;
   if (!key) {
-    throw new Error('API key non configurata nel server.');
+    throw new Error('API key Groq non configurata. Imposta VITE_GROQ_API_KEY nel file .env');
   }
+
+  const groqMessages = [
+    { role: 'system', content: systemPrompt },
+    ...messages,
+  ];
 
   const response = await fetch(API_URL, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'x-api-key': key,
-      'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-direct-browser-access': 'true',
+      'Authorization': `Bearer ${key}`,
     },
     body: JSON.stringify({
       model: MODEL,
       max_tokens: maxTokens,
-      system: systemPrompt,
-      messages,
+      messages: groqMessages,
     }),
   });
 
   if (!response.ok) {
     const err = await response.text();
-    throw new Error(`Claude API errore ${response.status}: ${err}`);
+    throw new Error(`Groq API errore ${response.status}: ${err}`);
   }
 
   const data = await response.json();
   useAppStore.getState().decrementaCrediti();
-  return data.content[0].text;
+  return data.choices[0].message.content;
 }
 
 export async function callClaude({ systemPrompt, userMessage, maxTokens = 500 }) {
