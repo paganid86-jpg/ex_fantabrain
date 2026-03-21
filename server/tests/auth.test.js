@@ -92,3 +92,19 @@ describe('authenticateAdmin', async () => {
     process.env.ADMIN_SECRET = saved;
   });
 });
+
+import bcrypt from 'bcrypt';
+
+describe('password hashing', () => {
+  it('bcrypt hash verifies correctly', async () => {
+    const hash = await bcrypt.hash('mypassword', 10);
+    const valid = await bcrypt.compare('mypassword', hash);
+    assert.ok(valid);
+  });
+
+  it('bcrypt rejects wrong password', async () => {
+    const hash = await bcrypt.hash('mypassword', 10);
+    const valid = await bcrypt.compare('wrong', hash);
+    assert.ok(!valid);
+  });
+});
