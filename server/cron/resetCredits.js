@@ -8,10 +8,28 @@ export function startCreditResetCron() {
     try {
       // Check for active matches in Serie A
       const apiKey = process.env.FOOTBALL_DATA_API_KEY;
-      const response = await fetch(
-        'https://api.football-data.org/v4/competitions/SA/matches?status=IN_PLAY,PAUSED',
-        { headers: { 'X-Auth-Token': apiKey } }
-      );
+
+      if (!apiKey) {
+        console.warn('[cron] FOOTBALL_DATA_API_KEY not set — skipping credit reset to avoid unsafe state');
+        return;
+      }
+
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 10_000);
+      let response;
+      try {
+        response = await fetch(
+          'https://api.football-data.org/v4/competitions/SA/matches?status=IN_PLAY,PAUSED',
+          { headers: { 'X-Auth-Token': apiKey }, signal: controller.signal }
+        );
+      } finally {
+        clearTimeout(timeout);
+      }
+
+      if (!response.ok) {
+        throw new Error(`Football API returned ${response.status}`);
+      }
+
       const data = await response.json();
       const activeMatches = data.matches ?? [];
 
