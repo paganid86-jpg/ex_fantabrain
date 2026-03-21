@@ -7,8 +7,8 @@ const router = Router();
 // POST /api/admin/set-plan
 router.post('/set-plan', authenticateAdmin, async (req, res) => {
   const { userId, plan } = req.body;
-  if (!userId || !['free', 'silver', 'gold'].includes(plan)) {
-    return res.status(400).json({ error: 'userId e plan (free|silver|gold) obbligatori' });
+  if (!Number.isInteger(userId) || userId <= 0 || !['free', 'silver', 'gold'].includes(plan)) {
+    return res.status(400).json({ error: 'userId (intero positivo) e plan (free|silver|gold) obbligatori' });
   }
   try {
     await pool.query('UPDATE users SET plan = $1 WHERE id = $2', [plan, userId]);
@@ -24,7 +24,10 @@ router.post('/reset-credits', authenticateAdmin, async (req, res) => {
   const { userId } = req.body; // optional — if omitted, resets all non-Gold
   try {
     let result;
-    if (userId) {
+    if (userId !== undefined && userId !== null) {
+      if (!Number.isInteger(userId) || userId <= 0) {
+        return res.status(400).json({ error: 'userId deve essere un intero positivo' });
+      }
       result = await pool.query(
         'UPDATE ai_credits SET credits_remaining = 3, reset_at = NOW() WHERE user_id = $1',
         [userId]
