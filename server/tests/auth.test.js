@@ -29,15 +29,32 @@ describe('authenticateJWT', async () => {
   it('returns 401 with no token', () => {
     const req = { headers: {} };
     const res = mockRes();
-    authenticateJWT(req, res, () => {});
+    let nextCalled = false;
+    authenticateJWT(req, res, () => { nextCalled = true; });
     assert.equal(res._status, 401);
+    assert.equal(res._json.error, 'Non autorizzato');
+    assert.ok(!nextCalled);
   });
 
   it('returns 401 with invalid token', () => {
     const req = { headers: { authorization: 'Bearer bad-token' } };
     const res = mockRes();
-    authenticateJWT(req, res, () => {});
+    let nextCalled = false;
+    authenticateJWT(req, res, () => { nextCalled = true; });
     assert.equal(res._status, 401);
+    assert.equal(res._json.error, 'Token non valido o scaduto');
+    assert.ok(!nextCalled);
+  });
+
+  it('returns 401 with expired token', () => {
+    const token = jwt.sign({ id: 1 }, 'test-secret', { expiresIn: '-1s' });
+    const req = { headers: { authorization: `Bearer ${token}` } };
+    const res = mockRes();
+    let nextCalled = false;
+    authenticateJWT(req, res, () => { nextCalled = true; });
+    assert.equal(res._status, 401);
+    assert.equal(res._json.error, 'Token non valido o scaduto');
+    assert.ok(!nextCalled);
   });
 });
 
@@ -55,7 +72,23 @@ describe('authenticateAdmin', async () => {
   it('returns 403 with wrong secret', () => {
     const req = { headers: { 'x-admin-secret': 'wrong' } };
     const res = mockRes();
-    authenticateAdmin(req, res, () => {});
+    let nextCalled = false;
+    authenticateAdmin(req, res, () => { nextCalled = true; });
     assert.equal(res._status, 403);
+    assert.equal(res._json.error, 'Accesso negato');
+    assert.ok(!nextCalled);
+  });
+
+  it('returns 403 when ADMIN_SECRET is undefined', () => {
+    const saved = process.env.ADMIN_SECRET;
+    delete process.env.ADMIN_SECRET;
+    const req = { headers: { 'x-admin-secret': '' } };
+    const res = mockRes();
+    let nextCalled = false;
+    authenticateAdmin(req, res, () => { nextCalled = true; });
+    assert.equal(res._status, 403);
+    assert.equal(res._json.error, 'Accesso negato');
+    assert.ok(!nextCalled);
+    process.env.ADMIN_SECRET = saved;
   });
 });
