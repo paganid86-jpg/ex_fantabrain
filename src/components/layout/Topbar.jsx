@@ -1,5 +1,6 @@
 import { useLocation } from 'react-router-dom';
 import useAppStore from '../../store/useAppStore';
+import useLeagueStore from '../../store/useLeagueStore';
 
 const pageTitles = {
   '/': 'Dashboard',
@@ -18,6 +19,8 @@ export default function Topbar({ onMenuClick }) {
   const location = useLocation();
   const user = useAppStore((s) => s.user);
   const giornataCorrente = useAppStore((s) => s.giornataCorrente);
+  const currentLeague = useLeagueStore((s) => s.currentLeague);
+  const leagueName = currentLeague?.name || 'Nessuna lega';
   const title = pageTitles[location.pathname] || 'FantaBrain AI';
 
   return (
@@ -55,7 +58,7 @@ export default function Topbar({ onMenuClick }) {
           fontSize: 12, color: 'var(--text-muted)',
           maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
         }}>
-          {user.league}
+          {leagueName}
         </div>
       </div>
     </header>
