@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import useAppStore from '../store/useAppStore';
 import useSerieAStore from '../stores/useSerieAStore';
+import useLeagueStore from '../stores/useLeagueStore';
 
 function MiniBarChart({ punti, max }) {
   return (
@@ -24,7 +25,29 @@ function MiniBarChart({ punti, max }) {
 }
 
 export default function Classifica() {
-  const classifica = useAppStore((s) => s.classifica);
+  const appClassifica = useAppStore((s) => s.classifica);
+
+  // Reactive selector — re-renders when leagues or currentLeagueId change
+  const currentLeague = useLeagueStore((s) =>
+    s.leagues.find((l) => l.id === s.currentLeagueId) || null
+  );
+
+  // Derive classifica from currentLeague (standings or participants), fall back to appStore
+  const classifica = currentLeague?.standings?.length > 0
+    ? currentLeague.standings
+    : currentLeague?.participants?.map((p, i) => ({
+        id: p.id ?? i,
+        nome: p.name || 'Squadra',
+        punti: 0,
+        vittorie: 0,
+        pareggi: 0,
+        sconfitte: 0,
+        puntimedia: 0,
+        ultimoTurno: 0,
+        isUser: p.isUser ?? false,
+        andamento: [],
+      })) ?? appClassifica;
+
   const [modal, setModal] = useState(null);
   const [confronto, setConfronto] = useState(null);
   const [vista, setVista] = useState('lega'); // 'lega' | 'seriea'
@@ -188,7 +211,7 @@ export default function Classifica() {
           <div className="empty-state-icon">🏆</div>
           <div className="empty-state-title">Classifica lega non disponibile</div>
           <div className="empty-state-desc">
-            La classifica verrà popolata quando inizieranno le giornate.<br />
+            La classifica si aggiornerà dopo la prima giornata.<br />
             Nel frattempo, esplora la <strong>classifica Serie A reale</strong> qui sopra!
           </div>
         </div>

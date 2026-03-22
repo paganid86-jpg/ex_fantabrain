@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAppStore from '../store/useAppStore';
 import useSerieAStore from '../stores/useSerieAStore';
+import useLeagueStore from '../stores/useLeagueStore';
 import RankItem from '../components/ui/RankItem';
 import AlertItem from '../components/ui/AlertItem';
 import { formatMatchDate, statusLabel } from '../services/footballDataMapper';
@@ -482,6 +483,11 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const rosa = useAppStore((s) => s.rosa);
 
+  // Reactive selector — re-renders when leagues or currentLeagueId change
+  const currentLeague = useLeagueStore((s) =>
+    s.leagues.find((l) => l.id === s.currentLeagueId) || null
+  );
+
   // Dati reali Serie A
   const serieAStandings    = useSerieAStore((s) => s.standings);
   const serieAMatchday     = useSerieAStore((s) => s.currentMatchday);
@@ -539,6 +545,42 @@ export default function Dashboard() {
 
   const mediaGiornate = userRow?.puntimedia;
   const variazionePos = userRow?.ultimoTurno;
+
+  // LeagueGate — show onboarding screen if no league is selected
+  if (!currentLeague) {
+    return (
+      <div style={{ minHeight: '100vh', background: 'var(--bg-deep)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 'var(--space-lg)', gap: 'var(--space-lg)' }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: '3rem', marginBottom: 'var(--space-sm)' }}>🏆</div>
+          <h2 style={{ color: 'var(--text-primary)', fontFamily: 'Syne, sans-serif', fontSize: '1.5rem', marginBottom: 'var(--space-sm)' }}>
+            Benvenuto su FantaBrain AI
+          </h2>
+          <p style={{ color: 'var(--text-secondary)', marginBottom: 'var(--space-lg)' }}>
+            Per iniziare, crea una nuova lega o unisciti a una esistente
+          </p>
+          <button
+            className="btn-primary"
+            onClick={() => navigate('/crea-lega')}
+            style={{ padding: 'var(--space-md) var(--space-lg)', fontSize: '1rem', boxShadow: 'var(--shadow-glow)' }}
+          >
+            🚀 Inizia ora
+          </button>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)', width: '100%', maxWidth: '380px' }}>
+          {[
+            { icon: '⚽', text: 'Crea la tua lega' },
+            { icon: '🔍', text: 'Aggiungi i tuoi giocatori' },
+            { icon: '📊', text: 'Configura la formazione' },
+          ].map((s, i) => (
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', padding: 'var(--space-sm) var(--space-md)', background: 'var(--bg-glass)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-glass)', backdropFilter: 'blur(var(--glass-blur))' }}>
+              <span style={{ fontSize: '1.25rem' }}>{s.icon}</span>
+              <span style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>{s.text}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   /* ── Layout principale ───────────────────────────────── */
   return (
