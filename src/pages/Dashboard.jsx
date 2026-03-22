@@ -192,7 +192,7 @@ export default function Dashboard() {
 
   // KPI values
   const myPosition = me ? `${me.position}° / ${standings.length}` : '—';
-  const myPositionSub = hasResults ? `${me?.totalPoints ?? 0} punti totali` : 'Nessuna giornata giocata';
+  const myPositionSub = me && hasResults ? `${me.totalPoints} punti totali` : 'Nessuna giornata giocata';
   const myMedia = me && hasResults ? me.avg.toFixed(1) : '—';
   const myLastScore = me && me.lastScore !== null ? `${me.lastScore}pt` : '—';
   const myLastScoreSub = hasResults
@@ -341,7 +341,7 @@ export default function Dashboard() {
                 nome={team.teamName}
                 punti={team.totalPoints}
                 isUser={team.isCurrentUser}
-                ultimoTurno={team.lastScore}
+                ultimoTurno={team.lastScore ?? undefined}
               />
             ))
           )}
