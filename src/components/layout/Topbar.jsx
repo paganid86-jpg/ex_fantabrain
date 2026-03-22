@@ -102,7 +102,7 @@ export default function Topbar({ onMenuClick }) {
                 height: '0.75rem',
                 background: 'var(--border-glass)',
                 borderRadius: 'var(--radius-sm)',
-                animation: 'pulse 1.5s ease-in-out infinite',
+                opacity: 0.5,
               }}
             />
           )}
