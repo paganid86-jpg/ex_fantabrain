@@ -14,6 +14,8 @@ import WarRoom from './pages/WarRoom';
 import Statistiche from './pages/Statistiche';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import LeagueCreation from './pages/LeagueCreation';
+import LeagueSettings from './pages/LeagueSettings';
 import useAppStore from './store/useAppStore';
 
 function RequireAuth({ children }) {
@@ -42,6 +44,8 @@ function AppLayout() {
             <Route path="scouting" element={<Scouting />} />
             <Route path="war-room" element={<WarRoom />} />
             <Route path="statistiche" element={<Statistiche />} />
+            <Route path="crea-lega" element={<LeagueCreation />} />
+            <Route path="impostazioni-lega" element={<LeagueSettings />} />
           </Routes>
         </div>
       </div>

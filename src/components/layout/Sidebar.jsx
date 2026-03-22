@@ -1,5 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import useAppStore from '../../store/useAppStore';
+import useLeagueStore from '../../stores/useLeagueStore';
 
 const navItems = [
   { path: '/',              label: 'Dashboard',     icon: '📊', group: null },
@@ -9,9 +10,10 @@ const navItems = [
   { path: '/schieramento', label: 'Schieramento',   icon: '🏟️', group: 'Squadra' },
   { path: '/mercato',      label: 'Mercato',        icon: '💰', group: 'Squadra' },
   { path: '/scouting',     label: 'Scouting',       icon: '🔍', group: 'Squadra' },
-  { path: '/classifica',   label: 'Classifica',     icon: '🏆', group: 'Lega' },
-  { path: '/calendario',   label: 'Calendario',     icon: '📅', group: 'Lega' },
-  { path: '/statistiche',  label: 'Statistiche',    icon: '📈', group: 'Lega' },
+  { path: '/classifica',        label: 'Classifica',        icon: '🏆', group: 'Lega' },
+  { path: '/calendario',        label: 'Calendario',        icon: '📅', group: 'Lega' },
+  { path: '/statistiche',       label: 'Statistiche',       icon: '📈', group: 'Lega' },
+  { path: '/impostazioni-lega', label: 'Impostazioni Lega', icon: '⚙️', group: 'Lega' },
 ];
 
 const groups = [null, 'AI', 'Squadra', 'Lega'];
@@ -19,6 +21,7 @@ const groups = [null, 'AI', 'Squadra', 'Lega'];
 export default function Sidebar({ mobileOpen, onClose }) {
   const user      = useAppStore((s) => s.user);
   const aiCrediti = useAppStore((s) => s.aiCrediti);
+  const hasLeague = useLeagueStore((s) => s.currentLeagueId != null);
 
   return (
     <>
@@ -134,6 +137,27 @@ export default function Sidebar({ mobileOpen, onClose }) {
             );
           })}
         </nav>
+
+        {/* ── Crea Lega CTA (solo se non ha ancora una lega) ── */}
+        {!hasLeague && (
+          <div style={{ padding: '0 var(--space-sm) var(--space-sm)' }}>
+            <NavLink
+              to="/crea-lega"
+              className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
+              onClick={onClose}
+              style={{
+                background: 'linear-gradient(135deg, rgba(0,212,255,0.15), rgba(6,182,212,0.08))',
+                border: '1px solid rgba(0,212,255,0.35)',
+                borderRadius: 'var(--radius-md)',
+                color: 'var(--accent-primary)',
+                fontWeight: 700,
+              }}
+            >
+              <span style={{ fontSize: 16, lineHeight: 1, flexShrink: 0 }}>⚽</span>
+              <span>Crea una Lega</span>
+            </NavLink>
+          </div>
+        )}
 
         {/* ── Footer crediti + utente ── */}
         <div style={{
