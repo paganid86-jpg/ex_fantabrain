@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { RUOLI_MANTRA, SQUADRE_SERIE_A } from '../../data/mockData';
 import useAppStore from '../../store/useAppStore';
+import PlayerSearchInput from './PlayerSearchInput';
 
 const DEFAULT = {
   nome: '',
@@ -140,6 +141,45 @@ export default function AddPlayerModal({ onClose, giocatoreEsistente }) {
             </span>
           </div>
         )}
+
+        {/* Cerca giocatore Serie A */}
+        <div style={{ marginBottom: 'var(--space-lg)' }}>
+          <label style={{
+            color: 'var(--text-secondary)',
+            fontSize: '0.75rem',
+            textTransform: 'uppercase',
+            letterSpacing: '0.08em',
+            marginBottom: 'var(--space-sm)',
+            display: 'block',
+          }}>
+            Cerca Giocatore Serie A
+          </label>
+          <PlayerSearchInput
+            onPlayerSelect={(player) => {
+              const positionMap = {
+                Goalkeeper: 'Por',
+                Defence: 'DC',
+                Midfield: 'M/C',
+                Offence: 'PC',
+              };
+              setForm((prev) => ({
+                ...prev,
+                nome: player.name.split(' ').slice(0, -1).join(' '),
+                cognome: player.name.split(' ').slice(-1)[0],
+                squadra: player.teamName,
+                ruoloMantra: positionMap[player.position] || prev.ruoloMantra,
+              }));
+            }}
+            placeholder="Cerca un giocatore Serie A..."
+          />
+          <p style={{
+            color: 'var(--text-muted)',
+            fontSize: '0.75rem',
+            marginTop: 'var(--space-sm)',
+          }}>
+            Seleziona un giocatore per pre-compilare i campi, poi regola il ruolo Mantra.
+          </p>
+        </div>
 
         {/* FORM */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 16px' }}>
