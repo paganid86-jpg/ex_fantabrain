@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-
 const CLASSIFICA_DEMO = [
   { id: 1, nome: 'FC Drago', punti: 487, ultimoTurno: 78, puntimedia: 81.2 },
   { id: 2, nome: 'La Mia Squadra', punti: 462, ultimoTurno: 74, puntimedia: 77.0, isUser: true },
@@ -21,79 +20,74 @@ const CALENDARIO_DEMO = Array.from({ length: 14 }, (_, i) => ({
 
 const useAppStore = create(
   persist(
-    (set, get) => ({
-      // Navigazione
+    (set) => ({
+      // ── Navigazione ────────────────────────────────────────
       currentPage: 'dashboard',
       setCurrentPage: (page) => set({ currentPage: page }),
 
-      // Utente
-      user: { name: 'Allenatore', plan: 'pro', league: 'La mia lega' },
+      // ── Utente (con auth) ──────────────────────────────────
+      user: {
+        id: null,
+        email: null,
+        name: 'Allenatore',
+        plan: 'free',
+        token: null,
+        league: 'La mia lega',
+      },
+      setUser: (userData) => set({ user: userData }),
+      updateUser: (updates) => set((state) => ({ user: { ...state.user, ...updates } })),
+      logout: () => set({
+        user: { id: null, email: null, name: 'Allenatore', plan: 'free', token: null, league: 'La mia lega' },
+        aiCrediti: 3,
+        resetAt: null,
+      }),
 
-      // Rosa
+      // ── Rosa ───────────────────────────────────────────────
       rosa: [],
       giornataCorrente: 15,
 
-      // Lega
-      classifica: CLASSIFICA_DEMO,
-      calendario: CALENDARIO_DEMO,
-
-      // Mercato
-      offerte: [],
-      trattative: [],
-
-      // Schieramento
-      modulo: '4-3-3',
-      titolariIds: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
-
-      // AI
-      aiCrediti: 12,
-      aiConversazioni: {},
-
-      // ── CRUD Rosa ──────────────────────────────────────────────
-
       addGiocatore: (giocatore) =>
-        set((state) => ({
-          rosa: [...state.rosa, { ...giocatore, id: Date.now() }],
-        })),
-
+        set((state) => ({ rosa: [...state.rosa, { ...giocatore, id: Date.now() }] })),
       updateGiocatore: (id, updates) =>
-        set((state) => ({
-          rosa: state.rosa.map((g) => (g.id === id ? { ...g, ...updates } : g)),
-        })),
-
+        set((state) => ({ rosa: state.rosa.map((g) => (g.id === id ? { ...g, ...updates } : g)) })),
       removeGiocatore: (id) =>
         set((state) => ({
           rosa: state.rosa.filter((g) => g.id !== id),
           titolariIds: state.titolariIds.filter((tid) => tid !== id),
         })),
-
       toggleInfortunato: (id) =>
-        set((state) => ({
-          rosa: state.rosa.map((g) =>
-            g.id === id ? { ...g, infortunato: !g.infortunato } : g
-          ),
-        })),
-
+        set((state) => ({ rosa: state.rosa.map((g) => g.id === id ? { ...g, infortunato: !g.infortunato } : g) })),
       toggleDiffidato: (id) =>
-        set((state) => ({
-          rosa: state.rosa.map((g) =>
-            g.id === id ? { ...g, diffidato: !g.diffidato } : g
-          ),
-        })),
+        set((state) => ({ rosa: state.rosa.map((g) => g.id === id ? { ...g, diffidato: !g.diffidato } : g) })),
 
-      // ── Schieramento ───────────────────────────────────────────
+      // ── Lega ───────────────────────────────────────────────
+      classifica: CLASSIFICA_DEMO,
+      calendario: CALENDARIO_DEMO,
+      setGiornataCorrente: (n) => set({ giornataCorrente: n }),
+      setClassifica: (classifica) => set({ classifica }),
+      setCalendario: (calendario) => set({ calendario }),
 
+      // ── Mercato ────────────────────────────────────────────
+      offerte: [],
+      trattative: [],
+      aggiornaOfferta: (id, nuovoStato) =>
+        set((state) => ({ offerte: state.offerte.map((o) => o.id === id ? { ...o, stato: nuovoStato } : o) })),
+      addOfferta: (offerta) => set((state) => ({ offerte: [...state.offerte, offerta] })),
+      addTrattativa: (trattativa) => set((state) => ({ trattative: [...state.trattative, trattativa] })),
+
+      // ── Schieramento ───────────────────────────────────────
+      modulo: '4-3-3',
+      titolariIds: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
       setModulo: (modulo) => set({ modulo }),
-
       setTitolariIds: (ids) => set({ titolariIds: ids }),
 
-      // ── AI ─────────────────────────────────────────────────────
+      // ── AI ─────────────────────────────────────────────────
+      aiCrediti: 3,
+      resetAt: null,
+      aiConversazioni: {},
 
-      decrementaCrediti: () =>
-        set((state) => ({
-          aiCrediti: Math.max(0, state.aiCrediti - 1),
-        })),
-
+      setAiCrediti: (n) => set({ aiCrediti: Math.max(0, n) }),
+      setResetAt: (isoString) => set({ resetAt: isoString }),
       aggiungiMessaggio: (pageId, msg) =>
         set((state) => ({
           aiConversazioni: {
@@ -101,55 +95,15 @@ const useAppStore = create(
             [pageId]: [...(state.aiConversazioni[pageId] || []), msg],
           },
         })),
-
       resetConversazione: (pageId) =>
         set((state) => ({
-          aiConversazioni: {
-            ...state.aiConversazioni,
-            [pageId]: [],
-          },
+          aiConversazioni: { ...state.aiConversazioni, [pageId]: [] },
         })),
-
-      // ── Mercato ────────────────────────────────────────────────
-
-      aggiornaOfferta: (id, nuovoStato) =>
-        set((state) => ({
-          offerte: state.offerte.map((o) =>
-            o.id === id ? { ...o, stato: nuovoStato } : o
-          ),
-        })),
-
-      addOfferta: (offerta) =>
-        set((state) => ({
-          offerte: [...state.offerte, offerta],
-        })),
-
-      addTrattativa: (trattativa) =>
-        set((state) => ({
-          trattative: [...state.trattative, trattativa],
-        })),
-
-      // ── Utente ─────────────────────────────────────────────────
-
-      updateUser: (updates) =>
-        set((state) => ({
-          user: { ...state.user, ...updates },
-        })),
-
-      setGiornataCorrente: (n) => set({ giornataCorrente: n }),
-
-      // ── Classifica ─────────────────────────────────────────────
-
-      setClassifica: (classifica) => set({ classifica }),
-
-      setCalendario: (calendario) => set({ calendario }),
     }),
     {
-      name: 'fantabrain-store-v3',
+      name: 'fantabrain-store-v4',
       version: 1,
-      migrate: (persistedState) => {
-        return { ...persistedState, rosa: [] };
-      },
+      migrate: (persistedState) => ({ ...persistedState, rosa: [] }),
     }
   )
 );
