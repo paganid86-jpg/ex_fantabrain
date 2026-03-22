@@ -1,5 +1,6 @@
 import { useLocation } from 'react-router-dom';
 import useAppStore from '../../store/useAppStore';
+import useSerieAStore from '../../stores/useSerieAStore';
 
 const pageTitles = {
   '/':             'Dashboard',
@@ -17,7 +18,7 @@ const pageTitles = {
 export default function Topbar({ onMenuClick }) {
   const location         = useLocation();
   const user             = useAppStore((s) => s.user);
-  const giornataCorrente = useAppStore((s) => s.giornataCorrente);
+  const currentMatchday  = useSerieAStore((s) => s.currentMatchday);
 
   const title = pageTitles[location.pathname] ?? 'FantaAI';
 
@@ -82,16 +83,29 @@ export default function Topbar({ onMenuClick }) {
           }}>
             GIORNATA
           </span>
-          <span style={{
-            fontFamily: 'var(--font-display)',
-            fontWeight: 800,
-            fontSize: 18,
-            lineHeight: 1,
-            color: 'var(--accent-primary)',
-            textShadow: '0 0 10px rgba(0, 212, 255, 0.40)',
-          }}>
-            {giornataCorrente}
-          </span>
+          {currentMatchday != null ? (
+            <span style={{
+              fontFamily: 'var(--font-display)',
+              fontWeight: 800,
+              fontSize: 18,
+              lineHeight: 1,
+              color: 'var(--accent-primary)',
+              textShadow: '0 0 10px rgba(0, 212, 255, 0.40)',
+            }}>
+              {currentMatchday}
+            </span>
+          ) : (
+            <span
+              style={{
+                display: 'inline-block',
+                width: '1.5rem',
+                height: '0.75rem',
+                background: 'var(--border-glass)',
+                borderRadius: 'var(--radius-sm)',
+                animation: 'pulse 1.5s ease-in-out infinite',
+              }}
+            />
+          )}
         </div>
 
         {/* Nome lega */}
