@@ -9,6 +9,8 @@ export default defineConfig(({ mode }) => {
     plugins: [react(), tailwindcss()],
     server: {
       proxy: {
+        '/auth': 'http://localhost:3000',
+        '/api': 'http://localhost:3000',
         // Proxy per football-data.org: risolve CORS in sviluppo locale.
         // Aggiunge l'header X-Auth-Token server-side (non esposto nel bundle).
         '/api/football': {
