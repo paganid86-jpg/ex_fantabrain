@@ -1,5 +1,3 @@
-import useAppStore from '../store/useAppStore';
-
 const MODEL = 'llama-3.3-70b-versatile';
 const API_URL = 'https://api.groq.com/openai/v1/chat/completions';
 
@@ -72,7 +70,6 @@ async function callApi({ systemPrompt, messages, maxTokens }) {
   }
 
   const data = await response.json();
-  useAppStore.getState().decrementaCrediti();
   return data.choices[0].message.content;
 }
 
@@ -80,8 +77,33 @@ export async function callClaude({ systemPrompt, userMessage, maxTokens = 500 })
   return callApi({ systemPrompt, messages: [{ role: 'user', content: userMessage }], maxTokens });
 }
 
+// chatClaude routes to backend /api/ai/chat (Anthropic SDK, credit-gated)
 export async function chatClaude({ messages, systemPrompt, maxTokens = 600 }) {
-  return callApi({ systemPrompt, messages, maxTokens });
+  const { default: useAppStore } = await import('../store/useAppStore.js');
+  const store = useAppStore.getState();
+  const { user, setAiCrediti, setResetAt } = store;
+
+  const response = await fetch('/api/ai/chat', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${user.token}`,
+    },
+    body: JSON.stringify({ messages, systemPrompt, maxTokens }),
+  });
+
+  if (response.status === 402) {
+    const data = await response.json();
+    setAiCrediti(0);
+    if (data.resetAt) setResetAt(data.resetAt);
+    throw new Error('NO_CREDITS');
+  }
+  if (response.status === 401) throw new Error('UNAUTHORIZED');
+  if (!response.ok) throw new Error('AI_ERROR');
+
+  const data = await response.json();
+  if (data.creditsRemaining != null) setAiCrediti(data.creditsRemaining);
+  return data.content;
 }
 
 export async function analizzaSchieramento(schieramento, rosa, giornata) {
