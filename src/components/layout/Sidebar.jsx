@@ -111,7 +111,23 @@ export default function Sidebar({ mobileOpen, onClose }) {
                     <span style={{ fontSize: 16, lineHeight: 1, flexShrink: 0 }}>
                       {item.icon}
                     </span>
-                    <span>{item.label}</span>
+                    <span style={{ display: 'flex', alignItems: 'center' }}>
+                      {item.label}
+                      {item.path === '/ai-analisi' && (
+                        <span style={{
+                          background: 'linear-gradient(135deg, #F59E0B, #D97706)',
+                          color: '#000',
+                          fontSize: '8px',
+                          fontWeight: '900',
+                          padding: '2px 5px',
+                          borderRadius: '4px',
+                          letterSpacing: '0.5px',
+                          marginLeft: '4px',
+                        }}>
+                          GOLD
+                        </span>
+                      )}
+                    </span>
                   </NavLink>
                 ))}
               </div>
