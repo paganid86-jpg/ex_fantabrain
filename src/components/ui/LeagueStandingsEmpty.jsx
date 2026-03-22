@@ -47,7 +47,7 @@ export default function LeagueStandingsEmpty({ league }) {
                 {p.isCurrentUser && <span style={{ fontSize: 10, marginLeft: 6, color: 'var(--text-muted)' }}>TU</span>}
               </span>
               <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
-                Iscritto il {new Date(p.joinedAt).toLocaleDateString('it-IT', { day: '2-digit', month: 'short' })}
+                Iscritto il {p.joinedAt ? new Date(p.joinedAt).toLocaleDateString('it-IT', { day: '2-digit', month: 'short' }) : '—'}
               </span>
             </div>
           ))}
