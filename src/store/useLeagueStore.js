@@ -16,12 +16,12 @@ const useLeagueStore = create(
           currentLeague: state.currentLeague
             ? {
                 ...state.currentLeague,
-                results: [...state.currentLeague.results, result],
+                results: [...(state.currentLeague.results ?? []), result],
               }
             : null,
         })),
     }),
-    { name: 'fantabrain-league' }
+    { name: 'fantabrain-league', version: 1 }
   )
 );
 
