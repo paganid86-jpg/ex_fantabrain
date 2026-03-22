@@ -1,4 +1,4 @@
-import { HashRouter, Routes, Route } from 'react-router-dom';
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useState } from 'react';
 import Sidebar from './components/layout/Sidebar';
 import Topbar from './components/layout/Topbar';
@@ -12,6 +12,14 @@ import Mercato from './pages/Mercato';
 import Scouting from './pages/Scouting';
 import WarRoom from './pages/WarRoom';
 import Statistiche from './pages/Statistiche';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import useAppStore from './store/useAppStore';
+
+function RequireAuth({ children }) {
+  const token = useAppStore((s) => s.user.token);
+  return token ? children : <Navigate to="/login" replace />;
+}
 
 function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -45,7 +53,9 @@ export default function App() {
   return (
     <HashRouter>
       <Routes>
-        <Route path="/*" element={<AppLayout />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/*" element={<RequireAuth><AppLayout /></RequireAuth>} />
       </Routes>
     </HashRouter>
   );
