@@ -710,7 +710,7 @@ export default function Dashboard() {
         </div>
 
         {/* AI Suggestions */}
-        <AISuggestionsPanel rosa={rosa} giornataCorrente={giornataCorrente} aiCrediti={aiCrediti} />
+        <AISuggestionsPanel rosa={rosa} giornataCorrente={serieAMatchday ?? giornataCorrente} aiCrediti={aiCrediti} />
       </div>
 
       {/* Bottom row: Classifica + Alert */}

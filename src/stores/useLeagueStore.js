@@ -117,6 +117,15 @@ const useLeagueStore = create(
           ),
         })),
 
+      removeParticipant: (leagueId, participantId) =>
+        set((state) => ({
+          leagues: state.leagues.map((l) =>
+            l.id === leagueId
+              ? { ...l, participants: l.participants.filter((p) => p.id !== participantId) }
+              : l
+          ),
+        })),
+
       removeLeague: (leagueId) =>
         set((state) => ({
           leagues: state.leagues.filter((l) => l.id !== leagueId),

@@ -36,7 +36,7 @@ export default function PlayerSearchInput({ onPlayerSelect, placeholder = 'Cerca
   // Fetch teams se non ancora caricati
   useEffect(() => {
     if (!teams || teams.length === 0) fetchTeams();
-  }, []);
+  }, [fetchTeams]);
 
   // Appiattisci tutti i giocatori da tutti i team
   const allPlayers = useMemo(() => {

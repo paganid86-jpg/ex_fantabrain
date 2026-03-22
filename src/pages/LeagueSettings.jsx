@@ -8,6 +8,7 @@ export default function LeagueSettings() {
     s.leagues.find((l) => l.id === s.currentLeagueId) || null
   );
   const updateLeagueSettings = useLeagueStore((s) => s.updateLeagueSettings);
+  const removeParticipant = useLeagueStore((s) => s.removeParticipant);
   const [copied, setCopied] = useState(null);
   const [activeSection, setActiveSection] = useState('regolamento');
 
@@ -183,7 +184,11 @@ export default function LeagueSettings() {
                     {p.joinedAt ? new Date(p.joinedAt).toLocaleDateString('it-IT') : '—'}
                   </span>
                   {isAdmin && !p.isAdmin && (
-                    <button className="btn-danger" style={{ padding: '4px 10px', fontSize: '0.75rem' }}>
+                    <button
+                      className="btn-danger"
+                      style={{ padding: '4px 10px', fontSize: '0.75rem' }}
+                      onClick={() => removeParticipant(league.id, p.id)}
+                    >
                       Rimuovi
                     </button>
                   )}

@@ -162,11 +162,24 @@ export default function AddPlayerModal({ onClose, giocatoreEsistente }) {
                 Midfield: 'M/C',
                 Offence: 'PC',
               };
+              // Normalizza il nome squadra API → valore SQUADRE_SERIE_A
+              const teamNameMap = {
+                'Atalanta BC': 'Atalanta', 'Bologna FC 1909': 'Bologna',
+                'Cagliari Calcio': 'Cagliari', 'Como 1907': 'Como',
+                'Empoli FC': 'Empoli', 'ACF Fiorentina': 'Fiorentina',
+                'Genoa CFC': 'Genoa', 'FC Internazionale Milano': 'Inter',
+                'Juventus FC': 'Juventus', 'SS Lazio': 'Lazio',
+                'US Lecce': 'Lecce', 'AC Milan': 'Milan',
+                'AC Monza': 'Monza', 'SSC Napoli': 'Napoli',
+                'Parma Calcio 1913': 'Parma', 'AS Roma': 'Roma',
+                'Torino FC': 'Torino', 'Udinese Calcio': 'Udinese',
+                'Venezia FC': 'Venezia', 'Hellas Verona FC': 'Verona',
+              };
               setForm((prev) => ({
                 ...prev,
                 nome: player.name.split(' ').slice(0, -1).join(' '),
                 cognome: player.name.split(' ').slice(-1)[0],
-                squadra: player.teamName,
+                squadra: teamNameMap[player.teamName] || player.teamName,
                 ruoloMantra: positionMap[player.position] || prev.ruoloMantra,
               }));
             }}
