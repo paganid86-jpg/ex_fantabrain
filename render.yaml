@@ -9,7 +9,7 @@ services:
         value: "20"
       - key: FOOTBALL_DATA_API_KEY
         sync: false
-      - key: VITE_GROQ_API_KEY
+      - key: GROQ_API_KEY
         sync: false
       - key: DATABASE_URL
         fromDatabase:

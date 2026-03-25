@@ -1,6 +1,3 @@
-const MODEL = 'llama-3.3-70b-versatile';
-const API_URL = 'https://api.groq.com/openai/v1/chat/completions';
-
 // serieAContext: { currentMatchday, standings, scorers, nextMatches } — opzionale
 function buildSystemPrompt(rosa, giornata, avversario, serieAContext = null) {
   const rosaJson = JSON.stringify(
@@ -41,36 +38,28 @@ Prossimo avversario: ${avversario || 'da definire'}${serieAStr}`;
 }
 
 async function callApi({ systemPrompt, messages, maxTokens }) {
-  const key = import.meta.env.VITE_GROQ_API_KEY;
-  if (!key) {
-    throw new Error('API key Groq non configurata. Imposta VITE_GROQ_API_KEY nel file .env');
-  }
+  const { default: useAppStore } = await import('../store/useAppStore.js');
+  const { user } = useAppStore.getState();
 
-  const groqMessages = [
-    { role: 'system', content: systemPrompt },
-    ...messages,
-  ];
+  // messages è sempre [{ role: 'user', content: '...' }] per callClaude
+  const userMessage = messages.find(m => m.role === 'user')?.content || '';
 
-  const response = await fetch(API_URL, {
+  const response = await fetch('/api/ai/groq', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${key}`,
+      'Authorization': `Bearer ${user?.token}`,
     },
-    body: JSON.stringify({
-      model: MODEL,
-      max_tokens: maxTokens,
-      messages: groqMessages,
-    }),
+    body: JSON.stringify({ systemPrompt, userMessage, maxTokens }),
   });
 
   if (!response.ok) {
     const err = await response.text();
-    throw new Error(`Groq API errore ${response.status}: ${err}`);
+    throw new Error(`AI errore ${response.status}: ${err}`);
   }
 
   const data = await response.json();
-  return data.choices[0].message.content;
+  return data.content;
 }
 
 export async function callClaude({ systemPrompt, userMessage, maxTokens = 500 }) {

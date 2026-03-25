@@ -6,6 +6,9 @@ import { authenticateJWT } from '../middleware/auth.js';
 const router = Router();
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
+const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
+const GROQ_MODEL = 'llama-3.3-70b-versatile';
+
 // POST /api/ai/chat
 router.post('/chat', authenticateJWT, async (req, res, next) => {
   const { messages, systemPrompt, maxTokens = 600 } = req.body;
@@ -63,6 +66,49 @@ router.post('/chat', authenticateJWT, async (req, res, next) => {
     }
 
     res.json({ content, creditsRemaining });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// POST /api/ai/groq — chiamate Groq server-side (schieramento, scouting, war room, ecc.)
+router.post('/groq', authenticateJWT, async (req, res, next) => {
+  const { systemPrompt, userMessage, maxTokens = 500 } = req.body;
+  if (!userMessage) {
+    return res.status(400).json({ error: 'userMessage obbligatorio' });
+  }
+
+  const groqKey = process.env.GROQ_API_KEY;
+  if (!groqKey) {
+    return res.status(500).json({ error: 'GROQ_API_KEY non configurata sul server' });
+  }
+
+  const safeMaxTokens = Math.min(Number(maxTokens) || 500, 1000);
+
+  try {
+    const response = await fetch(GROQ_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${groqKey}`,
+      },
+      body: JSON.stringify({
+        model: GROQ_MODEL,
+        max_tokens: safeMaxTokens,
+        messages: [
+          { role: 'system', content: systemPrompt || 'Sei FantaBrain AI, assistente per il Fantacalcio Mantra italiano. Parla in italiano.' },
+          { role: 'user', content: String(userMessage).slice(0, 4000) },
+        ],
+      }),
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      throw new Error(`Groq errore ${response.status}: ${errText}`);
+    }
+
+    const data = await response.json();
+    res.json({ content: data.choices[0].message.content });
   } catch (err) {
     next(err);
   }
