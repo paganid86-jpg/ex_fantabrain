@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
 // Routes
+import { errorHandler } from './server/middleware/errorHandler.js';
 import authRoutes from './server/routes/auth.js';
 import creditsRoutes from './server/routes/credits.js';
 import aiRoutes from './server/routes/ai.js';
@@ -75,6 +76,9 @@ app.use(express.static(join(__dirname, 'dist')));
 app.get('*', (_req, res) => {
   res.sendFile(join(__dirname, 'dist', 'index.html'));
 });
+
+// ── Centralized error handler ──────────────────────────────
+app.use(errorHandler);
 
 // ── Start ──────────────────────────────────────────────────
 app.listen(PORT, () => {

@@ -7,7 +7,7 @@ const router = Router();
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 // POST /api/ai/chat
-router.post('/chat', authenticateJWT, async (req, res) => {
+router.post('/chat', authenticateJWT, async (req, res, next) => {
   const { messages, systemPrompt, maxTokens = 600 } = req.body;
   const safeMaxTokens = Math.min(Number(maxTokens) || 600, 1000);
   if (!messages || !Array.isArray(messages) || messages.length === 0) {
@@ -36,12 +36,18 @@ router.post('/chat', authenticateJWT, async (req, res) => {
       }
     }
 
+    // Sanitize messages: solo ruoli validi, max 2000 char per messaggio, max 20 messaggi
+    const sanitized = messages
+      .filter(m => ['user', 'assistant'].includes(m.role))
+      .map(m => ({ role: m.role, content: String(m.content).slice(0, 2000) }))
+      .slice(0, 20);
+
     // Call Anthropic
     const response = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: safeMaxTokens,
       system: systemPrompt || 'Sei FantaBrain AI, assistente per il Fantacalcio Mantra italiano. Parla in italiano.',
-      messages: messages.map((m) => ({ role: m.role, content: m.content })),
+      messages: sanitized,
     });
 
     const content = response.content[0]?.text || '';
@@ -58,8 +64,7 @@ router.post('/chat', authenticateJWT, async (req, res) => {
 
     res.json({ content, creditsRemaining });
   } catch (err) {
-    console.error('[ai chat]', err);
-    res.status(500).json({ error: 'Errore server' });
+    next(err);
   }
 });
 

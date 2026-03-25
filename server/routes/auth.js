@@ -10,12 +10,12 @@ function signToken(user) {
   return jwt.sign(
     { id: user.id, email: user.email, plan: user.plan },
     process.env.JWT_SECRET,
-    { expiresIn: '30d' }
+    { expiresIn: '7d' }
   );
 }
 
 // POST /auth/register
-router.post('/register', async (req, res) => {
+router.post('/register', async (req, res, next) => {
   const { email, password, name } = req.body;
   if (!email || !password || !name) {
     return res.status(400).json({ error: 'email, password e name sono obbligatori' });
@@ -35,13 +35,12 @@ router.post('/register', async (req, res) => {
     res.status(201).json({ token: signToken(user), user });
   } catch (err) {
     if (err.code === '23505') return res.status(409).json({ error: 'Email già registrata' });
-    console.error('[register]', err);
-    res.status(500).json({ error: 'Errore server' });
+    next(err);
   }
 });
 
 // POST /auth/login
-router.post('/login', async (req, res) => {
+router.post('/login', async (req, res, next) => {
   const { email, password } = req.body;
   if (!email || !password) {
     return res.status(400).json({ error: 'email e password obbligatori' });
@@ -66,13 +65,12 @@ router.post('/login', async (req, res) => {
       credits: { remaining: credits.credits_remaining, resetAt: credits.reset_at },
     });
   } catch (err) {
-    console.error('[login]', err);
-    res.status(500).json({ error: 'Errore server' });
+    next(err);
   }
 });
 
 // GET /auth/me
-router.get('/me', authenticateJWT, async (req, res) => {
+router.get('/me', authenticateJWT, async (req, res, next) => {
   try {
     const { rows } = await pool.query(
       'SELECT id, email, name, plan FROM users WHERE id = $1',
@@ -88,8 +86,7 @@ router.get('/me', authenticateJWT, async (req, res) => {
       credits: { remaining: credits.credits_remaining, resetAt: credits.reset_at },
     });
   } catch (err) {
-    console.error('[me]', err);
-    res.status(500).json({ error: 'Errore server' });
+    next(err);
   }
 });
 
