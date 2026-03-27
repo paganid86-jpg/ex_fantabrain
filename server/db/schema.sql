@@ -14,6 +14,16 @@ CREATE TABLE IF NOT EXISTS ai_credits (
   reset_at TIMESTAMP DEFAULT NOW()
 );
 
+CREATE TABLE IF NOT EXISTS waitlist (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  lega VARCHAR(20) NOT NULL CHECK (lega IN ('classico','mantra','entrambi')),
+  my_referral_code VARCHAR(20) UNIQUE NOT NULL,
+  referred_by VARCHAR(20),
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
 CREATE TABLE IF NOT EXISTS ai_conversations (
   id SERIAL PRIMARY KEY,
   user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
