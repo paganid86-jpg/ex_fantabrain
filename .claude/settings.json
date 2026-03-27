@@ -1,0 +1,35 @@
+{
+  "project": "FantaBrain",
+  "language": "it",
+  "stack": ["Vite 5", "React 19", "Tailwind CSS v4", "Zustand 4.5", "React Router DOM v6", "Express"],
+  "ai": {
+    "model": "claude-sonnet-4-6",
+    "groq_model": "llama-3.3-70b-versatile",
+    "client": "src/lib/claudeApi.js"
+  },
+  "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(git status)",
+      "Bash(git log *)",
+      "Bash(git diff *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(git checkout *)",
+      "Bash(git branch *)",
+      "Read(**)",
+      "Write(src/**)",
+      "Write(server/**)",
+      "Write(public/**)",
+      "Write(.claude/**)",
+      "Write(docs/**)"
+    ],
+    "deny": [
+      "Bash(rm -rf *)",
+      "Bash(git push --force *)",
+      "Write(.env*)",
+      "Write(node_modules/**)"
+    ]
+  }
+}

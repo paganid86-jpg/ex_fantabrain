@@ -3,3 +3,5 @@ dist/
 .env
 .env.local
 .worktrees/
+CLAUDE.local.md
+.claude/settings.local.json
