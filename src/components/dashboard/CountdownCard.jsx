@@ -1,8 +1,9 @@
 // src/components/dashboard/CountdownCard.jsx
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import useSerieAStore from '../../stores/useSerieAStore';
 
 const FOLLOWED_TEAM_KEY = 'fantabrain-followed-team';
+const MATCH_WINDOW_MS = 24 * 60 * 60 * 1000;
 
 function getCountdown(dateStr) {
   const diff = new Date(dateStr) - Date.now();
@@ -23,6 +24,8 @@ export default function CountdownCard() {
   });
   const [showDropdown, setShowDropdown] = useState(false);
   const [countdown, setCountdown] = useState('');
+
+  const dropdownRef = useRef(null);
 
   // Team list from standings (sorted by Serie A position)
   const teamOptions = useMemo(
@@ -52,7 +55,7 @@ export default function CountdownCard() {
     if (!match) return 'hidden';
     if (['IN_PLAY', 'PAUSED'].includes(match.status)) return 'live';
     const msToKickoff = new Date(match.date) - Date.now();
-    if (msToKickoff > 0 && msToKickoff < 24 * 60 * 60 * 1000) return 'upcoming';
+    if (msToKickoff > 0 && msToKickoff < MATCH_WINDOW_MS) return 'upcoming';
     return 'hidden';
   }, [match]);
 
@@ -64,7 +67,17 @@ export default function CountdownCard() {
     return () => clearInterval(id);
   }, [cardState, match]);
 
-  if (cardState === 'hidden') return null;
+  // Click-outside-to-close for the dropdown
+  useEffect(() => {
+    if (!showDropdown) return;
+    function handleClickOutside(e) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setShowDropdown(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showDropdown]);
 
   function selectTeam(id) {
     setFollowedTeamId(id);
@@ -77,6 +90,8 @@ export default function CountdownCard() {
     localStorage.removeItem(FOLLOWED_TEAM_KEY);
     setShowDropdown(false);
   }
+
+  if (cardState === 'hidden') return null;
 
   const home = match.homeTeam.shortName || match.homeTeam.name;
   const away = match.awayTeam.shortName || match.awayTeam.name;
@@ -109,7 +124,7 @@ export default function CountdownCard() {
 
       {/* Team selector dropdown */}
       {showDropdown && (
-        <div style={{
+        <div ref={dropdownRef} style={{
           position: 'absolute', top: 44, right: 18,
           background: 'var(--bg-card)', border: '1px solid var(--border-glass)',
           borderRadius: 8, padding: '6px 0', zIndex: 50,
