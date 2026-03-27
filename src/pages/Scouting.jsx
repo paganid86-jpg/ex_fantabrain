@@ -196,6 +196,9 @@ export default function Scouting() {
   const [filtroRuolo,  setFiltroRuolo]  = useState('Tutti');
   const [filtroSquadra,setFiltroSquadra]= useState('Tutte');
   const [filtroFascia, setFiltroFascia] = useState('');
+  const [escludiInRosa, setEscludiInRosa] = useState(
+    () => sessionStorage.getItem('scouting-escludi-rosa') === 'true'
+  );
   const [report,       setReport]       = useState({});
   const [confronto,    setConfronto]    = useState([]);
 
@@ -228,6 +231,7 @@ export default function Scouting() {
   const rosaIds = useMemo(() => new Set(rosa.map((g) => g.id)), [rosa]);
 
   const filtrati = useMemo(() => allPlayers.filter((g) => {
+    if (escludiInRosa && rosaIds.has(g.id)) return false;
     if (filtroRuolo !== 'Tutti' && g.ruoloMantra !== filtroRuolo) return false;
     if (filtroSquadra !== 'Tutte' && g.squadra !== filtroSquadra) return false;
     if (filtroFascia === 'bassa' && g.quotazione >= 10) return false;
@@ -236,7 +240,7 @@ export default function Scouting() {
     if (filtroFascia === 'top'   && g.quotazione <= 30) return false;
     if (cerca && !`${g.nome} ${g.cognome}`.toLowerCase().includes(cerca.toLowerCase())) return false;
     return true;
-  }), [allPlayers, filtroRuolo, filtroSquadra, filtroFascia, cerca]);
+  }), [allPlayers, filtroRuolo, filtroSquadra, filtroFascia, cerca, escludiInRosa, rosaIds]);
 
   async function generaReport(g) {
     setReport((r) => ({ ...r, [g.id]: { loading: true, testo: null, error: null } }));
@@ -259,6 +263,14 @@ export default function Scouting() {
       if (prev.find((p) => p.id === g.id)) return prev.filter((p) => p.id !== g.id);
       if (prev.length >= 2) return [prev[1], g];
       return [...prev, g];
+    });
+  }
+
+  function toggleEscludiRosa() {
+    setEscludiInRosa((prev) => {
+      const next = !prev;
+      sessionStorage.setItem('scouting-escludi-rosa', String(next));
+      return next;
     });
   }
 
@@ -308,6 +320,35 @@ export default function Scouting() {
             {FASCE.map((f) => <option key={f.val} value={f.val}>{f.label}</option>)}
           </select>
           <div style={{ flex: 1 }} />
+          <button
+            onClick={toggleEscludiRosa}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 7,
+              background: escludiInRosa ? 'rgba(0,212,255,0.1)' : 'rgba(255,255,255,0.04)',
+              border: `1px solid ${escludiInRosa ? 'rgba(0,212,255,0.35)' : 'var(--border-glass)'}`,
+              borderRadius: 7, padding: '5px 12px',
+              cursor: 'pointer', whiteSpace: 'nowrap',
+            }}
+          >
+            <div style={{
+              width: 26, height: 15,
+              background: escludiInRosa ? 'var(--accent-primary)' : 'rgba(255,255,255,0.15)',
+              borderRadius: 8, position: 'relative', transition: 'background 0.2s', flexShrink: 0,
+            }}>
+              <div style={{
+                width: 11, height: 11, background: '#fff', borderRadius: '50%',
+                position: 'absolute', top: 2,
+                left: escludiInRosa ? 13 : 2, transition: 'left 0.2s',
+              }} />
+            </div>
+            <span style={{
+              fontSize: 12,
+              color: escludiInRosa ? 'var(--accent-primary)' : 'var(--text-muted)',
+              fontWeight: 600, transition: 'color 0.2s',
+            }}>
+              Escludi in rosa
+            </span>
+          </button>
           <span style={{ fontSize: 12, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
             {filtrati.length} giocatori · <span className={`badge ${aiCrediti < 3 ? 'badge-red' : 'badge-gold'}`}>{aiCrediti} crediti</span>
           </span>
