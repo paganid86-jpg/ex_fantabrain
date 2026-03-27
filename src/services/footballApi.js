@@ -1,34 +1,19 @@
 // src/services/footballApi.js
-// Client HTTP per football-data.org API (piano Free — Serie A 2025/2026)
-// In produzione le chiamate passano dal proxy Express (server.js) che aggiunge
-// l'header X-Auth-Token. In sviluppo usa il proxy Vite configurato in vite.config.js.
+// Client HTTP per API-Football (RapidAPI) — Serie A 2025/2026
+// Tutte le chiamate passano dal proxy Express (/api/football) che aggiunge
+// i header X-RapidAPI-Key e X-RapidAPI-Host server-side.
 
 const BASE_URL = '/api/football';
+const LEAGUE_ID = 135;  // Serie A
+const SEASON = 2025;    // stagione 2025/2026
 
-// Rate limiting: max 10 req/min (piano Free football-data.org)
-let requestCount = 0;
-let resetTime = Date.now() + 60000;
-
-async function rateLimitedFetch(path) {
-  const now = Date.now();
-  if (now > resetTime) {
-    requestCount = 0;
-    resetTime = now + 60000;
-  }
-  if (requestCount >= 9) {
-    const waitTime = resetTime - now;
-    await new Promise((resolve) => setTimeout(resolve, waitTime));
-    requestCount = 0;
-    resetTime = Date.now() + 60000;
-  }
-  requestCount++;
-
+async function apiFetch(path) {
   const response = await fetch(`${BASE_URL}${path}`);
 
   if (response.status === 429) {
-    // Rate limit superato — attendi 60s e riprova
+    // Quota giornaliera superata — aspetta 60s e riprova una volta
     await new Promise((resolve) => setTimeout(resolve, 60000));
-    return rateLimitedFetch(path);
+    return apiFetch(path);
   }
 
   if (!response.ok) {
@@ -41,26 +26,26 @@ async function rateLimitedFetch(path) {
 // === ENDPOINT ===
 
 export const getStandings = () =>
-  rateLimitedFetch('/competitions/SA/standings');
+  apiFetch(`/standings?league=${LEAGUE_ID}&season=${SEASON}`);
 
 export const getMatches = (params = {}) => {
-  const qs = new URLSearchParams(params).toString();
-  return rateLimitedFetch(`/competitions/SA/matches${qs ? `?${qs}` : ''}`);
+  const qs = new URLSearchParams({ league: LEAGUE_ID, season: SEASON, ...params }).toString();
+  return apiFetch(`/fixtures?${qs}`);
 };
 
 export const getMatchesByMatchday = (matchday) =>
-  rateLimitedFetch(`/competitions/SA/matches?matchday=${matchday}`);
+  apiFetch(`/fixtures?league=${LEAGUE_ID}&season=${SEASON}&round=Regular+Season+-+${matchday}`);
 
 export const getScorers = (limit = 20) =>
-  rateLimitedFetch(`/competitions/SA/scorers?limit=${limit}`);
+  apiFetch(`/players/topscorers?league=${LEAGUE_ID}&season=${SEASON}`);
 
 export const getTeams = () =>
-  rateLimitedFetch('/competitions/SA/teams');
+  apiFetch(`/teams?league=${LEAGUE_ID}&season=${SEASON}`);
 
-export const getTeamDetail = (teamId) =>
-  rateLimitedFetch(`/teams/${teamId}`);
+export const getTeamSquad = (teamId) =>
+  apiFetch(`/players/squads?team=${teamId}`);
 
 export const getTeamMatches = (teamId, params = {}) => {
-  const qs = new URLSearchParams({ competitions: 'SA', ...params }).toString();
-  return rateLimitedFetch(`/teams/${teamId}/matches?${qs}`);
+  const qs = new URLSearchParams({ league: LEAGUE_ID, season: SEASON, team: teamId, ...params }).toString();
+  return apiFetch(`/fixtures?${qs}`);
 };

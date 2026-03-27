@@ -66,12 +66,14 @@ const useSerieAStore = create((set, get) => ({
       errors:  { ...s.errors,  matches: null },
     }));
     try {
-      const raw  = await api.getMatches(params);
-      const data = mapper.mapMatches(raw);
+      const raw     = await api.getMatches(params);
+      const data    = mapper.mapMatches(raw);
+      const matchday = mapper.extractCurrentMatchday(data);
       set((s) => ({
-        matches:     data,
-        loading:     { ...s.loading,     matches: false      },
-        lastFetched: { ...s.lastFetched, matches: Date.now() },
+        matches:         data,
+        currentMatchday: matchday ?? s.currentMatchday,
+        loading:         { ...s.loading,     matches: false      },
+        lastFetched:     { ...s.lastFetched, matches: Date.now() },
       }));
     } catch (error) {
       set((s) => ({
@@ -114,8 +116,27 @@ const useSerieAStore = create((set, get) => ({
       errors:  { ...s.errors,  teams: null },
     }));
     try {
-      const raw  = await api.getTeams();
-      const data = mapper.mapTeamsWithSquad(raw);
+      const teamsRaw = await api.getTeams();
+      const teamsList = teamsRaw.response || [];
+
+      // Fetch squads in parallelo per tutte le squadre (batch da 5 per non sovraccaricare)
+      const squadsMap = {};
+      const batchSize = 5;
+      for (let i = 0; i < teamsList.length; i += batchSize) {
+        const batch = teamsList.slice(i, i + batchSize);
+        await Promise.all(
+          batch.map(async (item) => {
+            try {
+              const squadRaw = await api.getTeamSquad(item.team.id);
+              squadsMap[item.team.id] = squadRaw.response?.[0]?.players || [];
+            } catch {
+              squadsMap[item.team.id] = [];
+            }
+          })
+        );
+      }
+
+      const data = mapper.mapTeamsWithSquad(teamsRaw, squadsMap);
       set((s) => ({
         teams:       data,
         loading:     { ...s.loading,     teams: false      },

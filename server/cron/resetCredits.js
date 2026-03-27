@@ -1,16 +1,19 @@
 import cron from 'node-cron';
 import pool from '../db/pool.js';
 
+// Statuses considered "in play" on API-Football
+const LIVE_STATUSES = new Set(['1H', '2H', 'HT', 'ET', 'BT', 'P', 'INT']);
+
 export function startCreditResetCron() {
   // Every Monday at 20:45 Europe/Rome
   cron.schedule('45 20 * * 1', async () => {
     console.log('[cron] Checking if matchday is complete before resetting credits...');
     try {
-      // Check for active matches in Serie A
-      const apiKey = process.env.FOOTBALL_DATA_API_KEY;
+      const apiKey = process.env.RAPIDAPI_KEY;
+      const apiHost = 'api-football-v1.p.rapidapi.com';
 
       if (!apiKey) {
-        console.warn('[cron] FOOTBALL_DATA_API_KEY not set — skipping credit reset to avoid unsafe state');
+        console.warn('[cron] RAPIDAPI_KEY not set — skipping credit reset to avoid unsafe state');
         return;
       }
 
@@ -18,20 +21,30 @@ export function startCreditResetCron() {
       const timeout = setTimeout(() => controller.abort(), 10_000);
       let response;
       try {
+        // Fetch live Serie A fixtures (league 135, season 2025)
         response = await fetch(
-          'https://api.football-data.org/v4/competitions/SA/matches?status=IN_PLAY,PAUSED',
-          { headers: { 'X-Auth-Token': apiKey }, signal: controller.signal }
+          `https://${apiHost}/v3/fixtures?league=135&season=2025&live=all`,
+          {
+            headers: {
+              'X-RapidAPI-Key': apiKey,
+              'X-RapidAPI-Host': apiHost,
+            },
+            signal: controller.signal,
+          }
         );
       } finally {
         clearTimeout(timeout);
       }
 
       if (!response.ok) {
-        throw new Error(`Football API returned ${response.status}`);
+        throw new Error(`API-Football returned ${response.status}`);
       }
 
       const data = await response.json();
-      const activeMatches = data.matches ?? [];
+      const fixtures = data.response ?? [];
+      const activeMatches = fixtures.filter((f) =>
+        LIVE_STATUSES.has(f.fixture?.status?.short)
+      );
 
       if (activeMatches.length > 0) {
         console.log(`[cron] Reset skipped: ${activeMatches.length} matches still active`);

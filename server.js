@@ -11,6 +11,7 @@ import authRoutes from './server/routes/auth.js';
 import creditsRoutes from './server/routes/credits.js';
 import aiRoutes from './server/routes/ai.js';
 import adminRoutes from './server/routes/admin.js';
+import waitlistRoutes from './server/routes/waitlist.js';
 import { startCreditResetCron } from './server/cron/resetCredits.js';
 import { authenticateJWT } from './server/middleware/auth.js';
 
@@ -18,13 +19,11 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const FOOTBALL_API_KEY =
-  process.env.FOOTBALL_DATA_API_KEY ||
-  process.env.VITE_FOOTBALL_DATA_API_KEY ||
-  '';
+const RAPIDAPI_KEY = process.env.RAPIDAPI_KEY || '';
+const RAPIDAPI_HOST = 'api-football-v1.p.rapidapi.com';
 
-if (!FOOTBALL_API_KEY) {
-  console.warn('[WARN] FOOTBALL_DATA_API_KEY non configurata.');
+if (!RAPIDAPI_KEY) {
+  console.warn('[WARN] RAPIDAPI_KEY non configurata — dati calcio non disponibili.');
 }
 
 // ── Middleware ─────────────────────────────────────────────
@@ -46,12 +45,17 @@ app.use('/auth/register', authLimiter);
 
 app.use(express.json());
 
-// ── Proxy football-data.org ────────────────────────────────
+// ── Proxy API-Football (RapidAPI) ──────────────────────────
 app.use('/api/football', authenticateJWT, async (req, res) => {
   const qs = new URLSearchParams(req.query).toString();
-  const url = `https://api.football-data.org/v4${req.path}${qs ? '?' + qs : ''}`;
+  const url = `https://${RAPIDAPI_HOST}/v3${req.path}${qs ? '?' + qs : ''}`;
   try {
-    const upstream = await fetch(url, { headers: { 'X-Auth-Token': FOOTBALL_API_KEY } });
+    const upstream = await fetch(url, {
+      headers: {
+        'X-RapidAPI-Key': RAPIDAPI_KEY,
+        'X-RapidAPI-Host': RAPIDAPI_HOST,
+      },
+    });
     const body = await upstream.text();
     res.status(upstream.status).set('Content-Type', 'application/json').send(body);
   } catch (err) {
@@ -71,8 +75,23 @@ app.use('/api/ai', aiRoutes);
 // ── Admin routes ───────────────────────────────────────────
 app.use('/api/admin', adminRoutes);
 
+// ── Waitlist routes ────────────────────────────────────────
+app.use('/api/waitlist', waitlistRoutes);
+
 // ── Static files + SPA fallback (ALWAYS LAST) ─────────────
+app.use(express.static(join(__dirname, 'public')));
 app.use(express.static(join(__dirname, 'dist')));
+app.get('/waiting-list', (_req, res) => {
+  res.setHeader('Content-Security-Policy',
+    "default-src 'self'; " +
+    "script-src 'self'; " +
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
+    "font-src https://fonts.gstatic.com; " +
+    "img-src 'self' data:; " +
+    "connect-src 'self';"
+  );
+  res.sendFile(join(__dirname, 'public', 'waiting-list.html'));
+});
 app.get('*', (_req, res) => {
   res.sendFile(join(__dirname, 'dist', 'index.html'));
 });
