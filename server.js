@@ -19,11 +19,13 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const RAPIDAPI_KEY = process.env.RAPIDAPI_KEY || '';
-const RAPIDAPI_HOST = 'api-football-v1.p.rapidapi.com';
+const FOOTBALL_API_KEY =
+  process.env.FOOTBALL_DATA_API_KEY ||
+  process.env.VITE_FOOTBALL_DATA_API_KEY ||
+  '';
 
-if (!RAPIDAPI_KEY) {
-  console.warn('[WARN] RAPIDAPI_KEY non configurata — dati calcio non disponibili.');
+if (!FOOTBALL_API_KEY) {
+  console.warn('[WARN] FOOTBALL_DATA_API_KEY non configurata.');
 }
 
 // ── Middleware ─────────────────────────────────────────────
@@ -45,17 +47,12 @@ app.use('/auth/register', authLimiter);
 
 app.use(express.json());
 
-// ── Proxy API-Football (RapidAPI) ──────────────────────────
+// ── Proxy football-data.org ────────────────────────────────
 app.use('/api/football', authenticateJWT, async (req, res) => {
   const qs = new URLSearchParams(req.query).toString();
-  const url = `https://${RAPIDAPI_HOST}/v3${req.path}${qs ? '?' + qs : ''}`;
+  const url = `https://api.football-data.org/v4${req.path}${qs ? '?' + qs : ''}`;
   try {
-    const upstream = await fetch(url, {
-      headers: {
-        'X-RapidAPI-Key': RAPIDAPI_KEY,
-        'X-RapidAPI-Host': RAPIDAPI_HOST,
-      },
-    });
+    const upstream = await fetch(url, { headers: { 'X-Auth-Token': FOOTBALL_API_KEY } });
     const body = await upstream.text();
     res.status(upstream.status).set('Content-Type', 'application/json').send(body);
   } catch (err) {
