@@ -321,6 +321,8 @@ export default function Scouting() {
           </select>
           <div style={{ flex: 1 }} />
           <button
+            type="button"
+            aria-pressed={escludiInRosa}
             onClick={toggleEscludiRosa}
             style={{
               display: 'flex', alignItems: 'center', gap: 7,
