@@ -6,6 +6,7 @@ import useLeagueStore from '../stores/useLeagueStore';
 import RankItem from '../components/ui/RankItem';
 import AlertItem from '../components/ui/AlertItem';
 import { formatMatchDate, statusLabel } from '../services/footballDataMapper';
+import CountdownCard from '../components/dashboard/CountdownCard';
 
 /* ── Sub-componenti ──────────────────────────────────────── */
 
@@ -617,6 +618,9 @@ export default function Dashboard() {
           icon="🤕"
         />
       </div>
+
+      {/* Countdown prossima partita */}
+      <CountdownCard />
 
       {/* Middle row: Pitch + AI */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 16, alignItems: 'stretch' }}>

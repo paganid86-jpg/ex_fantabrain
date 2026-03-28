@@ -12,6 +12,7 @@ import creditsRoutes from './server/routes/credits.js';
 import aiRoutes from './server/routes/ai.js';
 import adminRoutes from './server/routes/admin.js';
 import waitlistRoutes from './server/routes/waitlist.js';
+import warsharesRoutes from './server/routes/warsharesRoutes.js';
 import { startCreditResetCron } from './server/cron/resetCredits.js';
 import { authenticateJWT } from './server/middleware/auth.js';
 
@@ -54,6 +55,15 @@ const waitlistLimiter = rateLimit({
 });
 app.use('/api/waitlist', waitlistLimiter);
 
+const warshareLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 60,
+  message: { error: 'Troppi tentativi, riprova tra 15 minuti' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use('/api/ai/warroom-share', warshareLimiter);
+
 app.use(express.json());
 
 // ── Proxy football-data.org ────────────────────────────────
@@ -74,6 +84,9 @@ app.use('/auth', authRoutes);
 
 // ── Credits routes ─────────────────────────────────────────
 app.use('/api/credits', creditsRoutes);
+
+// ── War Room share routes ───────────────────────────────────
+app.use('/api/ai/warroom-share', warsharesRoutes);
 
 // ── AI route ──────────────────────────────────────────────
 app.use('/api/ai', aiRoutes);

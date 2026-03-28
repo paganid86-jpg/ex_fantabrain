@@ -143,4 +143,20 @@ export async function analizzaGiornata(titolari, partite, giornata) {
   return callClaude({ systemPrompt, userMessage, maxTokens: 400 });
 }
 
+export async function warRoomShare(token, analysisText, matchContext) {
+  const res = await fetch('/api/ai/warroom-share', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ analysisText, matchContext }),
+  });
+  if (!res.ok) {
+    const data = await res.json();
+    throw new Error(data.error || 'Errore creazione link');
+  }
+  return res.json(); // returns { id, url, expiresAt }
+}
+
 export { buildSystemPrompt };
