@@ -14,6 +14,7 @@ import WarRoom from './pages/WarRoom';
 import Statistiche from './pages/Statistiche';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import WarroomShare from './pages/WarroomShare';
 import LeagueCreation from './pages/LeagueCreation';
 import LeagueSettings from './pages/LeagueSettings';
 import useAppStore from './store/useAppStore';
@@ -59,6 +60,7 @@ export default function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/warroom/:id" element={<WarroomShare />} />
         <Route path="/*" element={<RequireAuth><AppLayout /></RequireAuth>} />
       </Routes>
     </HashRouter>
