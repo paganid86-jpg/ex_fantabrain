@@ -13,6 +13,13 @@ router.post('/', authenticateJWT, async (req, res, next) => {
     return res.status(400).json({ error: 'analysisText obbligatorio' });
   }
 
+  // Validate matchContext size if provided
+  if (matchContext !== undefined && matchContext !== null) {
+    if (typeof matchContext !== 'object' || JSON.stringify(matchContext).length > 50000) {
+      return res.status(400).json({ error: 'matchContext non valido o troppo grande' });
+    }
+  }
+
   try {
     const result = await pool.query(
       `INSERT INTO warroom_shares (analysis_text, match_context)

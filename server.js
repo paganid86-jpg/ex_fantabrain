@@ -55,6 +55,15 @@ const waitlistLimiter = rateLimit({
 });
 app.use('/api/waitlist', waitlistLimiter);
 
+const warshareLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 60,
+  message: { error: 'Troppi tentativi, riprova tra 15 minuti' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use('/api/ai/warroom-share', warshareLimiter);
+
 app.use(express.json());
 
 // ── Proxy football-data.org ────────────────────────────────
