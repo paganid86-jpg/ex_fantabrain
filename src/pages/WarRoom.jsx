@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import useAppStore from '../store/useAppStore';
 import { warRoomAnalisi } from '../lib/claudeApi';
+import ShareButton from '../components/warroom/ShareButton';
 
 const LOADING_STEPS = [
   'Analizzando avversario...',
@@ -244,6 +245,12 @@ export default function WarRoom() {
               </div>
             ))}
           </div>
+
+          {/* Condividi analisi */}
+          <ShareButton
+            analysisText={[risultato.analisiAvversario, risultato.vantaggi, risultato.pianoTattico].join('\n\n---\n\n')}
+            matchContext={{ avversario: nomeAvversario, giornata: giornataCorrente }}
+          />
         </div>
       )}
 
