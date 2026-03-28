@@ -3,6 +3,8 @@
 // Le chiamate passano dal proxy Express (/api/football) che aggiunge X-Auth-Token.
 // In sviluppo Vite proxy /api → localhost:3000, che poi chiama football-data.org.
 
+import useAppStore from '../store/useAppStore';
+
 const BASE_URL = '/api/football';
 
 // Rate limiting: max 10 req/min (piano Free football-data.org)
@@ -23,7 +25,10 @@ async function rateLimitedFetch(path) {
   }
   requestCount++;
 
-  const response = await fetch(`${BASE_URL}${path}`);
+  const token = useAppStore.getState().user?.token;
+  const response = await fetch(`${BASE_URL}${path}`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
 
   if (response.status === 429) {
     await new Promise((resolve) => setTimeout(resolve, 60000));
