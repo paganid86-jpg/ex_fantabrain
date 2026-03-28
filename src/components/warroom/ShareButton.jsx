@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import useAppStore from '../../store/useAppStore';
+import { warRoomShare } from '../../lib/claudeApi';
 
 export default function ShareButton({ analysisText, matchContext }) {
   const token = useAppStore((s) => s.user.token);
@@ -14,18 +15,10 @@ export default function ShareButton({ analysisText, matchContext }) {
     setStato('loading');
     setErrMsg('');
     try {
-      const res = await fetch('/api/ai/warroom-share', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ analysisText, matchContext }),
-      });
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || 'Errore creazione link');
-      }
-      const data = await res.json();
+      const data = await warRoomShare(token, analysisText, matchContext);
       setShareUrl(data.url);
-      setExpiresAt(new Date(data.expiresAt).toLocaleDateString('it-IT'));
+      const d = new Date(data.expiresAt);
+      setExpiresAt(!isNaN(d) ? d.toLocaleDateString('it-IT') : '');
       setStato('done');
     } catch (err) {
       setErrMsg(err.message);
@@ -86,7 +79,7 @@ export default function ShareButton({ analysisText, matchContext }) {
         }}>
           LINK CONDIVISIBILE
         </span>
-        <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>Scade il {expiresAt}</span>
+        {expiresAt && <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>Scade il {expiresAt}</span>}
       </div>
       <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 10 }}>
         <input
