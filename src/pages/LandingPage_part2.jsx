@@ -325,6 +325,8 @@ export function FAQSection() {
 export function WaitlistForm({ position = 'hero' }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [modalita, setModalita] = useState('mantra');
+  const [codiceAmico, setCodiceAmico] = useState('');
   const [gdpr, setGdpr] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
@@ -334,7 +336,7 @@ export function WaitlistForm({ position = 'hero' }) {
 
   function validate() {
     if (!email.trim()) return 'Inserisci la tua email.';
-    if (!EMAIL_REGEX.test(email.trim())) return 'Inserisci un\'email valida.';
+    if (!EMAIL_REGEX.test(email.trim())) return "Inserisci un'email valida.";
     if (!gdpr) return 'Devi accettare la Privacy Policy per continuare.';
     return null;
   }
@@ -352,12 +354,13 @@ export function WaitlistForm({ position = 'hero' }) {
     setLoading(true);
 
     try {
+      // TODO: sostituire con endpoint reale (Brevo/Mailchimp)
       await new Promise((resolve) => setTimeout(resolve, 800));
 
-      // Analytics tracking
       window.gtag?.('event', 'form_submit', {
         event_category: 'Form',
         event_label: position,
+        modalita,
       });
       window.fbq?.('track', 'Lead');
       window.ttq?.track?.('SubmitForm');
@@ -408,6 +411,37 @@ export function WaitlistForm({ position = 'hero' }) {
         />
       </div>
 
+      <div className="waitlist-form__modalita">
+        <span className="waitlist-form__modalita-label">Modalità</span>
+        <div className="waitlist-form__modalita-pills">
+          <button
+            type="button"
+            className={`waitlist-form__pill${modalita === 'mantra' ? ' waitlist-form__pill--active' : ''}`}
+            onClick={() => setModalita('mantra')}
+            disabled={loading}
+          >
+            Mantra
+          </button>
+          <button
+            type="button"
+            className={`waitlist-form__pill${modalita === 'classica' ? ' waitlist-form__pill--active' : ''}`}
+            onClick={() => setModalita('classica')}
+            disabled={loading}
+          >
+            Classica
+          </button>
+        </div>
+      </div>
+
+      <input
+        className="waitlist-form__input"
+        type="text"
+        placeholder="Codice amico (opzionale)"
+        value={codiceAmico}
+        onChange={(e) => setCodiceAmico(e.target.value)}
+        disabled={loading}
+      />
+
       <label className="waitlist-form__gdpr">
         <input
           type="checkbox"
@@ -436,7 +470,7 @@ export function WaitlistForm({ position = 'hero' }) {
         disabled={loading}
         style={{ minHeight: '52px' }}
       >
-        {loading ? 'Iscrizione in corso…' : 'Mettiti in lista d\'attesa →'}
+        {loading ? 'Iscrizione in corso…' : "Mettiti in lista d'attesa →"}
       </button>
     </form>
   );
