@@ -1,18 +1,22 @@
 // src/components/ui/SpiralGate.jsx
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 export function SpiralGate({ onEnter }) {
   const [buttonVisible, setButtonVisible] = useState(false)
   const [exiting, setExiting] = useState(false)
+  const exitTimerRef = useRef(null)
 
   useEffect(() => {
     const timer = setTimeout(() => setButtonVisible(true), 2000)
-    return () => clearTimeout(timer)
+    return () => {
+      clearTimeout(timer)
+      if (exitTimerRef.current) clearTimeout(exitTimerRef.current)
+    }
   }, [])
 
   function handleEnter() {
     setExiting(true)
-    setTimeout(() => onEnter(), 800)
+    exitTimerRef.current = setTimeout(() => onEnter(), 800)
   }
 
   return (

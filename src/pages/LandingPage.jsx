@@ -28,8 +28,9 @@ import { SpiralAnimation } from '../components/ui/SpiralAnimation';
 import { SpiralGate } from '../components/ui/SpiralGate';
 
 /* ─── Scroll-reveal hook ───────────────────────────── */
-function useScrollReveal() {
+function useScrollReveal(active) {
   useEffect(() => {
+    if (!active) return;
     const elements = document.querySelectorAll('.landing .reveal');
     if (!elements.length) return;
 
@@ -47,7 +48,7 @@ function useScrollReveal() {
 
     elements.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
-  }, []);
+  }, [active]);
 }
 
 /* ─── Scroll-depth tracker ─────────────────────────── */
@@ -149,10 +150,10 @@ function WaitlistSection() {
 
 /* ─── Main LandingPage component ───────────────────── */
 export default function LandingPage() {
-  useScrollReveal();
   useScrollDepth();
 
   const [hasEntered, setHasEntered] = useState(false);
+  useScrollReveal(hasEntered);
   const spiralFaded = useSpiralFade(hasEntered);
 
   const spiralClass = [

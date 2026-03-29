@@ -280,10 +280,10 @@ class Star {
 export function SpiralAnimation() {
   const canvasRef = useRef(null)
   const animationRef = useRef(null)
-  const [dimensions, setDimensions] = useState({
+  const [dimensions, setDimensions] = useState(() => ({
     width: window.innerWidth,
     height: window.innerHeight,
-  })
+  }))
 
   useEffect(() => {
     const handleResize = () => {
