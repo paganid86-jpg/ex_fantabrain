@@ -1354,3 +1354,145 @@
     max-width: 1280px;
   }
 }
+
+/* ─── Spiral Canvas ─────────────────────────────── */
+.spiral-canvas-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.spiral-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* ─── Spiral Background Layer ───────────────────── */
+.spiral-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  opacity: 1;
+  transition: opacity 1s ease;
+  pointer-events: none;
+}
+
+.spiral-bg--active {
+  opacity: 0.12;
+}
+
+.spiral-bg--faded {
+  opacity: 0;
+}
+
+/* ─── Spiral Gate Overlay ────────────────────────── */
+.spiral-gate {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.8s ease;
+}
+
+.spiral-gate--exiting {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.spiral-gate__btn {
+  color: white;
+  font-family: 'Syne', sans-serif;
+  font-size: 1.5rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-weight: 200;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 1s ease, transform 1s ease, letter-spacing 0.7s ease;
+}
+
+.spiral-gate__btn--visible {
+  opacity: 1;
+  transform: translateY(0);
+  animation: gatePulse 2.5s ease-in-out infinite;
+}
+
+.spiral-gate__btn:hover {
+  letter-spacing: 0.32em;
+}
+
+@keyframes gatePulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+
+/* ─── Landing Content (post-enter) ──────────────── */
+.landing-content {
+  position: relative;
+  z-index: 10;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease 0.2s, transform 0.6s ease 0.2s;
+}
+
+.landing-content--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ─── WaitlistForm — Modalità Pills ─────────────── */
+.waitlist-form__modalita {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 4px 0 8px;
+}
+
+.waitlist-form__modalita-label {
+  font-size: 14px;
+  color: var(--text-secondary, #94A3B8);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.waitlist-form__modalita-pills {
+  display: flex;
+  gap: 8px;
+}
+
+.waitlist-form__pill {
+  padding: 7px 20px;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: transparent;
+  color: var(--text-secondary, #94A3B8);
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+
+.waitlist-form__pill:hover:not(:disabled) {
+  border-color: rgba(255, 255, 255, 0.4);
+  color: var(--text-primary, #F1F5F9);
+}
+
+.waitlist-form__pill--active {
+  background: var(--accent-primary, #00d4ff);
+  border-color: var(--accent-primary, #00d4ff);
+  color: #050A14;
+  font-weight: 600;
+}
+
+.waitlist-form__pill:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

@@ -12,7 +12,7 @@
  *   Mailchimp / Brevo / ActiveCampaign API endpoint
  */
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import './LandingPage.css';
 
 import { LandingNav, HeroSection, ProblemSection, DemoSection } from './LandingPage_part1';
@@ -24,10 +24,13 @@ import {
   SecondCTASection,
   LandingFooter,
 } from './LandingPage_part2';
+import { SpiralAnimation } from '../components/ui/SpiralAnimation';
+import { SpiralGate } from '../components/ui/SpiralGate';
 
 /* ─── Scroll-reveal hook ───────────────────────────── */
-function useScrollReveal() {
+function useScrollReveal(active) {
   useEffect(() => {
+    if (!active) return;
     const elements = document.querySelectorAll('.landing .reveal');
     if (!elements.length) return;
 
@@ -45,7 +48,7 @@ function useScrollReveal() {
 
     elements.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
-  }, []);
+  }, [active]);
 }
 
 /* ─── Scroll-depth tracker ─────────────────────────── */
@@ -75,6 +78,28 @@ function useScrollDepth() {
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
+}
+
+/* ─── Spiral fade on scroll ────────────────────────── */
+function useSpiralFade(hasEntered) {
+  const [faded, setFaded] = useState(false);
+
+  useEffect(() => {
+    if (!hasEntered) return;
+
+    function onScroll() {
+      const scrolled = window.scrollY;
+      const total = document.documentElement.scrollHeight - window.innerHeight;
+      if (total <= 0) return;
+      const pct = (scrolled / total) * 100;
+      setFaded(pct >= 60);
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [hasEntered]);
+
+  return faded;
 }
 
 /* ─── Waitlist Section wrapper (with form) ─────────── */
@@ -125,69 +150,66 @@ function WaitlistSection() {
 
 /* ─── Main LandingPage component ───────────────────── */
 export default function LandingPage() {
-  useScrollReveal();
   useScrollDepth();
+
+  const [hasEntered, setHasEntered] = useState(false);
+  useScrollReveal(hasEntered);
+  const spiralFaded = useSpiralFade(hasEntered);
+
+  const spiralClass = [
+    'spiral-bg',
+    hasEntered ? 'spiral-bg--active' : '',
+    spiralFaded ? 'spiral-bg--faded' : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   return (
     <div className="landing">
-      {/* ── Tracking scripts placeholder ── */}
-      {/*
-        GA4: Add to index.html <head>:
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-        <script>
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', 'G-XXXXXXXXXX');
-        </script>
+      {/* ── Spiral — sempre montata, CSS gestisce visibilità ── */}
+      <div className={spiralClass}>
+        <SpiralAnimation />
+      </div>
 
-        Meta Pixel: Add to index.html <head>:
-        <script>
-          !function(f,b,e,v,n,t,s){...}(window,document,'script',
-          'https://connect.facebook.net/en_US/fbevents.js');
-          fbq('init', 'XXXXXXXXXX');
-          fbq('track', 'PageView');
-        </script>
+      {/* ── Gate overlay — solo il bottone "Entra →" ── */}
+      {!hasEntered && (
+        <SpiralGate onEnter={() => setHasEntered(true)} />
+      )}
 
-        TikTok Pixel: Add to index.html <head>:
-        <script>
-          !function(w,d,t){...}
-          ttq.load('XXXXXXXXXX');
-          ttq.page();
-        </script>
-      */}
+      {/* ── Contenuto landing — emerge dopo il click ── */}
+      <div className={`landing-content${hasEntered ? ' landing-content--visible' : ''}`}>
+        {/* 1 — Sticky nav */}
+        <LandingNav />
 
-      {/* 1 — Sticky nav */}
-      <LandingNav />
+        <main>
+          {/* 2 — Hero */}
+          <HeroSection />
 
-      <main>
-        {/* 2 — Hero */}
-        <HeroSection />
+          {/* 3 — Problem */}
+          <ProblemSection />
 
-        {/* 3 — Problem */}
-        <ProblemSection />
+          {/* 4 — Demo / Coach AI Mockup */}
+          <DemoSection />
 
-        {/* 4 — Demo / Coach AI Mockup */}
-        <DemoSection />
+          {/* 5 — Pricing */}
+          <PricingSection />
 
-        {/* 5 — Pricing */}
-        <PricingSection />
+          {/* 6 — Social Proof */}
+          <SocialProofSection />
 
-        {/* 6 — Social Proof */}
-        <SocialProofSection />
+          {/* 7 — FAQ */}
+          <FAQSection />
 
-        {/* 7 — FAQ */}
-        <FAQSection />
+          {/* 8 — Waitlist form (hero anchor #waitlist) */}
+          <WaitlistSection />
 
-        {/* 8 — Waitlist form (hero anchor #waitlist) */}
-        <WaitlistSection />
+          {/* 9 — Second CTA */}
+          <SecondCTASection />
+        </main>
 
-        {/* 9 — Second CTA */}
-        <SecondCTASection />
-      </main>
-
-      {/* 10 — Footer */}
-      <LandingFooter />
+        {/* 10 — Footer */}
+        <LandingFooter />
+      </div>
     </div>
   );
 }
