@@ -12,6 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
 
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -810,9 +811,81 @@
       *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
       .reveal, .features-grid .feat-card, .steps-row .step { opacity: 1; transform: none; }
     }
+
+    /* ── SPIRAL GATE ─────────────────────────────────── */
+    #spiral-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      opacity: 1;
+      transition: opacity 1.2s ease;
+      pointer-events: none;
+      display: block;
+    }
+    #spiral-canvas.dimmed { opacity: 0.1; }
+    #spiral-canvas.faded  { opacity: 0; }
+
+    #spiral-gate {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.8s ease;
+    }
+    #spiral-gate.exiting {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    #spiral-enter-btn {
+      color: #fff;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.5rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      font-weight: 200;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 1s ease, transform 1s ease, letter-spacing 0.7s ease;
+    }
+    #spiral-enter-btn.visible {
+      opacity: 1;
+      transform: translateY(0);
+      animation: gateButtonPulse 2.5s ease-in-out infinite;
+    }
+    #spiral-enter-btn:hover { letter-spacing: 0.32em; }
+
+    @keyframes gateButtonPulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    #page-content {
+      position: relative;
+      z-index: 10;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.7s ease 0.2s, transform 0.7s ease 0.2s;
+    }
+    #page-content.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
   </style>
 </head>
 <body>
+
+<!-- SPIRAL GATE -->
+<canvas id="spiral-canvas"></canvas>
+<div id="spiral-gate">
+  <button id="spiral-enter-btn" type="button" aria-label="Entra nella waiting list di FantaBrain">Entra →</button>
+</div>
+<div id="page-content">
 
 <!-- NAV -->
 <nav class="nav">
@@ -1056,6 +1129,8 @@
   </div>
 </footer>
 
+</div><!-- /page-content -->
+
 <!-- SUCCESS OVERLAY -->
 <div id="success-overlay">
   <div class="success-card">
@@ -1080,6 +1155,244 @@
   </div>
 </div>
 
+<script>
+(function () {
+  // ── Vector classes ──────────────────────────────────
+  function Vector2D(x, y) { this.x = x; this.y = y; }
+  Vector2D.random = function (min, max) { return min + Math.random() * (max - min); };
+
+  function Vector3D(x, y, z) { this.x = x; this.y = y; this.z = z; }
+
+  // ── Star ────────────────────────────────────────────
+  function Star(cameraZ, cameraTravelDistance) {
+    this.angle = Math.random() * Math.PI * 2;
+    this.distance = 30 * Math.random() + 15;
+    this.rotationDirection = Math.random() > 0.5 ? 1 : -1;
+    this.expansionRate = 1.2 + Math.random() * 0.8;
+    this.finalScale = 0.7 + Math.random() * 0.6;
+    this.dx = this.distance * Math.cos(this.angle);
+    this.dy = this.distance * Math.sin(this.angle);
+    this.spiralLocation = (1 - Math.pow(1 - Math.random(), 3.0)) / 1.3;
+    this.z = Vector2D.random(0.5 * cameraZ, cameraTravelDistance + cameraZ);
+    var lerp = function (s, e, t) { return s * (1 - t) + e * t; };
+    this.z = lerp(this.z, cameraTravelDistance / 2, 0.3 * this.spiralLocation);
+    this.strokeWeightFactor = Math.pow(Math.random(), 2.0);
+  }
+
+  Star.prototype.render = function (p, ctrl) {
+    var spiralPos = ctrl.spiralPath(this.spiralLocation);
+    var q = p - this.spiralLocation;
+    if (q <= 0) return;
+
+    var dp = ctrl.constrain(4 * q, 0, 1);
+    var lin = dp, ela = ctrl.easeOutElastic(dp), pow = dp * dp;
+    var easing;
+    if (dp < 0.3)      easing = ctrl.lerp(lin, pow, dp / 0.3);
+    else if (dp < 0.7) easing = ctrl.lerp(pow, ela, (dp - 0.3) / 0.4);
+    else               easing = ela;
+
+    var sx, sy;
+    if (dp < 0.3) {
+      sx = ctrl.lerp(spiralPos.x, spiralPos.x + this.dx * 0.3, easing / 0.3);
+      sy = ctrl.lerp(spiralPos.y, spiralPos.y + this.dy * 0.3, easing / 0.3);
+    } else if (dp < 0.7) {
+      var mp = (dp - 0.3) / 0.4;
+      var cs = Math.sin(mp * Math.PI) * this.rotationDirection * 1.5;
+      var bx = spiralPos.x + this.dx * 0.3, by = spiralPos.y + this.dy * 0.3;
+      var tx = spiralPos.x + this.dx * 0.7, ty = spiralPos.y + this.dy * 0.7;
+      sx = ctrl.lerp(bx, tx, mp) + (-this.dy * 0.4 * cs) * mp;
+      sy = ctrl.lerp(by, ty, mp) + (this.dx * 0.4 * cs) * mp;
+    } else {
+      var fp = (dp - 0.7) / 0.3;
+      var bx2 = spiralPos.x + this.dx * 0.7, by2 = spiralPos.y + this.dy * 0.7;
+      var td = this.distance * this.expansionRate * 1.5;
+      var sa = this.angle + 1.2 * this.rotationDirection * fp * Math.PI;
+      sx = ctrl.lerp(bx2, spiralPos.x + td * Math.cos(sa), fp);
+      sy = ctrl.lerp(by2, spiralPos.y + td * Math.sin(sa), fp);
+    }
+
+    var vx = (this.z - ctrl.cameraZ) * sx / ctrl.viewZoom;
+    var vy = (this.z - ctrl.cameraZ) * sy / ctrl.viewZoom;
+    var sm;
+    if (dp < 0.6) sm = 1.0 + dp * 0.2;
+    else { var tt = (dp - 0.6) / 0.4; sm = 1.2 * (1 - tt) + this.finalScale * tt; }
+
+    ctrl.showProjectedDot(new Vector3D(vx, vy, this.z), 8.5 * this.strokeWeightFactor * sm);
+  };
+
+  // ── AnimationController ─────────────────────────────
+  function AnimationController(canvas, ctx, size) {
+    this.canvas = canvas;
+    this.ctx = ctx;
+    this.size = size;
+    this.time = 0;
+    this.stars = [];
+    this.changeEventTime = 0.32;
+    this.cameraZ = -400;
+    this.cameraTravelDistance = 3400;
+    this.startDotYOffset = 28;
+    this.viewZoom = 100;
+    this.numberOfStars = 5000;
+    this.trailLength = 80;
+
+    // Deterministic stars
+    var origRand = Math.random;
+    var seed = 1234;
+    Math.random = function () { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; };
+    this._createStars();
+    Math.random = origRand;
+    // Random stars
+    this._createStars();
+
+    this.timeline = gsap.timeline({ repeat: -1 });
+    var self = this;
+    this.timeline.to(this, { time: 1, duration: 15, repeat: -1, ease: 'none', onUpdate: function () { self.render(); } });
+  }
+
+  AnimationController.prototype._createStars = function () {
+    for (var i = 0; i < this.numberOfStars; i++) {
+      this.stars.push(new Star(this.cameraZ, this.cameraTravelDistance));
+    }
+  };
+
+  AnimationController.prototype.ease = function (p, g) {
+    return p < 0.5 ? 0.5 * Math.pow(2 * p, g) : 1 - 0.5 * Math.pow(2 * (1 - p), g);
+  };
+  AnimationController.prototype.easeOutElastic = function (x) {
+    var c4 = (2 * Math.PI) / 4.5;
+    if (x <= 0) return 0; if (x >= 1) return 1;
+    return Math.pow(2, -8 * x) * Math.sin((x * 8 - 0.75) * c4) + 1;
+  };
+  AnimationController.prototype.map = function (v, s1, e1, s2, e2) { return s2 + (e2 - s2) * ((v - s1) / (e1 - s1)); };
+  AnimationController.prototype.constrain = function (v, min, max) { return Math.min(Math.max(v, min), max); };
+  AnimationController.prototype.lerp = function (s, e, t) { return s * (1 - t) + e * t; };
+
+  AnimationController.prototype.spiralPath = function (p) {
+    p = this.constrain(1.2 * p, 0, 1);
+    p = this.ease(p, 1.8);
+    var turns = 6, theta = 2 * Math.PI * turns * Math.sqrt(p), r = 170 * Math.sqrt(p);
+    return new Vector2D(r * Math.cos(theta), r * Math.sin(theta) + this.startDotYOffset);
+  };
+
+  AnimationController.prototype.showProjectedDot = function (position, sizeFactor) {
+    var t2 = this.constrain(this.map(this.time, this.changeEventTime, 1, 0, 1), 0, 1);
+    var newCamZ = this.cameraZ + this.ease(Math.pow(t2, 1.2), 1.8) * this.cameraTravelDistance;
+    if (position.z > newCamZ) {
+      var d = position.z - newCamZ;
+      var x = this.viewZoom * position.x / d;
+      var y = this.viewZoom * position.y / d;
+      var sw = 400 * sizeFactor / d;
+      this.ctx.lineWidth = sw;
+      this.ctx.beginPath();
+      this.ctx.arc(x, y, 0.5, 0, Math.PI * 2);
+      this.ctx.fill();
+    }
+  };
+
+  AnimationController.prototype.render = function () {
+    var ctx = this.ctx;
+    ctx.fillStyle = 'black';
+    ctx.fillRect(0, 0, this.size, this.size);
+    ctx.save();
+    ctx.translate(this.size / 2, this.size / 2);
+    var t1 = this.constrain(this.map(this.time, 0, this.changeEventTime + 0.25, 0, 1), 0, 1);
+    var t2 = this.constrain(this.map(this.time, this.changeEventTime, 1, 0, 1), 0, 1);
+    ctx.rotate(-Math.PI * this.ease(t2, 2.7));
+    // Trail
+    for (var i = 0; i < this.trailLength; i++) {
+      var f = this.map(i, 0, this.trailLength, 1.1, 0.1);
+      var sw = (1.3 * (1 - t1) + 3.0 * Math.sin(Math.PI * t1)) * f;
+      ctx.fillStyle = 'white'; ctx.lineWidth = sw;
+      var pt = this.spiralPath(t1 - 0.00015 * i);
+      var off = new Vector2D(pt.x + 5, pt.y + 5);
+      // Simple rotate for trail dot
+      var mx = (pt.x + off.x) / 2, my = (pt.y + off.y) / 2;
+      var dx = pt.x - mx, dy = pt.y - my;
+      var ang = Math.atan2(dy, dx);
+      var o = (i % 2 === 0) ? -1 : 1;
+      var rr = Math.sqrt(dx * dx + dy * dy);
+      var pp = Math.sin(this.time * Math.PI * 2) * 0.5 + 0.5;
+      var bounce = Math.sin(pp * Math.PI) * 0.05 * (1 - pp);
+      var rx = mx + rr * (1 + bounce) * Math.cos(ang + o * Math.PI * this.easeOutElastic(pp));
+      var ry = my + rr * (1 + bounce) * Math.sin(ang + o * Math.PI * this.easeOutElastic(pp));
+      ctx.beginPath(); ctx.arc(rx, ry, sw / 2, 0, Math.PI * 2); ctx.fill();
+    }
+    // Stars
+    ctx.fillStyle = 'white';
+    for (var s = 0; s < this.stars.length; s++) { this.stars[s].render(t1, this); }
+    // Start dot
+    if (this.time > this.changeEventTime) {
+      var dy2 = this.cameraZ * this.startDotYOffset / this.viewZoom;
+      this.showProjectedDot(new Vector3D(0, dy2, this.cameraTravelDistance), 2.5);
+    }
+    ctx.restore();
+  };
+
+  AnimationController.prototype.destroy = function () { this.timeline.kill(); };
+
+  // ── Init ────────────────────────────────────────────
+  var controller = null;
+
+  function initCanvas() {
+    var canvas = document.getElementById('spiral-canvas');
+    var ctx = canvas.getContext('2d');
+    var dpr = window.devicePixelRatio || 1;
+    var w = window.innerWidth, h = window.innerHeight;
+    var size = Math.max(w, h);
+    canvas.width = size * dpr;
+    canvas.height = size * dpr;
+    canvas.style.width = w + 'px';
+    canvas.style.height = h + 'px';
+    ctx.scale(dpr, dpr);
+    if (controller) controller.destroy();
+    controller = new AnimationController(canvas, ctx, size);
+  }
+
+  // ── Gate interaction ────────────────────────────────
+  function initGate() {
+    var gate = document.getElementById('spiral-gate');
+    var btn = document.getElementById('spiral-enter-btn');
+    var canvas = document.getElementById('spiral-canvas');
+    var content = document.getElementById('page-content');
+
+    // Show button after 2s
+    setTimeout(function () { btn.classList.add('visible'); }, 2000);
+
+    // Scroll handler: dim canvas at 60%+ scroll
+    function onScroll() {
+      var scrolled = window.scrollY;
+      var total = document.documentElement.scrollHeight - window.innerHeight;
+      if (total <= 0) return;
+      var pct = (scrolled / total) * 100;
+      if (pct >= 60) canvas.classList.add('faded');
+      else canvas.classList.remove('faded');
+    }
+
+    btn.addEventListener('click', function () {
+      gate.classList.add('exiting');
+      setTimeout(function () {
+        gate.style.display = 'none';
+        canvas.classList.add('dimmed');
+        content.classList.add('visible');
+        window.addEventListener('scroll', onScroll, { passive: true });
+      }, 800);
+    });
+  }
+
+  // ── Resize handler ──────────────────────────────────
+  var resizeTimer;
+  window.addEventListener('resize', function () {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(initCanvas, 200);
+  });
+
+  // ── Boot ────────────────────────────────────────────
+  window.addEventListener('DOMContentLoaded', function () {
+    initCanvas();
+    initGate();
+  });
+})();
+</script>
 <script src="/waiting-list.js"></script>
 
 </body>

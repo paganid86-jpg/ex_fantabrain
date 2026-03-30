@@ -110,7 +110,7 @@ app.use(express.static(join(__dirname, 'dist')));
 app.get('/waiting-list', (_req, res) => {
   res.setHeader('Content-Security-Policy',
     "default-src 'self'; " +
-    "script-src 'self'; " +
+    "script-src 'self' https://cdnjs.cloudflare.com 'unsafe-inline'; " +
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
     "font-src https://fonts.gstatic.com; " +
     "img-src 'self' data:; " +
