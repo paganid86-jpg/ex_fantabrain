@@ -15,6 +15,18 @@ import waitlistRoutes from './server/routes/waitlist.js';
 import warsharesRoutes from './server/routes/warsharesRoutes.js';
 import { startCreditResetCron } from './server/cron/resetCredits.js';
 import { authenticateJWT } from './server/middleware/auth.js';
+import { readFileSync } from 'fs';
+import pool from './server/db/pool.js';
+
+async function initDb() {
+  try {
+    const schema = readFileSync(join(__dirname, 'server/db/schema.sql'), 'utf8');
+    await pool.query(schema);
+    console.log('[DB] Schema applicato.');
+  } catch (err) {
+    console.error('[DB] Errore schema:', err.message);
+  }
+}
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -126,7 +138,9 @@ app.get('*', (_req, res) => {
 app.use(errorHandler);
 
 // ── Start ──────────────────────────────────────────────────
-app.listen(PORT, () => {
-  console.log(`[FantaBrain] Server on port ${PORT}`);
-  startCreditResetCron();
+initDb().then(() => {
+  app.listen(PORT, () => {
+    console.log(`[FantaBrain] Server on port ${PORT}`);
+    startCreditResetCron();
+  });
 });
