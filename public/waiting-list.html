@@ -1388,7 +1388,7 @@
 
   // ── Boot ────────────────────────────────────────────
   window.addEventListener('DOMContentLoaded', function () {
-    initCanvas();
+    try { initCanvas(); } catch (e) { console.warn('[Spiral] initCanvas error:', e); }
     initGate();
   });
 })();
