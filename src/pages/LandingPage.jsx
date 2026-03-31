@@ -107,40 +107,9 @@ function WaitlistSection() {
   return (
     <section className="section" id="waitlist" aria-label="Iscrizione lista d'attesa">
       <div className="container">
-        <div
-          style={{
-            background: 'rgba(34, 197, 94, 0.05)',
-            border: '1px solid rgba(34, 197, 94, 0.20)',
-            borderRadius: 20,
-            padding: '48px 32px',
-            maxWidth: 560,
-            margin: '0 auto',
-            textAlign: 'center',
-          }}
-        >
-          <h2
-            style={{
-              fontFamily: "'Syne', sans-serif",
-              fontSize: 32,
-              fontWeight: 800,
-              textTransform: 'uppercase',
-              letterSpacing: '0.04em',
-              color: 'var(--text-primary)',
-              marginBottom: 8,
-            }}
-          >
-            Accedi in anteprima
-          </h2>
-          <p
-            style={{
-              fontSize: 16,
-              color: 'var(--text-secondary)',
-              marginBottom: 28,
-              lineHeight: 1.6,
-            }}
-          >
-            Iscriviti alla lista d'attesa — gratis, nessuna carta richiesta.
-          </p>
+        <div className="waitlist-section-panel">
+          <h2>Accedi in anteprima</h2>
+          <p>Iscriviti alla lista d&apos;attesa — gratis, nessuna carta richiesta.</p>
           <WaitlistForm position="hero" />
         </div>
       </div>
