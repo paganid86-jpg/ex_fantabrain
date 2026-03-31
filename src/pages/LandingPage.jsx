@@ -15,10 +15,10 @@
 import { useEffect, useState } from 'react';
 import './LandingPage.css';
 
-import { LandingNav, HeroSection, ProblemSection, DemoSection } from './LandingPage_part1';
+import { LandingNav, HeroSection, FeatureSection, HowItWorksSection } from './LandingPage_part1';
 import {
   PricingSection,
-  SocialProofSection,
+  StatsSection,
   FAQSection,
   WaitlistForm,
   SecondCTASection,
@@ -80,73 +80,19 @@ function useScrollDepth() {
   }, []);
 }
 
-/* ─── Spiral fade on scroll ────────────────────────── */
+/* ─── Spiral fade — 3s timer after enter ───────────── */
 function useSpiralFade(hasEntered) {
   const [faded, setFaded] = useState(false);
 
   useEffect(() => {
     if (!hasEntered) return;
-
-    function onScroll() {
-      const scrolled = window.scrollY;
-      const total = document.documentElement.scrollHeight - window.innerHeight;
-      if (total <= 0) return;
-      const pct = (scrolled / total) * 100;
-      setFaded(pct >= 60);
-    }
-
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+    const timer = setTimeout(() => setFaded(true), 3000);
+    return () => clearTimeout(timer);
   }, [hasEntered]);
 
   return faded;
 }
 
-/* ─── Waitlist Section wrapper (with form) ─────────── */
-function WaitlistSection() {
-  return (
-    <section className="section" id="waitlist" aria-label="Iscrizione lista d'attesa">
-      <div className="container">
-        <div
-          style={{
-            background: 'rgba(34, 197, 94, 0.05)',
-            border: '1px solid rgba(34, 197, 94, 0.20)',
-            borderRadius: 20,
-            padding: '48px 32px',
-            maxWidth: 560,
-            margin: '0 auto',
-            textAlign: 'center',
-          }}
-        >
-          <h2
-            style={{
-              fontFamily: "'Syne', sans-serif",
-              fontSize: 32,
-              fontWeight: 800,
-              textTransform: 'uppercase',
-              letterSpacing: '0.04em',
-              color: 'var(--text-primary)',
-              marginBottom: 8,
-            }}
-          >
-            Accedi in anteprima
-          </h2>
-          <p
-            style={{
-              fontSize: 16,
-              color: 'var(--text-secondary)',
-              marginBottom: 28,
-              lineHeight: 1.6,
-            }}
-          >
-            Iscriviti alla lista d'attesa — gratis, nessuna carta richiesta.
-          </p>
-          <WaitlistForm position="hero" />
-        </div>
-      </div>
-    </section>
-  );
-}
 
 /* ─── Main LandingPage component ───────────────────── */
 export default function LandingPage() {
@@ -185,25 +131,22 @@ export default function LandingPage() {
           {/* 2 — Hero */}
           <HeroSection />
 
-          {/* 3 — Problem */}
-          <ProblemSection />
+          {/* 3 — Feature / Problem */}
+          <FeatureSection />
 
-          {/* 4 — Demo / Coach AI Mockup */}
-          <DemoSection />
+          {/* 4 — How It Works */}
+          <HowItWorksSection />
 
           {/* 5 — Pricing */}
           <PricingSection />
 
           {/* 6 — Social Proof */}
-          <SocialProofSection />
+          <StatsSection />
 
           {/* 7 — FAQ */}
           <FAQSection />
 
-          {/* 8 — Waitlist form (hero anchor #waitlist) */}
-          <WaitlistSection />
-
-          {/* 9 — Second CTA */}
+          {/* 8 — Second CTA */}
           <SecondCTASection />
         </main>
 

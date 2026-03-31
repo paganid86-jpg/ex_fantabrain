@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 /* ─────────────────────────────────────────────
    1. PricingSection
@@ -49,7 +49,9 @@ export function PricingSection() {
   return (
     <section className="pricing-section section reveal" id="prezzi">
       <div className="container">
-        <h2 className="section-title">Scegli il tuo piano</h2>
+        <div className="section-header">
+          <h2 className="section-title">Scegli il tuo piano</h2>
+        </div>
 
         <div className="pricing-toggle-wrapper">
           <button
@@ -170,62 +172,27 @@ export function PricingSection() {
 }
 
 /* ─────────────────────────────────────────────
-   2. SocialProofSection
+   2. StatsSection (was: SocialProofSection)
 ───────────────────────────────────────────── */
-export function SocialProofSection() {
-  const testimonials = [
-    {
-      quote:
-        'Il Coach mi ha fatto schierare Lookman invece di Leao — ha fatto 12 punti. Ho vinto la giornata.',
-      author: 'Marco R.',
-      location: 'Milano',
-      stars: 5,
-    },
-    {
-      quote:
-        'Finalmente smetto di perdere ore sui pronostici. Il Coach decide meglio di me.',
-      author: 'Andrea F.',
-      location: 'Roma',
-      stars: 5,
-    },
-    {
-      quote: 'Ho vinto la lega di ufficio per la prima volta in 5 anni.',
-      author: 'Giulia T.',
-      location: 'Torino',
-      stars: 5,
-    },
+export function StatsSection() {
+  const stats = [
+    { value: '#1', label: 'App fantacalcio con Coach AI in Italia' },
+    { value: '1.200+', label: "Fantallenatori in lista d'attesa" },
+    { value: '4.9★', label: 'Valutazione dai beta tester' },
+    { value: '18%', label: 'Miglioramento medio punteggio' },
   ];
 
   return (
-    <section className="social-proof-section section reveal" id="recensioni">
+    <section className="landing-stats section reveal" id="recensioni">
       <div className="container">
-        <h2 className="section-title">Cosa dicono i fantallenatori</h2>
-
-        <div className="social-proof-stats">
-          <div className="social-proof-counter">
-            <span className="social-proof-counter__number">1.200+</span>
-            <span className="social-proof-counter__label">fantallenatori in lista d&apos;attesa</span>
-          </div>
-          <div className="social-proof-rating">
-            <span className="social-proof-rating__stars" aria-label="5 stelle su 5">
-              ★★★★★
-            </span>
-            <span className="social-proof-rating__label">4.9/5 dai beta tester</span>
-          </div>
+        <div className="section-header">
+          <h2 className="section-title">I numeri parlano chiaro</h2>
         </div>
-
-        <div className="testimonials-grid">
-          {testimonials.map((t, i) => (
-            <div key={i} className="testimonial-card reveal">
-              <p className="testimonial-card__quote">&ldquo;{t.quote}&rdquo;</p>
-              <div className="testimonial-card__footer">
-                <span className="testimonial-card__author">
-                  — {t.author}, {t.location}
-                </span>
-                <span className="testimonial-card__stars" aria-label={`${t.stars} stelle`}>
-                  {'⭐'.repeat(t.stars)}
-                </span>
-              </div>
+        <div className="stats-row" role="list">
+          {stats.map((s, i) => (
+            <div key={i} className="stat-item reveal" role="listitem">
+              <span className="stat-value grad-text">{s.value}</span>
+              <span className="stat-label">{s.label}</span>
             </div>
           ))}
         </div>
@@ -250,16 +217,16 @@ export function FAQSection() {
       a: 'Il Coach analizza dati reali: xG, xA, statistiche di forma, infortuni confermati, moduli avversari. Nei test beta, gli utenti che hanno seguito i consigli hanno migliorato il loro punteggio medio del 18% nelle giornate analizzate.',
     },
     {
-      q: 'Posso disdire l\'abbonamento quando voglio?',
+      q: "Posso disdire l'abbonamento quando voglio?",
       a: 'Assolutamente sì. Nessun vincolo, nessuna penale. Puoi disdire in qualsiasi momento direttamente dal tuo profilo. Il piano Free rimane sempre gratuito.',
     },
     {
       q: 'Qual è la differenza principale tra Silver e Gold?',
-      a: 'Gold aggiunge l\'analisi predittiva ML, l\'Asta Planner AI per gestire il mercato, la creazione rosa AI e i consigli di formazione settimanali illimitati. Se sei serio nella tua lega, Gold è il piano giusto.',
+      a: "Gold aggiunge l'analisi predittiva ML, l'Asta Planner AI per gestire il mercato, la creazione rosa AI e i consigli di formazione settimanali illimitati. Se sei serio nella tua lega, Gold è il piano giusto.",
     },
     {
       q: 'I consigli sono personalizzati per la mia rosa o sono generici?',
-      a: 'Sono completamente personalizzati. Il Coach conosce la tua rosa, i tuoi titolari abituali, il tuo modulo preferito e l\'avversario della settimana. Ogni consiglio è specifico per la tua situazione.',
+      a: "Sono completamente personalizzati. Il Coach conosce la tua rosa, i tuoi titolari abituali, il tuo modulo preferito e l'avversario della settimana. Ogni consiglio è specifico per la tua situazione.",
     },
     {
       q: 'Funziona anche per la Champions League?',
@@ -276,7 +243,9 @@ export function FAQSection() {
   return (
     <section className="faq-section section reveal" id="faq">
       <div className="container">
-        <h2 className="section-title">Domande frequenti</h2>
+        <div className="section-header">
+          <h2 className="section-title">Domande frequenti</h2>
+        </div>
         <div className="faq-list">
           {faqs.map((faq, i) => {
             const isOpen = openIndex.includes(i);
@@ -468,7 +437,6 @@ export function WaitlistForm({ position = 'hero' }) {
         className="btn btn--primary btn--full-width waitlist-form__submit"
         type="submit"
         disabled={loading}
-        style={{ minHeight: '52px' }}
       >
         {loading ? 'Iscrizione in corso…' : "Mettiti in lista d'attesa →"}
       </button>
@@ -485,9 +453,9 @@ export function SecondCTASection({ WaitlistFormComponent }) {
   return (
     <section className="second-cta-section section reveal" id="iscriviti">
       <div className="container">
-        <div className="second-cta-panel glass-panel">
+        <div className="second-cta-panel">
           <h2 className="second-cta-section__headline">
-            Smetti di perdere la lega.
+            <span className="grad-text">Entra in lista ora.</span>
           </h2>
           <p className="second-cta-section__subheadline">
             Unisciti ai 1.200+ fantallenatori che hanno già scelto il Coach AI.
@@ -521,17 +489,11 @@ export function LandingFooter() {
           </div>
 
           <nav className="landing-footer__links" aria-label="Link footer">
-            <a href="/privacy" className="landing-footer__link">
-              Privacy Policy
-            </a>
+            <a href="/privacy" className="landing-footer__link">Privacy Policy</a>
             <span className="landing-footer__separator" aria-hidden="true">|</span>
-            <a href="/termini" className="landing-footer__link">
-              Termini di Servizio
-            </a>
+            <a href="/termini" className="landing-footer__link">Termini di Servizio</a>
             <span className="landing-footer__separator" aria-hidden="true">|</span>
-            <a href="/contatti" className="landing-footer__link">
-              Contatti
-            </a>
+            <a href="/contatti" className="landing-footer__link">Contatti</a>
           </nav>
         </div>
 
