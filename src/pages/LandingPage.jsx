@@ -15,7 +15,7 @@
 import { useEffect, useState } from 'react';
 import './LandingPage.css';
 
-import { LandingNav, HeroSection, ProblemSection, DemoSection } from './LandingPage_part1';
+import { LandingNav, HeroSection, FeatureSection, HowItWorksSection } from './LandingPage_part1';
 import {
   PricingSection,
   SocialProofSection,
@@ -185,11 +185,11 @@ export default function LandingPage() {
           {/* 2 — Hero */}
           <HeroSection />
 
-          {/* 3 — Problem */}
-          <ProblemSection />
+          {/* 3 — Feature / Problem */}
+          <FeatureSection />
 
-          {/* 4 — Demo / Coach AI Mockup */}
-          <DemoSection />
+          {/* 4 — How It Works */}
+          <HowItWorksSection />
 
           {/* 5 — Pricing */}
           <PricingSection />
