@@ -18,7 +18,7 @@ import './LandingPage.css';
 import { LandingNav, HeroSection, FeatureSection, HowItWorksSection } from './LandingPage_part1';
 import {
   PricingSection,
-  SocialProofSection,
+  StatsSection,
   FAQSection,
   WaitlistForm,
   SecondCTASection,
@@ -195,7 +195,7 @@ export default function LandingPage() {
           <PricingSection />
 
           {/* 6 — Social Proof */}
-          <SocialProofSection />
+          <StatsSection />
 
           {/* 7 — FAQ */}
           <FAQSection />
