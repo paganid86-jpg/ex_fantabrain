@@ -80,42 +80,19 @@ function useScrollDepth() {
   }, []);
 }
 
-/* ─── Spiral fade on scroll ────────────────────────── */
+/* ─── Spiral fade — 3s timer after enter ───────────── */
 function useSpiralFade(hasEntered) {
   const [faded, setFaded] = useState(false);
 
   useEffect(() => {
     if (!hasEntered) return;
-
-    function onScroll() {
-      const scrolled = window.scrollY;
-      const total = document.documentElement.scrollHeight - window.innerHeight;
-      if (total <= 0) return;
-      const pct = (scrolled / total) * 100;
-      setFaded(pct >= 60);
-    }
-
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+    const timer = setTimeout(() => setFaded(true), 3000);
+    return () => clearTimeout(timer);
   }, [hasEntered]);
 
   return faded;
 }
 
-/* ─── Waitlist Section wrapper (with form) ─────────── */
-function WaitlistSection() {
-  return (
-    <section className="section" id="waitlist" aria-label="Iscrizione lista d'attesa">
-      <div className="container">
-        <div className="waitlist-section-panel">
-          <h2>Accedi in anteprima</h2>
-          <p>Iscriviti alla lista d&apos;attesa — gratis, nessuna carta richiesta.</p>
-          <WaitlistForm position="hero" />
-        </div>
-      </div>
-    </section>
-  );
-}
 
 /* ─── Main LandingPage component ───────────────────── */
 export default function LandingPage() {
@@ -169,10 +146,7 @@ export default function LandingPage() {
           {/* 7 — FAQ */}
           <FAQSection />
 
-          {/* 8 — Waitlist form (hero anchor #waitlist) */}
-          <WaitlistSection />
-
-          {/* 9 — Second CTA */}
+          {/* 8 — Second CTA */}
           <SecondCTASection />
         </main>
 

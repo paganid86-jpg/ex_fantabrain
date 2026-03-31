@@ -136,13 +136,14 @@
 .landing .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
 .landing .btn--primary {
-  background: var(--green);
+  background: linear-gradient(135deg, #10b981 0%, #6366f1 38%, #34d399 65%, #818cf8 100%);
+  background-size: 300% 300%;
   color: #fff;
-  animation: glowPulse 3s ease-in-out infinite;
+  animation: grad-flow 6s ease-in-out infinite, glowPulse 3s ease-in-out infinite;
 }
 .landing .btn--primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 0 36px rgba(16,185,129,0.5), 0 6px 28px rgba(0,0,0,0.4);
+  box-shadow: 0 0 36px rgba(16,185,129,0.5), 0 0 36px rgba(99,102,241,0.3), 0 6px 28px rgba(0,0,0,0.4);
 }
 
 .landing .btn--outlined {
@@ -389,7 +390,7 @@
 .feature-solution strong { color: var(--text); }
 
 /* ─── How It Works (was: Demo) ───────────────────── */
-.landing-how { background: var(--surface); }
+.landing-how { background: var(--bg); }
 .steps-row {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -465,7 +466,7 @@
 }
 
 /* ─── Pricing ────────────────────────────────────── */
-.pricing-section { background: var(--surface); }
+.pricing-section { background: var(--bg); }
 .pricing-toggle-wrapper {
   display: flex;
   align-items: center;
@@ -665,7 +666,7 @@
 }
 
 /* ─── CTA / Second CTA ───────────────────────────── */
-.second-cta-section { background: var(--surface); }
+.second-cta-section { background: var(--bg); }
 .second-cta-panel {
   background: linear-gradient(160deg, rgba(16,185,129,0.06) 0%, rgba(99,102,241,0.04) 100%);
   border: 1px solid rgba(16,185,129,0.15);
@@ -912,7 +913,7 @@
   inset: 0;
   z-index: 0;
   opacity: 1;
-  transition: opacity 1s ease;
+  transition: opacity 2s ease;
   pointer-events: none;
 }
 .spiral-bg--active { opacity: 0.12; }

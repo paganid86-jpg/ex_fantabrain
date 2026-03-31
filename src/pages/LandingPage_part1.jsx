@@ -16,7 +16,7 @@ export function LandingNav() {
 
   function scrollToWaitlist(e) {
     e.preventDefault();
-    document.getElementById('waitlist')?.scrollIntoView({ behavior: 'smooth' });
+    document.getElementById('iscriviti')?.scrollIntoView({ behavior: 'smooth' });
     window.gtag?.('event', 'cta_click', { event_category: 'CTA', event_label: 'nav' });
   }
 
@@ -48,7 +48,7 @@ export function LandingNav() {
 export function HeroSection() {
   function scrollToWaitlist(e) {
     e.preventDefault();
-    document.getElementById('waitlist')?.scrollIntoView({ behavior: 'smooth' });
+    document.getElementById('iscriviti')?.scrollIntoView({ behavior: 'smooth' });
     window.gtag?.('event', 'cta_click', { event_category: 'CTA', event_label: 'hero' });
     window.fbq?.('track', 'InitiateCheckout');
   }
