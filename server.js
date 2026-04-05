@@ -7,6 +7,7 @@ import { dirname, join } from 'path';
 
 // Routes
 import { errorHandler } from './server/middleware/errorHandler.js';
+import { cloudwatchMiddleware } from './server/middleware/cloudwatch.js';
 import authRoutes from './server/routes/auth.js';
 import creditsRoutes from './server/routes/credits.js';
 import aiRoutes from './server/routes/ai.js';
@@ -31,6 +32,8 @@ async function initDb() {
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+app.use(cloudwatchMiddleware);
 
 const FOOTBALL_API_KEY =
   process.env.FOOTBALL_DATA_API_KEY ||

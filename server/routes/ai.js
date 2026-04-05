@@ -2,6 +2,7 @@ import { Router } from 'express';
 import Anthropic from '@anthropic-ai/sdk';
 import pool from '../db/pool.js';
 import { authenticateJWT } from '../middleware/auth.js';
+import { sendMetric } from '../middleware/cloudwatch.js';
 
 const router = Router();
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
@@ -46,12 +47,22 @@ router.post('/chat', authenticateJWT, async (req, res, next) => {
       .slice(0, 20);
 
     // Call Anthropic
+    const apiStart = Date.now();
     const response = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: safeMaxTokens,
       system: systemPrompt || 'Sei FantaBrain AI, assistente per il Fantacalcio Mantra italiano. Parla in italiano.',
       messages: sanitized,
     });
+    const apiLatency = Date.now() - apiStart;
+
+    const inputTokens = response.usage?.input_tokens ?? 0;
+    const outputTokens = response.usage?.output_tokens ?? 0;
+    const estimatedCost = (inputTokens * 0.000003) + (outputTokens * 0.000015);
+
+    sendMetric('AnthropicAPILatency', apiLatency, 'Milliseconds');
+    sendMetric('AnthropicAPICall', 1, 'Count');
+    sendMetric('AnthropicEstimatedCostUSD', estimatedCost, 'None');
 
     const content = response.content[0]?.text || '';
 
