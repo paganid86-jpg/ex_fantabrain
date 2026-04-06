@@ -13,7 +13,7 @@ dotenv.config({ quiet: true });
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const cloudwatchClient = new CloudWatchClient({ region: process.env.AWS_REGION || 'us-east-1' });
 
-const RUNBOOK_PATH = join(__dirname, '..', 'docs', 'runbook-serie-a.md');
+const RUNBOOK_PATH = join(__dirname, 'runbook-serie-a.md');
 
 function createMcpServer() {
   const server = new Server(
