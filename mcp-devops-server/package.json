@@ -1,18 +1,19 @@
 {
-  "name": "mcp-devops-server",
-  "version": "1.0.0",
-  "description": "MCP Server - FantaBrain DevOps Agent",
-  "main": "index.js",
-  "type": "module",
-  "scripts": {
-    "start": "node index.js"
-  },
-  "keywords": [],
-  "author": "Dante Pagani - New DAi",
-  "license": "ISC",
-  "dependencies": {
-    "@aws-sdk/client-cloudwatch": "^3.1024.0",
-    "@modelcontextprotocol/sdk": "^1.29.0",
-    "dotenv": "^17.4.0"
-  }
+    "name": "mcp-devops-server",
+    "version": "1.0.0",
+    "description": "MCP Server - FantaBrain DevOps Agent",
+    "main": "index.js",
+    "type": "module",
+    "scripts": {
+          "start": "node index.js"
+    },
+    "keywords": [],
+    "author": "Dante Pagani - New DAi",
+    "license": "ISC",
+    "dependencies": {
+          "@aws-sdk/client-cloudwatch": "^3.1024.0",
+          "@modelcontextprotocol/sdk": "^1.29.0",
+          "dotenv": "^17.4.0",
+          "express": "^4.21.0"
+    }
 }
