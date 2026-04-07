@@ -175,3 +175,81 @@ document.getElementById('final-cta-btn').onclick = () => {
 
 /* ── Init ─────────────────────────────────────────────── */
 loadCount();
+
+/* ── Gradient Text Blob Animation ─────────────────── */
+document.addEventListener('DOMContentLoaded', function () {
+  if (typeof gsap === 'undefined') return;
+
+  // Full 4-stop circuits per blob — no yoyo, continuous organic loop
+  const JOURNEYS = [
+    [ // blob 0 — green
+      { x: '120%',  y: '130%',  duration: 9  },
+      { x: '65%',   y: '-80%',  duration: 8  },
+      { x: '-40%',  y: '-55%',  duration: 10 },
+      { x: '0%',    y: '0%',    duration: 7  },
+    ],
+    [ // blob 1 — indigo
+      { x: '-115%', y: '-90%',  duration: 11 },
+      { x: '-50%',  y: '-150%', duration: 9  },
+      { x: '55%',   y: '-30%',  duration: 10 },
+      { x: '0%',    y: '0%',    duration: 8  },
+    ],
+    [ // blob 2 — light green
+      { x: '-75%',  y: '165%',  duration: 7  },
+      { x: '85%',   y: '85%',   duration: 9  },
+      { x: '25%',   y: '-40%',  duration: 8  },
+      { x: '0%',    y: '0%',    duration: 6  },
+    ],
+    [ // blob 3 — light indigo
+      { x: '110%',  y: '-145%', duration: 8  },
+      { x: '-55%',  y: '-65%',  duration: 11 },
+      { x: '30%',   y: '70%',   duration: 9  },
+      { x: '0%',    y: '0%',    duration: 10 },
+    ],
+  ];
+
+  // Base delay per blob
+  const BASE_DELAYS = [0, 3.1, 1.7, 5.2];
+
+  // Per-element timing scale + phase shift → blobs di ogni elemento completamente indipendenti
+  const EL_CONFIG = [
+    { scale: 1.00, phase: 0   },  // "Brain"
+    { scale: 1.45, phase: 6.3 },  // typed text — più lento, fuori fase dal ritmo scrittura
+    { scale: 0.85, phase: 2.8 },  // "Tu scegli"
+    { scale: 1.20, phase: 9.1 },  // "risultati potenti"
+  ];
+
+  document.querySelectorAll('.grad-text').forEach(function (el, elIndex) {
+    if (el.tagName !== 'SPAN') return;
+    if (el.closest('#spiral-gate')) return;
+    if (el.id === 'typed') return; // wrapper si ridimensiona col testo → blob seguirebbero il ritmo
+
+    const wrap = document.createElement('span');
+    wrap.className = 'grad-text-wrap';
+    el.parentNode.insertBefore(wrap, el);
+    wrap.appendChild(el);
+
+    const layer = document.createElement('span');
+    layer.className = 'grad-blob-layer';
+    for (let i = 0; i < 4; i++) {
+      const blob = document.createElement('span');
+      blob.className = 'grad-blob';
+      layer.appendChild(blob);
+    }
+    wrap.appendChild(layer);
+
+    const cfg = EL_CONFIG[elIndex] || { scale: 1.0, phase: elIndex * 4.7 };
+    const blobs = layer.querySelectorAll('.grad-blob');
+
+    blobs.forEach(function (blob, i) {
+      const tl = gsap.timeline({
+        repeat: -1,
+        delay: BASE_DELAYS[i] + cfg.phase,
+        defaults: { ease: 'sine.inOut' },
+      });
+      JOURNEYS[i].forEach(function (step) {
+        tl.to(blob, { x: step.x, y: step.y, duration: step.duration * cfg.scale });
+      });
+    });
+  });
+});
