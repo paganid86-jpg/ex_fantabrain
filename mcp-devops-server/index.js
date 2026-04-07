@@ -2,12 +2,18 @@ import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
 import { CloudWatchClient, PutMetricDataCommand, GetMetricStatisticsCommand } from '@aws-sdk/client-cloudwatch';
+import { readFileSync } from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
 import dotenv from 'dotenv';
 import express from 'express';
 
 dotenv.config();
 
 const MCP_BEARER_TOKEN = process.env.MCP_BEARER_TOKEN || 'fantabrain-devops-token';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const RUNBOOK_PATH = join(__dirname, 'runbook-serie-a.md');
 
 const cloudwatchClient = new CloudWatchClient({
   region: process.env.AWS_REGION || 'eu-west-1',
@@ -18,13 +24,18 @@ const cloudwatchClient = new CloudWatchClient({
 });
 
 const server = new Server(
-  { name: 'fantabrain-devops', version: '1.0.0' },
+  { name: 'fantabrain-devops', version: '1.1.0' },
   { capabilities: { tools: {} } }
 );
 
 server.setRequestHandler(ListToolsRequestSchema, async () => {
   return {
     tools: [
+      {
+        name: 'get_runbook',
+        description: 'Restituisce il runbook operativo di FantaBrain per i picchi Serie A weekend',
+        inputSchema: { type: 'object', properties: {} },
+      },
       {
         name: 'get_app_health',
         description: 'Snapshot della salute attuale di FantaBrain (ultimi 30 min)',
@@ -54,6 +65,15 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const args = request.params.arguments;
+
+  if (request.params.name === 'get_runbook') {
+    try {
+      const content = readFileSync(RUNBOOK_PATH, 'utf-8');
+      return { content: [{ type: 'text', text: content }] };
+    } catch (err) {
+      return { content: [{ type: 'text', text: 'Runbook non trovato: ' + err.message }] };
+    }
+  }
 
   if (request.params.name === 'get_app_health') {
     const endTime = new Date();
