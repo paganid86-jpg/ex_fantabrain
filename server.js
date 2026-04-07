@@ -15,6 +15,7 @@ import adminRoutes from './server/routes/admin.js';
 import waitlistRoutes from './server/routes/waitlist.js';
 import warsharesRoutes from './server/routes/warsharesRoutes.js';
 import { startCreditResetCron } from './server/cron/resetCredits.js';
+import { startKeepAliveCron } from './server/cron/keepAlive.js';
 import { authenticateJWT } from './server/middleware/auth.js';
 import { readFileSync } from 'fs';
 import pool from './server/db/pool.js';
@@ -119,6 +120,11 @@ app.use('/api/admin', adminRoutes);
 // ── Waitlist routes ────────────────────────────────────────
 app.use('/api/waitlist', waitlistRoutes);
 
+// ── Health check ───────────────────────────────────────────
+app.get('/api/health', (_req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
 // ── Static files + SPA fallback (ALWAYS LAST) ─────────────
 app.use(express.static(join(__dirname, 'public')));
 app.use(express.static(join(__dirname, 'dist')));
@@ -145,5 +151,6 @@ initDb().then(() => {
   app.listen(PORT, () => {
     console.log(`[FantaBrain] Server on port ${PORT}`);
     startCreditResetCron();
+    startKeepAliveCron();
   });
 });
