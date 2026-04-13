@@ -2,10 +2,10 @@ import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 
 const RUOLO_COLORS = {
-  Por: '#F59E0B', DD: '#3B82F6', DS: '#3B82F6', DC: '#3B82F6',
-  'M/C': '#22C55E', M: '#22C55E', C: '#22C55E',
-  'T/A': '#06B6D4', W: '#06B6D4', A: '#06B6D4',
-  PC: '#EF4444',
+  Por: 'var(--role-gk)', DD: 'var(--role-def)', DS: 'var(--role-def)', DC: 'var(--role-def)',
+  'M/C': 'var(--role-mid)', M: 'var(--role-mid)', C: 'var(--role-mid)',
+  'T/A': 'var(--role-fwd)', W: 'var(--role-fwd)', A: 'var(--role-fwd)',
+  PC: 'var(--role-pk)',
 };
 
 export default function PlayerToken({ giocatore, disabled }) {
@@ -16,7 +16,7 @@ export default function PlayerToken({ giocatore, disabled }) {
   });
 
   const primary = giocatore.ruoloMantra?.split('/')[0].trim();
-  const color = RUOLO_COLORS[primary] || '#64748B';
+  const color = RUOLO_COLORS[primary] || 'var(--text-secondary)';
 
   return (
     <div
@@ -24,7 +24,7 @@ export default function PlayerToken({ giocatore, disabled }) {
       {...listeners}
       {...attributes}
       style={{
-        background: '#1E1E2E',
+        background: 'var(--bg-elevated)',
         borderRadius: '6px',
         padding: '6px 8px',
         cursor: disabled ? 'not-allowed' : isDragging ? 'grabbing' : 'grab',
@@ -48,9 +48,9 @@ export default function PlayerToken({ giocatore, disabled }) {
         <span style={{ fontSize: '8px', color, background: `${color}22`, borderRadius: '3px', padding: '1px 4px' }}>
           {giocatore.ruoloMantra}
         </span>
-        <span style={{ fontSize: '9px', color: '#F59E0B' }}>{giocatore.votoMedia?.toFixed(1)}</span>
-        {giocatore.infortunato && <span style={{ fontSize: '9px', color: '#EF4444' }}>✕</span>}
-        {giocatore.diffidato && !giocatore.infortunato && <span style={{ fontSize: '9px', color: '#F59E0B' }}>!</span>}
+        <span style={{ fontSize: '9px', color: 'var(--gold)' }}>{giocatore.votoMedia?.toFixed(1)}</span>
+        {giocatore.infortunato && <span style={{ fontSize: '9px', color: 'var(--danger)' }}>✕</span>}
+        {giocatore.diffidato && !giocatore.infortunato && <span style={{ fontSize: '9px', color: 'var(--gold)' }}>!</span>}
       </div>
     </div>
   );
