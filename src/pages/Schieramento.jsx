@@ -60,8 +60,8 @@ export default function Schieramento() {
       </div>
 
       {/* AI Sidebar */}
-      <div style={{ width: '280px', background: '#0E0E18', borderLeft: '1px solid #ffffff10', padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px', overflowY: 'auto' }}>
-        <h3 style={{ color: '#F59E0B', fontSize: '14px', fontWeight: 'bold', margin: 0 }}>⚡ Analisi AI</h3>
+      <div style={{ width: '280px', background: 'var(--bg-deep)', borderLeft: '1px solid var(--border-glass)', padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px', overflowY: 'auto' }}>
+        <h3 style={{ color: 'var(--gold)', fontSize: '14px', fontWeight: 'bold', margin: 0 }}>⚡ Analisi AI</h3>
         <button
           onClick={handleOttimizza}
           disabled={aiLoading}
@@ -70,17 +70,17 @@ export default function Schieramento() {
         >
           {aiLoading ? '⏳ Analisi in corso...' : '⚡ Ottimizza Schieramento'}
         </button>
-        {aiError && <div style={{ color: '#EF4444', fontSize: '11px' }}>{aiError}</div>}
+        {aiError && <div style={{ color: 'var(--danger)', fontSize: '11px' }}>{aiError}</div>}
         {aiRisultato && (
-          <div style={{ background: '#1A1200', border: '1px solid #F59E0B33', borderRadius: '8px', padding: '10px', fontSize: '11px', color: '#E2E8F0', lineHeight: '1.6' }}>
+          <div style={{ background: 'var(--bg-glass)', border: '1px solid rgba(245, 158, 11, 0.20)', borderRadius: '8px', padding: '10px', fontSize: '11px', color: 'var(--text-primary)', lineHeight: '1.6' }}>
             {aiRisultato}
           </div>
         )}
 
         {/* Legenda */}
-        <div style={{ marginTop: 'auto', fontSize: '10px', color: '#64748B' }}>
-          <div style={{ marginBottom: '6px', fontWeight: 'bold', color: '#94A3B8' }}>Legenda ruoli</div>
-          {[['Por', '#F59E0B'], ['DC/DD/DS', '#3B82F6'], ['M/C', '#22C55E'], ['T/A/W', '#06B6D4'], ['PC', '#EF4444']].map(([label, color]) => (
+        <div style={{ marginTop: 'auto', fontSize: '10px', color: 'var(--text-muted)' }}>
+          <div style={{ marginBottom: '6px', fontWeight: 'bold', color: 'var(--text-secondary)' }}>Legenda ruoli</div>
+          {[['Por', 'var(--gold)'], ['DC/DD/DS', 'var(--blue)'], ['M/C', 'var(--success)'], ['T/A/W', 'var(--ice-light)'], ['PC', 'var(--danger)']].map(([label, color]) => (
             <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '3px' }}>
               <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: color }} />
               <span>{label}</span>

@@ -26,13 +26,13 @@ function MessageBubble({ msg }) {
           width: 32,
           height: 32,
           borderRadius: '50%',
-          background: 'linear-gradient(135deg, var(--accent-primary), #06B6D4)',
+          background: 'linear-gradient(135deg, var(--accent-primary), var(--ice-light))',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           fontSize: 16,
           flexShrink: 0,
-          boxShadow: '0 0 14px rgba(0,212,255,0.45)',
+          boxShadow: '0 0 14px rgba(126,173,212,0.45)',
         }}>🤖</div>
       )}
       <div style={{
@@ -40,7 +40,7 @@ function MessageBubble({ msg }) {
         background: isUser
           ? 'rgba(245, 158, 11, 0.08)'
           : 'var(--bg-glass)',
-        border: `1px solid ${isUser ? 'var(--gold-border)' : 'rgba(0,212,255,0.2)'}`,
+        border: `1px solid ${isUser ? 'var(--gold-border)' : 'rgba(126,173,212,0.2)'}`,
         borderRadius: isUser ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
         padding: '10px 16px',
         fontSize: 13,
@@ -138,11 +138,11 @@ export default function AIAnalisi() {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          background: 'rgba(0, 212, 255, 0.03)',
+          background: 'rgba(126, 173, 212, 0.03)',
         }}>
           <div>
             <div style={{
-              fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 17,
+              fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 17,
               color: 'var(--text-primary)', letterSpacing: '0.02em',
             }}>
               🤖 Chat FantaBrain AI
@@ -173,22 +173,22 @@ export default function AIAnalisi() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <div style={{ display: 'flex', gap: '3px' }}>
                 {[0, 1, 2].map((i) => (
-                  <div key={i} style={{ width: '10px', height: '10px', borderRadius: '50%', background: i < aiCrediti ? '#F59E0B' : '#ffffff20', border: i >= aiCrediti ? '1px solid #F59E0B44' : 'none' }} />
+                  <div key={i} style={{ width: '10px', height: '10px', borderRadius: '50%', background: i < aiCrediti ? 'var(--gold)' : '#ffffff20', border: i >= aiCrediti ? '1px solid rgba(245, 158, 11, 0.27)' : 'none' }} />
                 ))}
               </div>
-              <span style={{ fontSize: '10px', color: '#F59E0B', fontWeight: 'bold' }}>{aiCrediti}/3 crediti</span>
+              <span style={{ fontSize: '10px', color: 'var(--gold)', fontWeight: 'bold' }}>{aiCrediti}/3 crediti</span>
             </div>
             {resetAt && (
-              <span style={{ fontSize: '9px', color: '#475569' }}>
+              <span style={{ fontSize: '9px', color: 'var(--text-muted)' }}>
                 🔄 Reset {new Date(resetAt).toLocaleDateString('it-IT', { weekday: 'short', day: 'numeric', month: 'short' })} 20:45
               </span>
             )}
           </div>
         )}
         {isGold && (
-          <div style={{ padding: '6px 12px', background: 'linear-gradient(90deg, #1A1200, #12121A)', borderBottom: '1px solid #F59E0B22', display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ background: 'linear-gradient(135deg,#F59E0B,#D97706)', color: '#000', fontSize: '8px', fontWeight: '900', padding: '2px 6px', borderRadius: '4px' }}>✦ GOLD</span>
-            <span style={{ fontSize: '10px', color: '#F59E0B44' }}>Accesso illimitato</span>
+          <div style={{ padding: '6px 12px', background: 'linear-gradient(90deg, #1A1200, #12121A)', borderBottom: '1px solid rgba(245, 158, 11, 0.13)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span style={{ background: 'linear-gradient(135deg,var(--gold),var(--gold-dark))', color: '#000', fontSize: '8px', fontWeight: '900', padding: '2px 6px', borderRadius: '4px' }}>✦ GOLD</span>
+            <span style={{ fontSize: '10px', color: 'rgba(245, 158, 11, 0.27)' }}>Accesso illimitato</span>
           </div>
         )}
 
@@ -216,14 +216,14 @@ export default function AIAnalisi() {
             <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, marginBottom: 14 }}>
               <div style={{
                 width: 32, height: 32, borderRadius: '50%',
-                background: 'linear-gradient(135deg, var(--accent-primary), #06B6D4)',
+                background: 'linear-gradient(135deg, var(--accent-primary), var(--ice-light))',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontSize: 16, flexShrink: 0,
-                boxShadow: '0 0 14px rgba(0,212,255,0.45)',
+                boxShadow: '0 0 14px rgba(126,173,212,0.45)',
               }}>🤖</div>
               <div style={{
                 background: 'var(--bg-glass)',
-                border: '1px solid rgba(0,212,255,0.2)',
+                border: '1px solid rgba(126,173,212,0.2)',
                 borderRadius: '18px 18px 18px 4px',
                 padding: '14px 18px',
                 display: 'flex', gap: 6, alignItems: 'center',
@@ -277,26 +277,26 @@ export default function AIAnalisi() {
                   onClick={() => invia(p.label)}
                   disabled={loading || aiCrediti === 0}
                   style={{
-                    background: 'rgba(0,212,255,0.06)',
-                    border: '1px solid rgba(0,212,255,0.2)',
+                    background: 'rgba(126, 173, 212,0.06)',
+                    border: '1px solid rgba(126, 173, 212,0.2)',
                     borderRadius: 20,
                     padding: '4px 12px',
                     fontSize: 11,
                     color: 'var(--text-secondary)',
                     cursor: 'pointer',
                     transition: 'all 0.15s',
-                    fontFamily: 'DM Sans, sans-serif',
+                    fontFamily: 'var(--font-body)',
                     whiteSpace: 'nowrap',
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.borderColor = 'var(--accent-primary)';
                     e.currentTarget.style.color = 'var(--accent-primary)';
-                    e.currentTarget.style.background = 'rgba(0,212,255,0.14)';
+                    e.currentTarget.style.background = 'rgba(126, 173, 212,0.14)';
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = 'rgba(0,212,255,0.2)';
+                    e.currentTarget.style.borderColor = 'rgba(126, 173, 212,0.2)';
                     e.currentTarget.style.color = 'var(--text-secondary)';
-                    e.currentTarget.style.background = 'rgba(0,212,255,0.06)';
+                    e.currentTarget.style.background = 'rgba(126, 173, 212,0.06)';
                   }}
                 >
                   {p.icon} {p.label}
@@ -333,7 +333,7 @@ export default function AIAnalisi() {
         {/* Rosa contestuale */}
         <div className="glass-card" style={{ padding: 16, flex: 1 }}>
           <div style={{
-            fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 13,
+            fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 13,
             color: 'var(--text-primary)', letterSpacing: '0.04em',
             textTransform: 'uppercase', marginBottom: 12,
           }}>
@@ -350,7 +350,7 @@ export default function AIAnalisi() {
                 <div key={g.id} style={{
                   display: 'flex', alignItems: 'center', gap: 8,
                   padding: '5px 0',
-                  borderBottom: '1px solid rgba(0,212,255,0.08)',
+                  borderBottom: '1px solid rgba(126, 173, 212,0.08)',
                   opacity: g.infortunato ? 0.45 : 1,
                 }}>
                   <span className="badge badge-muted" style={{ fontSize: 9, padding: '1px 5px', flexShrink: 0 }}>
@@ -363,7 +363,7 @@ export default function AIAnalisi() {
                     {g.cognome}
                   </span>
                   <span style={{
-                    fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 12,
+                    fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 12,
                     color: g.votoMedia >= 7 ? 'var(--green)' : g.votoMedia >= 6 ? 'var(--text-secondary)' : 'var(--red)',
                   }}>
                     {g.votoMedia.toFixed(1)}

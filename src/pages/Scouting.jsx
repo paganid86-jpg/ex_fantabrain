@@ -116,7 +116,7 @@ function GiocatoreCard({ g, inRosa, onAggiungi, onGeneraReport, reportStato, onS
           <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 2 }}>{g.squadra}</div>
         </div>
         <div style={{ textAlign: 'right', flexShrink: 0, marginLeft: 8 }}>
-          <div style={{ fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 16, color: 'var(--amber)' }}>
+          <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 16, color: 'var(--amber)' }}>
             {g.quotazione}M
           </div>
           <span className="badge badge-muted" style={{ fontSize: 9 }}>{g.ruoloMantra}</span>
@@ -126,13 +126,13 @@ function GiocatoreCard({ g, inRosa, onAggiungi, onGeneraReport, reportStato, onS
       {/* Stats */}
       <div style={{ display: 'flex', gap: 16, alignItems: 'center', marginBottom: 12 }}>
         <div>
-          <div style={{ fontSize: 10, color: 'var(--text-muted)', fontFamily: 'Syne, sans-serif', letterSpacing: '0.06em' }}>MEDIA</div>
-          <div style={{ fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: 20, color: g.votoMedia >= 7 ? 'var(--green)' : 'var(--amber)' }}>
+          <div style={{ fontSize: 10, color: 'var(--text-muted)', fontFamily: 'var(--font-display)', letterSpacing: '0.06em' }}>MEDIA</div>
+          <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 20, color: g.votoMedia >= 7 ? 'var(--green)' : 'var(--amber)' }}>
             {g.votoMedia.toFixed(1)}
           </div>
         </div>
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 10, color: 'var(--text-muted)', fontFamily: 'Syne, sans-serif', letterSpacing: '0.06em', marginBottom: 4 }}>ULTIMI 5</div>
+          <div style={{ fontSize: 10, color: 'var(--text-muted)', fontFamily: 'var(--font-display)', letterSpacing: '0.06em', marginBottom: 4 }}>ULTIMI 5</div>
           <VotiPallini voti={g.votiUltimi5} />
         </div>
       </div>
@@ -171,7 +171,7 @@ function GiocatoreCard({ g, inRosa, onAggiungi, onGeneraReport, reportStato, onS
       {reportStato?.testo && (
         <div className="ai-response" style={{ marginTop: 10 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-            <span style={{ fontSize: 10, color: 'var(--text-muted)', fontFamily: 'Syne, sans-serif', letterSpacing: '0.06em' }}>REPORT SCOUTING AI</span>
+            <span style={{ fontSize: 10, color: 'var(--text-muted)', fontFamily: 'var(--font-display)', letterSpacing: '0.06em' }}>REPORT SCOUTING AI</span>
             {reportStato.consiglio && (
               <span className={`badge badge-${reportStato.consiglio === 'SI' ? 'green' : reportStato.consiglio === 'NO' ? 'red' : 'amber'}`}>
                 ACQUISTA: {reportStato.consiglio}
@@ -326,8 +326,8 @@ export default function Scouting() {
             onClick={toggleEscludiRosa}
             style={{
               display: 'flex', alignItems: 'center', gap: 7,
-              background: escludiInRosa ? 'rgba(0,212,255,0.1)' : 'rgba(255,255,255,0.04)',
-              border: `1px solid ${escludiInRosa ? 'rgba(0,212,255,0.35)' : 'var(--border-glass)'}`,
+              background: escludiInRosa ? 'rgba(126, 173, 212,0.1)' : 'rgba(255,255,255,0.04)',
+              border: `1px solid ${escludiInRosa ? 'rgba(126, 173, 212,0.35)' : 'var(--border-glass)'}`,
               borderRadius: 7, padding: '5px 12px',
               cursor: 'pointer', whiteSpace: 'nowrap',
             }}
@@ -369,7 +369,7 @@ export default function Scouting() {
               <div style={{ fontWeight: 700, fontSize: 15, color: 'var(--text-primary)' }}>{confronto[0].cognome}</div>
               <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>{confronto[0].squadra} · {confronto[0].ruoloMantra}</div>
             </div>
-            <div style={{ fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 18, color: 'var(--text-muted)', textAlign: 'center' }}>VS</div>
+            <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 18, color: 'var(--text-muted)', textAlign: 'center' }}>VS</div>
             <div style={{ textAlign: 'right' }}>
               <div style={{ fontWeight: 700, fontSize: 15, color: 'var(--text-primary)' }}>{confronto[1].cognome}</div>
               <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>{confronto[1].squadra} · {confronto[1].ruoloMantra}</div>
@@ -382,10 +382,10 @@ export default function Scouting() {
           ].map((row) => {
             const aWins = parseFloat(row.a) > parseFloat(row.b);
             return (
-              <div key={row.label} style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: 16, alignItems: 'center', marginTop: 10, padding: '6px 0', borderTop: '1px solid rgba(0,212,255,0.1)' }}>
-                <div style={{ textAlign: 'left',  fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 16, color: aWins  ? 'var(--green)' : 'var(--text-secondary)' }}>{row.a}</div>
+              <div key={row.label} style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: 16, alignItems: 'center', marginTop: 10, padding: '6px 0', borderTop: '1px solid rgba(126, 173, 212,0.1)' }}>
+                <div style={{ textAlign: 'left',  fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 16, color: aWins  ? 'var(--green)' : 'var(--text-secondary)' }}>{row.a}</div>
                 <div style={{ textAlign: 'center', fontSize: 11, color: 'var(--text-muted)' }}>{row.label}</div>
-                <div style={{ textAlign: 'right', fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 16, color: !aWins ? 'var(--green)' : 'var(--text-secondary)' }}>{row.b}</div>
+                <div style={{ textAlign: 'right', fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 16, color: !aWins ? 'var(--green)' : 'var(--text-secondary)' }}>{row.b}</div>
               </div>
             );
           })}
