@@ -238,6 +238,12 @@ export default function Mercato() {
 
   return (
     <div>
+      <div className="y2k-page-header">
+        <div>
+          <div className="y2k-page-title">Mercato</div>
+          <div className="y2k-page-sub">// OFFERTE · SCOUTING · TRATTATIVE</div>
+        </div>
+      </div>
       <div className="tab-bar">
         {tabs.map((t) => (
           <div

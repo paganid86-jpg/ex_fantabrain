@@ -109,6 +109,12 @@ export default function Calendario() {
 
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: 16 }}>
+      <div className="y2k-page-header" style={{ gridColumn: '1 / -1' }}>
+        <div>
+          <div className="y2k-page-title">Calendario</div>
+          <div className="y2k-page-sub">// STAGIONE 2025/26</div>
+        </div>
+      </div>
       {/* Lista giornate */}
       <div>
         {/* Filtri + stats */}

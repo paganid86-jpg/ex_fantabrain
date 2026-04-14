@@ -201,6 +201,12 @@ export default function LaRosa() {
   if (rosa.length === 0) {
     return (
       <div>
+        <div className="y2k-page-header">
+          <div>
+            <div className="y2k-page-title">La Rosa</div>
+            <div className="y2k-page-sub">// GESTIONE GIOCATORI</div>
+          </div>
+        </div>
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
           <div>
@@ -238,7 +244,7 @@ export default function LaRosa() {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <h2 className="section-title" style={{ margin: 0 }}>La Rosa</h2>
+          <div className="y2k-page-title">La Rosa</div>
           <span className="badge badge-gold">{rosa.length} giocatori</span>
         </div>
         <button className="btn-primary" onClick={() => setShowAdd(true)}>

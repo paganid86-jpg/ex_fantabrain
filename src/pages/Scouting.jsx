@@ -298,6 +298,12 @@ export default function Scouting() {
 
   return (
     <div>
+      <div className="y2k-page-header">
+        <div>
+          <div className="y2k-page-title">Scouting</div>
+          <div className="y2k-page-sub">// GIOCATORI SERIE A</div>
+        </div>
+      </div>
       {/* Filtri */}
       <div className="glass-card" style={{ padding: 16, marginBottom: 16 }}>
         <input

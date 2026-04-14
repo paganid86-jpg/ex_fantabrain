@@ -147,6 +147,12 @@ export default function Statistiche() {
 
   return (
     <div>
+      <div className="y2k-page-header">
+        <div>
+          <div className="y2k-page-title">Statistiche</div>
+          <div className="y2k-page-sub">// DATI STAGIONE 2025/26</div>
+        </div>
+      </div>
       {/* KPI Row */}
       <div style={{ display: 'flex', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}>
         {kpiItems.map((k) => (

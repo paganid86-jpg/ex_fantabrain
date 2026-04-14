@@ -27,7 +27,7 @@ export default function PanelHeader() {
 
   return (
     <header className="panel-header chrome-line">
-      <span className="panel-logo">FantaBrain</span>
+      <span className="panel-logo y2k-glitch-hover">FANTABRAIN</span>
       <span className="panel-title">{title}</span>
       <div className="panel-avatar">{initials}</div>
     </header>

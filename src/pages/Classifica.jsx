@@ -86,22 +86,15 @@ export default function Classifica() {
   return (
     <div>
       {/* Tab switcher */}
-      <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
+      <div className="y2k-tabs">
         {[
-          { val: 'lega',   label: '🏆 La mia Lega' },
-          { val: 'seriea', label: '⚽ Serie A Reale' },
+          { val: 'lega',   label: '// LA MIA LEGA' },
+          { val: 'seriea', label: '// SERIE A REALE' },
         ].map((t) => (
           <button
             key={t.val}
+            className={`y2k-tab${vista === t.val ? ' active' : ''}`}
             onClick={() => setVista(t.val)}
-            style={{
-              background: vista === t.val ? 'rgba(126, 173, 212,0.15)' : 'var(--bg-glass)',
-              border: `1px solid ${vista === t.val ? 'rgba(126, 173, 212,0.45)' : 'rgba(255,255,255,0.08)'}`,
-              color: vista === t.val ? 'var(--accent-primary)' : 'var(--text-secondary)',
-              borderRadius: 20, padding: '7px 20px',
-              fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 13,
-              cursor: 'pointer', transition: 'all 0.15s',
-            }}
           >
             {t.label}
           </button>
@@ -218,12 +211,12 @@ export default function Classifica() {
       ) : (
       <div>
       {/* KPI */}
-      <div style={{ display: 'flex', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}>
+      <div className="y2k-stats-grid" style={{ marginBottom: 20 }}>
         {kpiItems.map((k) => (
-          <div key={k.label} className="glass-card" style={{ flex: 1, minWidth: 100, padding: '14px 18px' }}>
+          <div key={k.label} className="y2k-stat-card" style={{ flex: 1, minWidth: 100 }}>
             <div style={{
-              fontSize: 10, color: 'var(--text-muted)',
-              fontFamily: 'var(--font-display)', letterSpacing: '0.1em',
+              fontSize: 9, color: 'var(--text-muted)',
+              fontFamily: 'var(--font-mono)', letterSpacing: '0.1em',
               textTransform: 'uppercase', marginBottom: 4,
             }}>{k.label}</div>
             <div style={{

@@ -35,20 +35,90 @@ export default function Register() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--bg-deep)' }}>
-      <div className="glass-card p-8 w-full max-w-sm">
-        <h1 className="text-2xl font-bold text-white mb-2">FantaBrain</h1>
-        <p className="text-sm mb-6" style={{ color: 'var(--text-secondary)' }}>Crea il tuo account</p>
-        {error && <div className="text-red-400 text-sm mb-4 p-3 rounded bg-red-900/20">{error}</div>}
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <input className="input-field" type="text" placeholder="Nome" value={name} onChange={(e) => setName(e.target.value)} required />
-          <input className="input-field" type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-          <input className="input-field" type="password" placeholder="Password (min 8 caratteri)" value={password} onChange={(e) => setPassword(e.target.value)} minLength={8} required />
-          <button className="btn-primary" disabled={loading}>{loading ? 'Registrazione...' : 'Registrati'}</button>
+    <div style={{
+      minHeight: '100vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      background: 'var(--y2k-bg)',
+      padding: '20px',
+    }}>
+      <div className="y2k-panel" style={{ width: '100%', maxWidth: 360, padding: 32 }}>
+        {/* Header */}
+        <div style={{ marginBottom: 28, textAlign: 'center' }}>
+          <div className="y2k-page-title" style={{ fontSize: 18, textAlign: 'center' }}>FANTABRAIN</div>
+          <div className="y2k-page-sub" style={{ textAlign: 'center', marginTop: 6 }}>// CREA IL TUO ACCOUNT</div>
+        </div>
+
+        {error && (
+          <div style={{
+            fontSize: 11,
+            fontFamily: 'var(--font-mono)',
+            color: 'var(--y2k-danger)',
+            padding: '8px 12px',
+            background: 'rgba(255,59,48,0.08)',
+            border: '1px solid rgba(255,59,48,0.2)',
+            borderRadius: 'var(--radius-sm)',
+            marginBottom: 16,
+            letterSpacing: '0.5px',
+          }}>
+            ⚠ {error}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div>
+            <label className="y2k-input-label">Nome</label>
+            <input
+              className="input-field"
+              type="text"
+              placeholder="Il tuo nome"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <label className="y2k-input-label">Email</label>
+            <input
+              className="input-field"
+              type="email"
+              placeholder="nome@esempio.it"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <label className="y2k-input-label">Password (min 8 caratteri)</label>
+            <input
+              className="input-field"
+              type="password"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              minLength={8}
+              required
+            />
+          </div>
+          <button className="btn-primary" disabled={loading} style={{ marginTop: 8, width: '100%' }}>
+            {loading ? 'REGISTRAZIONE...' : 'REGISTRATI'}
+          </button>
         </form>
-        <p className="text-sm mt-4 text-center" style={{ color: 'var(--text-secondary)' }}>
-          Hai già un account? <Link to="/login" style={{ color: 'var(--gold)' }}>Accedi</Link>
-        </p>
+
+        <div style={{
+          fontSize: 11,
+          fontFamily: 'var(--font-mono)',
+          color: 'var(--y2k-chrome-dim)',
+          textAlign: 'center',
+          marginTop: 20,
+          letterSpacing: '0.5px',
+        }}>
+          Hai già un account?{' '}
+          <Link to="/login" style={{ color: 'var(--y2k-blue-glow)', textDecoration: 'none' }}>
+            ACCEDI
+          </Link>
+        </div>
       </div>
     </div>
   );

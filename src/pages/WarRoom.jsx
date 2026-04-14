@@ -63,6 +63,13 @@ export default function WarRoom() {
 
   return (
     <div>
+      <div className="y2k-page-header">
+        <div>
+          <div className="y2k-page-title" style={{ color: 'var(--y2k-war)' }}>War Room</div>
+          <div className="y2k-page-sub">// ANALISI TATTICA AVVERSARIO</div>
+        </div>
+        <span className="y2k-panel-tag war">LIVE</span>
+      </div>
       {/* Config card */}
       <div className="glass-card" style={{ padding: 20, marginBottom: 20 }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>

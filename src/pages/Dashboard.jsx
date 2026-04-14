@@ -13,10 +13,9 @@ import CountdownCard from '../components/dashboard/CountdownCard';
 function KpiCard({ label, value, sub, color, icon }) {
   return (
     <div
-      className="glass-card"
+      className="y2k-stat-card"
       style={{
         flex: '1 1 200px',
-        borderTop: `3px solid ${color}`,
         display: 'flex',
         flexDirection: 'column',
         gap: 4,
@@ -28,9 +27,9 @@ function KpiCard({ label, value, sub, color, icon }) {
         alignItems: 'flex-start',
       }}>
         <div style={{
-          fontFamily: 'var(--font-display)',
+          fontFamily: 'var(--font-mono)',
           fontWeight: 700,
-          fontSize: 11,
+          fontSize: 9,
           color: 'var(--text-muted)',
           letterSpacing: '0.08em',
           textTransform: 'uppercase',
@@ -42,7 +41,7 @@ function KpiCard({ label, value, sub, color, icon }) {
       <div style={{
         fontFamily: 'var(--font-display)',
         fontWeight: 900,
-        fontSize: 42,
+        fontSize: 26,
         color,
         lineHeight: 1,
         marginTop: 4,
@@ -587,8 +586,15 @@ export default function Dashboard() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
 
+      <div className="y2k-page-header">
+        <div>
+          <div className="y2k-page-title">Dashboard</div>
+          <div className="y2k-page-sub">// STAGIONE 2025/26</div>
+        </div>
+      </div>
+
       {/* KPI Row */}
-      <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
+      <div className="y2k-stats-grid">
         <KpiCard
           label="Posizione in Lega"
           value={posizione > 0 ? `${posizione}°` : '—'}
