@@ -70,7 +70,7 @@ export default function Calendario() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <div className="glass-card" style={{ padding: 16 }}>
             <div style={{
-              fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 15,
+              fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 15,
               color: 'var(--text-primary)', marginBottom: 6,
             }}>
               🤖 Analisi Giornata {giornataCorrente}
@@ -122,11 +122,11 @@ export default function Calendario() {
               key={f.val}
               onClick={() => setFiltro(f.val)}
               style={{
-                background: filtro === f.val ? 'rgba(0,212,255,0.15)' : 'var(--bg-glass)',
-                border: `1px solid ${filtro === f.val ? 'rgba(0,212,255,0.45)' : 'rgba(255,255,255,0.08)'}`,
+                background: filtro === f.val ? 'rgba(126, 173, 212,0.15)' : 'var(--bg-glass)',
+                border: `1px solid ${filtro === f.val ? 'rgba(126, 173, 212,0.45)' : 'rgba(255,255,255,0.08)'}`,
                 color: filtro === f.val ? 'var(--accent-primary)' : 'var(--text-secondary)',
                 borderRadius: 20, padding: '6px 18px',
-                fontFamily: 'Syne, sans-serif', fontWeight: 600, fontSize: 13,
+                fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 13,
                 cursor: 'pointer', transition: 'all 0.15s',
                 backdropFilter: 'blur(8px)',
               }}
@@ -138,7 +138,7 @@ export default function Calendario() {
           <div style={{ fontSize: 12, color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 8 }}>
             <span>{totaleGiocate} giocate</span>
             {puntiTot > 0 && (
-              <span style={{ fontFamily: 'Syne, sans-serif', fontWeight: 700, color: 'var(--green)' }}>
+              <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--green)' }}>
                 {puntiTot}pt totali
               </span>
             )}
@@ -171,12 +171,12 @@ export default function Calendario() {
                   {/* Numero giornata */}
                   <div style={{
                     width: 42, height: 42, borderRadius: 8, flexShrink: 0,
-                    background: isCorso ? 'rgba(0,212,255,0.2)' : 'rgba(0,212,255,0.08)',
-                    border: `1px solid ${isCorso ? 'rgba(0,212,255,0.4)' : 'rgba(0,212,255,0.15)'}`,
+                    background: isCorso ? 'rgba(126, 173, 212,0.2)' : 'rgba(126, 173, 212,0.08)',
+                    border: `1px solid ${isCorso ? 'rgba(126, 173, 212,0.4)' : 'rgba(126, 173, 212,0.15)'}`,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                   }}>
                     <span style={{
-                      fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: 14,
+                      fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 14,
                       color: isCorso ? 'var(--accent-primary)' : 'var(--text-muted)',
                     }}>
                       G{g.giornata}
@@ -201,7 +201,7 @@ export default function Calendario() {
                   {isGiocata && g.risultato && (
                     <div style={{ textAlign: 'right', flexShrink: 0 }}>
                       <div style={{
-                        fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: 20,
+                        fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 20,
                         color: vinta ? 'var(--green)' : persa ? 'var(--red)' : 'var(--amber)',
                       }}>
                         {g.risultato}
@@ -209,7 +209,7 @@ export default function Calendario() {
                       <div style={{
                         fontSize: 10,
                         color: vinta ? 'var(--green)' : persa ? 'var(--red)' : 'var(--amber)',
-                        fontFamily: 'Syne, sans-serif', fontWeight: 600,
+                        fontFamily: 'var(--font-display)', fontWeight: 600,
                       }}>
                         {vinta ? 'VITTORIA' : persa ? 'SCONFITTA' : 'PAREGGIO'}
                       </div>
@@ -233,7 +233,7 @@ export default function Calendario() {
                   }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
                       <span style={{
-                        fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 14, color: 'var(--text-primary)',
+                        fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 14, color: 'var(--text-primary)',
                       }}>
                         Giornata {g.giornata} — vs {g.avversario}
                       </span>
@@ -245,7 +245,7 @@ export default function Calendario() {
                     {isGiocata ? (
                       <div>
                         <div style={{
-                          fontFamily: 'Syne, sans-serif', fontWeight: 800,
+                          fontFamily: 'var(--font-display)', fontWeight: 800,
                           fontSize: 28, color: 'var(--text-primary)', marginBottom: 8,
                         }}>
                           {g.risultato}
@@ -274,7 +274,7 @@ export default function Calendario() {
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         <div className="glass-card" style={{ padding: 16 }}>
           <div style={{
-            fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 15,
+            fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 15,
             color: 'var(--text-primary)', marginBottom: 6,
           }}>
             🤖 Analisi Giornata {giornataCorrente}
@@ -309,7 +309,7 @@ export default function Calendario() {
 
         {/* Prossima giornata Serie A */}
         <div className="glass-card" style={{ padding: 16 }}>
-          <div style={{ fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 14, color: 'var(--text-primary)', marginBottom: 10 }}>
+          <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 14, color: 'var(--text-primary)', marginBottom: 10 }}>
             ⚽ Serie A — G{serieAMatchday ?? '…'}
           </div>
           {loadingMatches && (
@@ -330,7 +330,7 @@ export default function Calendario() {
           {nextSerieAMatches.map((m) => {
             const isLive = ['IN_PLAY', 'PAUSED'].includes(m.status);
             return (
-              <div key={m.id} style={{ padding: '5px 0', borderBottom: '1px solid rgba(0,212,255,0.07)' }}>
+              <div key={m.id} style={{ padding: '5px 0', borderBottom: '1px solid rgba(126, 173, 212,0.07)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12 }}>
                   {m.homeTeam.crest && <img src={m.homeTeam.crest} alt="" style={{ width: 14, height: 14, objectFit: 'contain' }} />}
                   <span style={{ flex: 1, color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -350,7 +350,7 @@ export default function Calendario() {
         {totaleGiocate > 0 && (
           <div className="glass-card" style={{ padding: 16 }}>
             <div style={{
-              fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 14,
+              fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 14,
               color: 'var(--text-primary)', marginBottom: 12,
             }}>
               📊 Riepilogo
@@ -361,11 +361,11 @@ export default function Calendario() {
             ].map((item) => (
               <div key={item.label} style={{
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                padding: '6px 0', borderBottom: '1px solid rgba(0,212,255,0.08)',
+                padding: '6px 0', borderBottom: '1px solid rgba(126, 173, 212,0.08)',
               }}>
                 <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{item.label}</span>
                 <span style={{
-                  fontFamily: 'Syne, sans-serif', fontWeight: 700,
+                  fontFamily: 'var(--font-display)', fontWeight: 700,
                   fontSize: 14, color: 'var(--text-primary)',
                 }}>{item.value}</span>
               </div>

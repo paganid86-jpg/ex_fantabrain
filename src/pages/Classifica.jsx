@@ -95,11 +95,11 @@ export default function Classifica() {
             key={t.val}
             onClick={() => setVista(t.val)}
             style={{
-              background: vista === t.val ? 'rgba(0,212,255,0.15)' : 'var(--bg-glass)',
-              border: `1px solid ${vista === t.val ? 'rgba(0,212,255,0.45)' : 'rgba(255,255,255,0.08)'}`,
+              background: vista === t.val ? 'rgba(126, 173, 212,0.15)' : 'var(--bg-glass)',
+              border: `1px solid ${vista === t.val ? 'rgba(126, 173, 212,0.45)' : 'rgba(255,255,255,0.08)'}`,
               color: vista === t.val ? 'var(--accent-primary)' : 'var(--text-secondary)',
               borderRadius: 20, padding: '7px 20px',
-              fontFamily: 'Syne, sans-serif', fontWeight: 600, fontSize: 13,
+              fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 13,
               cursor: 'pointer', transition: 'all 0.15s',
             }}
           >
@@ -160,7 +160,7 @@ export default function Classifica() {
                             width: 26, height: 26, borderRadius: '50%',
                             background: i < 4 ? 'var(--gold)' : i >= 17 ? 'var(--red)' : 'rgba(255,255,255,0.06)',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: 12,
+                            fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 12,
                             color: i < 4 || i >= 17 ? '#000' : 'var(--text-muted)',
                           }}>
                             {team.position}
@@ -177,16 +177,16 @@ export default function Classifica() {
                           </div>
                         </td>
                         <td style={{ color: 'var(--text-muted)' }}>{team.played}</td>
-                        <td style={{ color: 'var(--green)', fontFamily: 'Syne, sans-serif', fontWeight: 700 }}>{team.won}</td>
-                        <td style={{ color: 'var(--amber)', fontFamily: 'Syne, sans-serif', fontWeight: 700 }}>{team.drawn}</td>
-                        <td style={{ color: 'var(--red)', fontFamily: 'Syne, sans-serif', fontWeight: 700 }}>{team.lost}</td>
+                        <td style={{ color: 'var(--green)', fontFamily: 'var(--font-display)', fontWeight: 700 }}>{team.won}</td>
+                        <td style={{ color: 'var(--amber)', fontFamily: 'var(--font-display)', fontWeight: 700 }}>{team.drawn}</td>
+                        <td style={{ color: 'var(--red)', fontFamily: 'var(--font-display)', fontWeight: 700 }}>{team.lost}</td>
                         <td>{team.goalsFor}</td>
                         <td>{team.goalsAgainst}</td>
                         <td style={{ color: team.goalDifference > 0 ? 'var(--green)' : team.goalDifference < 0 ? 'var(--red)' : 'var(--text-muted)' }}>
                           {team.goalDifference > 0 ? '+' : ''}{team.goalDifference}
                         </td>
                         <td>
-                          <span style={{ fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: 16, color: 'var(--text-primary)' }}>
+                          <span style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 16, color: 'var(--text-primary)' }}>
                             {team.points}
                           </span>
                         </td>
@@ -195,7 +195,7 @@ export default function Classifica() {
                   </tbody>
                 </table>
               </div>
-              <div style={{ padding: '10px 16px', fontSize: 11, color: 'var(--text-muted)', borderTop: '1px solid rgba(0,212,255,0.08)' }}>
+              <div style={{ padding: '10px 16px', fontSize: 11, color: 'var(--text-muted)', borderTop: '1px solid rgba(126, 173, 212,0.08)' }}>
                 🟡 Champions League · 🔴 Retrocessione · Dati: football-data.org
               </div>
             </div>
@@ -223,11 +223,11 @@ export default function Classifica() {
           <div key={k.label} className="glass-card" style={{ flex: 1, minWidth: 100, padding: '14px 18px' }}>
             <div style={{
               fontSize: 10, color: 'var(--text-muted)',
-              fontFamily: 'Syne, sans-serif', letterSpacing: '0.1em',
+              fontFamily: 'var(--font-display)', letterSpacing: '0.1em',
               textTransform: 'uppercase', marginBottom: 4,
             }}>{k.label}</div>
             <div style={{
-              fontFamily: 'Syne, sans-serif', fontWeight: 800,
+              fontFamily: 'var(--font-display)', fontWeight: 800,
               fontSize: 26, color: k.color,
             }}>{k.value}</div>
           </div>
@@ -262,7 +262,7 @@ export default function Classifica() {
                         width: 26, height: 26, borderRadius: '50%',
                         background: i < 3 ? 'var(--gold)' : 'rgba(255,255,255,0.06)',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: 12,
+                        fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 12,
                         color: i < 3 ? '#000' : 'var(--text-muted)',
                       }}>{i + 1}</div>
                     </td>
@@ -278,25 +278,25 @@ export default function Classifica() {
                         )}
                       </span>
                     </td>
-                    <td style={{ color: 'var(--green)', fontFamily: 'Syne, sans-serif', fontWeight: 700 }}>
+                    <td style={{ color: 'var(--green)', fontFamily: 'var(--font-display)', fontWeight: 700 }}>
                       {team.vittorie}
                     </td>
-                    <td style={{ color: 'var(--amber)', fontFamily: 'Syne, sans-serif', fontWeight: 700 }}>
+                    <td style={{ color: 'var(--amber)', fontFamily: 'var(--font-display)', fontWeight: 700 }}>
                       {team.pareggi}
                     </td>
-                    <td style={{ color: 'var(--red)', fontFamily: 'Syne, sans-serif', fontWeight: 700 }}>
+                    <td style={{ color: 'var(--red)', fontFamily: 'var(--font-display)', fontWeight: 700 }}>
                       {team.sconfitte}
                     </td>
                     <td>
                       <span style={{
-                        fontFamily: 'Syne, sans-serif', fontWeight: 800,
+                        fontFamily: 'var(--font-display)', fontWeight: 800,
                         fontSize: 16, color: 'var(--text-primary)',
                       }}>{team.punti}</span>
                     </td>
-                    <td style={{ fontFamily: 'Syne, sans-serif', fontWeight: 700 }}>
+                    <td style={{ fontFamily: 'var(--font-display)', fontWeight: 700 }}>
                       {team.puntimedia?.toFixed(1)}
                     </td>
-                    <td style={{ fontFamily: 'Syne, sans-serif', fontWeight: 700, color: 'var(--blue)' }}>
+                    <td style={{ fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--blue)' }}>
                       {team.ultimoTurno}
                     </td>
                     <td style={{ width: 80 }}>
@@ -358,16 +358,16 @@ export default function Classifica() {
                 <div key={row.label} style={{ display: 'contents' }}>
                   <div style={{
                     textAlign: 'right',
-                    fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 20,
+                    fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 20,
                     color: aWins ? 'var(--green)' : 'var(--text-secondary)',
                   }}>{row.a}</div>
                   <div style={{
                     textAlign: 'center', fontSize: 11, color: 'var(--text-muted)',
-                    fontFamily: 'Syne, sans-serif', letterSpacing: '0.06em', whiteSpace: 'nowrap',
+                    fontFamily: 'var(--font-display)', letterSpacing: '0.06em', whiteSpace: 'nowrap',
                   }}>{row.label}</div>
                   <div style={{
                     textAlign: 'left',
-                    fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 20,
+                    fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 20,
                     color: !aWins ? 'var(--green)' : 'var(--text-secondary)',
                   }}>{row.b}</div>
                 </div>
@@ -384,7 +384,7 @@ export default function Classifica() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
               <div>
                 <div style={{
-                  fontFamily: 'Syne, sans-serif', fontWeight: 800,
+                  fontFamily: 'var(--font-display)', fontWeight: 800,
                   fontSize: 22, color: 'var(--text-primary)',
                 }}>{modal.nome}</div>
                 <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>Dettaglio stagione</div>
@@ -411,11 +411,11 @@ export default function Classifica() {
                 }}>
                   <div style={{
                     fontSize: 10, color: 'var(--text-muted)',
-                    fontFamily: 'Syne, sans-serif', letterSpacing: '0.08em',
+                    fontFamily: 'var(--font-display)', letterSpacing: '0.08em',
                     textTransform: 'uppercase', marginBottom: 4,
                   }}>{s.label}</div>
                   <div style={{
-                    fontFamily: 'Syne, sans-serif', fontWeight: 800,
+                    fontFamily: 'var(--font-display)', fontWeight: 800,
                     fontSize: 22, color: s.color,
                   }}>{s.value}</div>
                 </div>
@@ -423,7 +423,7 @@ export default function Classifica() {
             </div>
 
             <div style={{
-              fontFamily: 'Syne, sans-serif', fontSize: 12, color: 'var(--text-muted)',
+              fontFamily: 'var(--font-display)', fontSize: 12, color: 'var(--text-muted)',
               letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 8,
             }}>
               Forma ultimi 5 turni

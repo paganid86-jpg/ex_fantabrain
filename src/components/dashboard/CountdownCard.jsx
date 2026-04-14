@@ -147,7 +147,7 @@ export default function CountdownCard() {
               onClick={() => selectTeam(t.id)}
               style={{
                 display: 'block', width: '100%', textAlign: 'left',
-                background: t.id === followedTeamId ? 'rgba(0,212,255,0.08)' : 'none',
+                background: t.id === followedTeamId ? 'rgba(126,173,212,0.08)' : 'none',
                 border: 'none', padding: '6px 14px',
                 color: t.id === followedTeamId ? 'var(--accent-primary)' : 'var(--text-primary)',
                 fontSize: 12, cursor: 'pointer',

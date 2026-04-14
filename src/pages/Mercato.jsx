@@ -63,7 +63,7 @@ function TabOfferte() {
                 }}>
                   <div style={{
                     fontSize: 10, color: 'var(--red)',
-                    fontFamily: 'Syne, sans-serif', letterSpacing: '0.08em',
+                    fontFamily: 'var(--font-display)', letterSpacing: '0.08em',
                     textTransform: 'uppercase', marginBottom: 4,
                   }}>CEDO</div>
                   <div style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: 14 }}>
@@ -77,7 +77,7 @@ function TabOfferte() {
                 }}>
                   <div style={{
                     fontSize: 10, color: 'var(--green)',
-                    fontFamily: 'Syne, sans-serif', letterSpacing: '0.08em',
+                    fontFamily: 'var(--font-display)', letterSpacing: '0.08em',
                     textTransform: 'uppercase', marginBottom: 4,
                   }}>RICEVO</div>
                   <div style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: 14 }}>

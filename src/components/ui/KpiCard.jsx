@@ -1,10 +1,10 @@
 export default function KpiCard({ label, value, sub, color = 'var(--accent-green)', trend }) {
   return (
     <div className="card" style={{ flex: 1, minWidth: 0 }}>
-      <div style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'Syne, sans-serif', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8 }}>
+      <div style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'var(--font-display)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8 }}>
         {label}
       </div>
-      <div style={{ fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: 32, color, lineHeight: 1 }}>
+      <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 32, color, lineHeight: 1 }}>
         {value}
       </div>
       {sub && (

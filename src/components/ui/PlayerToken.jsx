@@ -3,12 +3,12 @@ export default function PlayerToken({ giocatore, size = 'sm', onClick, selected 
   const isDiff = giocatore?.diffidato;
 
   const colors = {
-    Por: '#ff9800', DD: '#2979ff', DS: '#2979ff', DC: '#2979ff',
-    'M/C': '#00e676', C: '#00e676', 'T/A': '#e040fb', T: '#e040fb',
-    A: '#e040fb', W: '#e040fb', PC: '#ff1744',
+    Por: 'var(--role-gk)', DD: 'var(--role-def)', DS: 'var(--role-def)', DC: 'var(--role-def)',
+    'M/C': 'var(--role-mid)', C: 'var(--role-mid)', 'T/A': 'var(--role-fwd)', T: 'var(--role-fwd)',
+    A: 'var(--role-fwd)', W: 'var(--role-fwd)', PC: 'var(--role-pk)',
   };
   const ruolo = giocatore?.ruoloMantra || 'C';
-  const color = colors[ruolo] || '#7a92b0';
+  const color = colors[ruolo] || 'var(--text-secondary)';
 
   const sz = size === 'lg' ? 56 : size === 'md' ? 44 : 36;
 
@@ -23,14 +23,14 @@ export default function PlayerToken({ giocatore, size = 'sm', onClick, selected 
     >
       <div style={{
         width: sz, height: sz, borderRadius: '50%',
-        background: `${color}22`,
-        border: `2px solid ${selected ? color : `${color}66`}`,
+        background: 'rgba(0,0,0,0.25)',
+        border: `2px solid ${selected ? color : 'rgba(255,255,255,0.15)'}`,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         position: 'relative',
         transition: 'border-color 0.2s',
-        boxShadow: selected ? `0 0 12px ${color}44` : 'none',
+        boxShadow: selected ? `0 0 12px rgba(126,173,212,0.27)` : 'none',
       }}>
-        <span style={{ fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: sz * 0.27, color }}>
+        <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: sz * 0.27, color }}>
           {ruolo}
         </span>
         {isInf && (
@@ -54,7 +54,7 @@ export default function PlayerToken({ giocatore, size = 'sm', onClick, selected 
       </div>
       {giocatore && (
         <div style={{
-          fontSize: size === 'lg' ? 12 : 10, fontFamily: 'Syne, sans-serif',
+          fontSize: size === 'lg' ? 12 : 10, fontFamily: 'var(--font-display)',
           fontWeight: 600, color: 'var(--text-primary)', textAlign: 'center',
           maxWidth: sz + 16, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
         }}>

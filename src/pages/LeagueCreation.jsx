@@ -90,7 +90,7 @@ export default function LeagueCreation() {
         <button onClick={() => setView('home')} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', marginBottom: 'var(--space-md)', fontSize: '0.875rem' }}>
           ← Indietro
         </button>
-        <h1 style={{ color: 'var(--text-primary)', fontFamily: 'Syne, sans-serif', fontSize: '1.75rem', marginBottom: 'var(--space-lg)' }}>
+        <h1 style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-display)', fontSize: '1.75rem', marginBottom: 'var(--space-lg)' }}>
           ⚽ Crea la tua Lega
         </h1>
 
@@ -158,7 +158,7 @@ function StepIndicator({ steps, current }) {
 function HomeView({ onCreate, onJoin }) {
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-deep)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 'var(--space-lg)' }}>
-      <h1 style={{ color: 'var(--text-primary)', fontFamily: 'Syne, sans-serif', fontSize: '2rem', marginBottom: '0.5rem', textAlign: 'center' }}>
+      <h1 style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-display)', fontSize: '2rem', marginBottom: '0.5rem', textAlign: 'center' }}>
         🧠⚽ FantaBrain AI
       </h1>
       <p style={{ color: 'var(--text-secondary)', marginBottom: 'var(--space-lg)', textAlign: 'center' }}>
@@ -170,7 +170,7 @@ function HomeView({ onCreate, onJoin }) {
           onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
           onMouseLeave={(e) => e.currentTarget.style.transform = 'none'}>
           <div style={{ fontSize: '2.5rem', marginBottom: 'var(--space-sm)' }}>⚽</div>
-          <h2 style={{ color: 'var(--text-primary)', fontFamily: 'Syne, sans-serif', marginBottom: 'var(--space-sm)' }}>Crea una Lega</h2>
+          <h2 style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-display)', marginBottom: 'var(--space-sm)' }}>Crea una Lega</h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: 'var(--space-lg)' }}>
             Crea la tua lega e invita i tuoi amici
           </p>
@@ -181,7 +181,7 @@ function HomeView({ onCreate, onJoin }) {
           onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
           onMouseLeave={(e) => e.currentTarget.style.transform = 'none'}>
           <div style={{ fontSize: '2.5rem', marginBottom: 'var(--space-sm)' }}>🔗</div>
-          <h2 style={{ color: 'var(--text-primary)', fontFamily: 'Syne, sans-serif', marginBottom: 'var(--space-sm)' }}>Unisciti a una Lega</h2>
+          <h2 style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-display)', marginBottom: 'var(--space-sm)' }}>Unisciti a una Lega</h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: 'var(--space-lg)' }}>
             Hai un codice invito? Entra in una lega esistente
           </p>
@@ -200,7 +200,7 @@ function JoinView({ joinCode, setJoinCode, joinError, onJoin, onBack }) {
         ← Indietro
       </button>
       <div className="glass-card glass-card--accent" style={{ padding: 'var(--space-lg)', borderRadius: 'var(--radius-lg)', width: '100%', maxWidth: '480px' }}>
-        <h2 style={{ color: 'var(--text-primary)', fontFamily: 'Syne, sans-serif', marginBottom: 'var(--space-lg)' }}>🔗 Unisciti a una Lega</h2>
+        <h2 style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-display)', marginBottom: 'var(--space-lg)' }}>🔗 Unisciti a una Lega</h2>
         <label style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
           Codice invito
         </label>
@@ -224,7 +224,7 @@ function JoinView({ joinCode, setJoinCode, joinError, onJoin, onBack }) {
 function Step1({ form, update }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
-      <h2 style={{ color: 'var(--text-primary)', fontFamily: 'Syne, sans-serif' }}>Informazioni Base</h2>
+      <h2 style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-display)' }}>Informazioni Base</h2>
       <FormField label="Nome lega *">
         <input type="text" value={form.nome} onChange={(e) => update('nome', e.target.value)} maxLength={30} placeholder="Es. La Banda del Lunedì" style={inputStyle} />
       </FormField>
@@ -256,7 +256,7 @@ function Step2({ form, update }) {
   const minRosa = form.modalitaGioco === 'mantra' ? 23 : 25;
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
-      <h2 style={{ color: 'var(--text-primary)', fontFamily: 'Syne, sans-serif' }}>Impostazioni Rosa</h2>
+      <h2 style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-display)' }}>Impostazioni Rosa</h2>
       <FormField label="Crediti iniziali per squadra *">
         <input type="number" value={form.creditiIniziali} onChange={(e) => update('creditiIniziali', parseInt(e.target.value))} min={100} max={1000} step={10} style={inputStyle} />
       </FormField>
@@ -283,7 +283,7 @@ function Step3({ form, update, updateBM }) {
   };
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
-      <h2 style={{ color: 'var(--text-primary)', fontFamily: 'Syne, sans-serif' }}>Regolamento e Modificatori</h2>
+      <h2 style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-display)' }}>Regolamento e Modificatori</h2>
       <FormField label="Fonte voti *">
         <select value={form.fonteVoti} onChange={(e) => update('fonteVoti', e.target.value)} style={inputStyle}>
           <option value="fantabrain">FantaBrain (interno)</option>
@@ -332,7 +332,7 @@ function Step3({ form, update, updateBM }) {
 function Step4({ form, update }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
-      <h2 style={{ color: 'var(--text-primary)', fontFamily: 'Syne, sans-serif' }}>Impostazioni Partite</h2>
+      <h2 style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-display)' }}>Impostazioni Partite</h2>
       <FormField label="Tipo calendario *">
         <select value={form.tipoCalendario} onChange={(e) => update('tipoCalendario', e.target.value)} style={inputStyle}>
           <option value="andata_ritorno">Andata e Ritorno</option>
@@ -372,7 +372,7 @@ function Step4({ form, update }) {
 function Step5({ form, onCreate }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
-      <h2 style={{ color: 'var(--text-primary)', fontFamily: 'Syne, sans-serif' }}>Conferma e Creazione</h2>
+      <h2 style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-display)' }}>Conferma e Creazione</h2>
       <div style={{ background: 'var(--bg-elevated)', borderRadius: 'var(--radius-md)', padding: 'var(--space-md)' }}>
         {[
           ['Nome', form.nome],
@@ -412,7 +412,7 @@ function ConfirmModal({ league, onNavigate, copyToClipboard }) {
     <div style={{ minHeight: '100vh', background: 'var(--bg-deep)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 'var(--space-lg)' }}>
       <div className="glass-card glass-card--accent" style={{ padding: 'var(--space-lg)', borderRadius: 'var(--radius-lg)', maxWidth: '480px', width: '100%', textAlign: 'center' }}>
         <div style={{ fontSize: '3rem', marginBottom: 'var(--space-sm)' }}>🎉</div>
-        <h2 style={{ color: 'var(--text-primary)', fontFamily: 'Syne, sans-serif', marginBottom: 'var(--space-sm)' }}>La tua lega è stata creata!</h2>
+        <h2 style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-display)', marginBottom: 'var(--space-sm)' }}>La tua lega è stata creata!</h2>
         <p style={{ color: 'var(--text-secondary)', marginBottom: 'var(--space-lg)' }}>Condividi il codice invito con i tuoi amici</p>
 
         {/* Codice invito */}

@@ -68,8 +68,8 @@ export default function ShareButton({ analysisText, matchContext }) {
   return (
     <div style={{
       marginTop: 16,
-      background: 'rgba(0,212,255,0.06)',
-      border: '1px solid rgba(0,212,255,0.2)',
+      background: 'rgba(126,173,212,0.06)',
+      border: '1px solid rgba(126,173,212,0.2)',
       borderRadius: 10, padding: '12px 16px',
     }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
@@ -88,7 +88,7 @@ export default function ShareButton({ analysisText, matchContext }) {
           onFocus={(e) => e.target.select()}
           style={{
             flex: 1, background: 'rgba(0,0,0,0.2)',
-            border: '1px solid rgba(0,212,255,0.2)', borderRadius: 6,
+            border: '1px solid rgba(126,173,212,0.2)', borderRadius: 6,
             padding: '6px 10px', color: 'var(--accent-primary)',
             fontSize: 12, fontFamily: 'var(--font-display)', outline: 'none',
           }}

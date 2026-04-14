@@ -25,8 +25,8 @@ export default function PlayerList({ rosa, titolariIds, onPlayerClick, highlight
             style={{
               flex: 1, padding: '8px 4px', fontSize: '10px', fontWeight: 'bold', border: 'none', cursor: 'pointer',
               background: 'transparent',
-              color: tab === t ? '#F59E0B' : '#64748B',
-              borderBottom: tab === t ? '2px solid #F59E0B' : '2px solid transparent',
+              color: tab === t ? 'var(--gold)' : 'var(--text-secondary)',
+              borderBottom: tab === t ? '2px solid var(--gold)' : '2px solid transparent',
             }}
           >
             {t === 'rosa' ? `Rosa (${nonTitolari.length})` : `Panchina (${titolari.length})`}
@@ -40,7 +40,7 @@ export default function PlayerList({ rosa, titolariIds, onPlayerClick, highlight
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="🔍 Cerca..."
-          style={{ width: '100%', background: '#1E1E2E', border: '1px solid #ffffff15', borderRadius: '4px', padding: '4px 6px', fontSize: '9px', color: '#94A3B8', outline: 'none', boxSizing: 'border-box' }}
+          style={{ width: '100%', background: 'var(--bg-elevated)', border: '1px solid #ffffff15', borderRadius: '4px', padding: '4px 6px', fontSize: '9px', color: 'var(--text-secondary)', outline: 'none', boxSizing: 'border-box' }}
         />
       </div>
 
@@ -56,7 +56,7 @@ export default function PlayerList({ rosa, titolariIds, onPlayerClick, highlight
             key={g.id}
             onClick={() => onPlayerClick?.(g.id)}
             style={{
-              outline: highlightedIds?.includes(g.id) ? '1px solid #F59E0B' : 'none',
+              outline: highlightedIds?.includes(g.id) ? '1px solid var(--gold)' : 'none',
               borderRadius: '6px',
             }}
           >

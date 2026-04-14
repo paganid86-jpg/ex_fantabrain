@@ -153,11 +153,11 @@ export default function Statistiche() {
           <div key={k.label} className="glass-card" style={{ flex: 1, minWidth: 100, padding: '14px 18px' }}>
             <div style={{
               fontSize: 10, color: 'var(--text-muted)',
-              fontFamily: 'Syne, sans-serif', letterSpacing: '0.1em',
+              fontFamily: 'var(--font-display)', letterSpacing: '0.1em',
               textTransform: 'uppercase', marginBottom: 4,
             }}>{k.label}</div>
             <div style={{
-              fontFamily: 'Syne, sans-serif', fontWeight: 800,
+              fontFamily: 'var(--font-display)', fontWeight: 800,
               fontSize: 24, color: k.color,
             }}>{k.value}</div>
             {k.sub && (
@@ -201,13 +201,13 @@ export default function Statistiche() {
                 <div key={g.id} style={{
                   display: 'flex', alignItems: 'center', gap: 10,
                   padding: '7px 0',
-                  borderBottom: '1px solid rgba(0,212,255,0.08)',
+                  borderBottom: '1px solid rgba(126, 173, 212,0.08)',
                 }}>
                   <div style={{
                     width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
                     background: i < 3 ? 'var(--gold)' : 'rgba(255,255,255,0.06)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: 11,
+                    fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 11,
                     color: i < 3 ? '#000' : 'var(--text-muted)',
                   }}>{i + 1}</div>
                   <span className="badge badge-muted" style={{ fontSize: 9, flexShrink: 0 }}>
@@ -221,7 +221,7 @@ export default function Statistiche() {
                     {g.cognome}
                   </span>
                   <span style={{
-                    fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 15,
+                    fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 15,
                     color: g.votoMedia >= 7 ? 'var(--green)' : 'var(--amber)',
                   }}>
                     {g.votoMedia.toFixed(1)}
@@ -246,7 +246,7 @@ export default function Statistiche() {
                     <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
                       <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{r.count} gioc.</span>
                       <span style={{
-                        fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 16,
+                        fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 16,
                         color: r.media ? barColor : 'var(--text-muted)',
                       }}>
                         {r.media ?? '—'}
@@ -282,7 +282,7 @@ export default function Statistiche() {
                 return (
                   <div key={g.id} style={{
                     display: 'flex', alignItems: 'center', gap: 10,
-                    padding: '6px 0', borderBottom: '1px solid rgba(0,212,255,0.08)',
+                    padding: '6px 0', borderBottom: '1px solid rgba(126, 173, 212,0.08)',
                   }}>
                     <span className="badge badge-muted" style={{ fontSize: 9, flexShrink: 0 }}>
                       {g.ruoloMantra}
@@ -292,14 +292,14 @@ export default function Statistiche() {
                     </span>
                     <div style={{ textAlign: 'right' }}>
                       <div style={{
-                        fontFamily: 'Syne, sans-serif', fontWeight: 700,
+                        fontFamily: 'var(--font-display)', fontWeight: 700,
                         fontSize: 14, color: 'var(--green)',
                       }}>{media3}</div>
                       <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>media 3</div>
                     </div>
                     <div style={{ textAlign: 'right' }}>
                       <div style={{
-                        fontFamily: 'Syne, sans-serif', fontWeight: 700,
+                        fontFamily: 'var(--font-display)', fontWeight: 700,
                         fontSize: 14, color: 'var(--text-secondary)',
                       }}>{g.votoMedia.toFixed(1)}</div>
                       <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>stagione</div>
@@ -330,7 +330,7 @@ export default function Statistiche() {
                 return (
                   <div key={g.id} style={{
                     display: 'flex', alignItems: 'center', gap: 10,
-                    padding: '6px 0', borderBottom: '1px solid rgba(0,212,255,0.08)',
+                    padding: '6px 0', borderBottom: '1px solid rgba(126, 173, 212,0.08)',
                   }}>
                     <span className="badge badge-muted" style={{ fontSize: 9, flexShrink: 0 }}>
                       {g.ruoloMantra}
@@ -340,14 +340,14 @@ export default function Statistiche() {
                     </span>
                     <div style={{ textAlign: 'right' }}>
                       <div style={{
-                        fontFamily: 'Syne, sans-serif', fontWeight: 700,
+                        fontFamily: 'var(--font-display)', fontWeight: 700,
                         fontSize: 14, color: 'var(--red)',
                       }}>{media3}</div>
                       <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>media 3</div>
                     </div>
                     <div style={{ textAlign: 'right' }}>
                       <div style={{
-                        fontFamily: 'Syne, sans-serif', fontWeight: 700,
+                        fontFamily: 'var(--font-display)', fontWeight: 700,
                         fontSize: 14, color: 'var(--text-secondary)',
                       }}>{g.votoMedia.toFixed(1)}</div>
                       <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>stagione</div>
@@ -399,13 +399,13 @@ export default function Statistiche() {
             {scorers.slice(0, 20).map((s, i) => (
               <div key={s.playerId} style={{
                 display: 'flex', alignItems: 'center', gap: 8,
-                padding: '6px 0', borderBottom: '1px solid rgba(0,212,255,0.07)',
+                padding: '6px 0', borderBottom: '1px solid rgba(126, 173, 212,0.07)',
               }}>
                 <div style={{
                   width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
                   background: i < 3 ? 'var(--gold)' : 'rgba(255,255,255,0.06)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: 11,
+                  fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 11,
                   color: i < 3 ? '#000' : 'var(--text-muted)',
                 }}>{i + 1}</div>
                 <div style={{ flex: 1, minWidth: 0 }}>
@@ -417,7 +417,7 @@ export default function Statistiche() {
                   </div>
                 </div>
                 <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                  <div style={{ fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: 16, color: 'var(--green)' }}>
+                  <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 16, color: 'var(--green)' }}>
                     {s.goals}
                     <span style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 400, marginLeft: 2 }}>gol</span>
                   </div>

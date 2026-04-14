@@ -40,7 +40,7 @@ export default function LeagueSettings() {
 
   return (
     <div style={{ padding: 'var(--space-lg)', maxWidth: '800px', margin: '0 auto' }}>
-      <h1 style={{ color: 'var(--text-primary)', fontFamily: 'Syne, sans-serif', marginBottom: '0.25rem' }}>
+      <h1 style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-display)', marginBottom: '0.25rem' }}>
         ⚙️ Impostazioni Lega
       </h1>
       <p style={{ color: 'var(--text-secondary)', marginBottom: 'var(--space-lg)', fontSize: '0.875rem' }}>
@@ -117,7 +117,7 @@ export default function LeagueSettings() {
       {/* Section: Condividi */}
       {activeSection === 'condividi' && (
         <div className="glass-card glass-card--accent" style={{ padding: 'var(--space-lg)', borderRadius: 'var(--radius-lg)' }}>
-          <h2 style={{ color: 'var(--text-primary)', fontFamily: 'Syne, sans-serif', marginBottom: 'var(--space-lg)' }}>🔗 Condividi la Lega</h2>
+          <h2 style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-display)', marginBottom: 'var(--space-lg)' }}>🔗 Condividi la Lega</h2>
 
           <div style={{ marginBottom: 'var(--space-lg)' }}>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.75rem', marginBottom: '4px' }}>CODICE INVITO</p>
@@ -161,7 +161,7 @@ export default function LeagueSettings() {
       {activeSection === 'partecipanti' && (
         <div className="glass-card" style={{ padding: 'var(--space-lg)', borderRadius: 'var(--radius-lg)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-lg)' }}>
-            <h2 style={{ color: 'var(--text-primary)', fontFamily: 'Syne, sans-serif' }}>👥 Partecipanti</h2>
+            <h2 style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-display)' }}>👥 Partecipanti</h2>
             <span style={{ color: 'var(--accent-primary)', fontSize: '0.875rem', fontWeight: 600 }}>
               {league.participants.length} / {league.settings.numPartecipanti} posti
             </span>
@@ -207,7 +207,7 @@ export default function LeagueSettings() {
       {/* Section: Competizioni */}
       {activeSection === 'competizioni' && (
         <div className="glass-card" style={{ padding: 'var(--space-lg)', borderRadius: 'var(--radius-lg)' }}>
-          <h2 style={{ color: 'var(--text-primary)', fontFamily: 'Syne, sans-serif', marginBottom: 'var(--space-lg)' }}>📊 Competizioni</h2>
+          <h2 style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-display)', marginBottom: 'var(--space-lg)' }}>📊 Competizioni</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: 'var(--space-md)', background: 'var(--bg-elevated)', borderRadius: 'var(--radius-md)' }}>
               <div>

@@ -83,13 +83,13 @@ function PitchSlot({ giocatore }) {
           width: 50,
           height: 50,
           borderRadius: '50%',
-          border: '2px dashed rgba(0, 212, 255, 0.20)',
-          background: 'rgba(0, 212, 255, 0.03)',
+          border: '2px dashed rgba(126, 173, 212, 0.20)',
+          background: 'rgba(126, 173, 212, 0.03)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           fontSize: 18,
-          color: 'rgba(0, 212, 255, 0.30)',
+          color: 'rgba(126, 173, 212, 0.30)',
         }}>
           +
         </div>
@@ -447,7 +447,7 @@ function BarChartGiornate({ giornate }) {
                   height: `${h}%`,
                   background: isBelow
                     ? 'linear-gradient(180deg, var(--danger), rgba(239, 68, 68, 0.45))'
-                    : 'linear-gradient(180deg, var(--accent-primary), rgba(0, 212, 255, 0.35))',
+                    : 'linear-gradient(180deg, var(--accent-primary), rgba(126, 173, 212, 0.35))',
                   borderRadius: '3px 3px 0 0',
                   minHeight: 4,
                   transition: 'opacity 0.2s',
@@ -553,7 +553,7 @@ export default function Dashboard() {
       <div style={{ minHeight: '100vh', background: 'var(--bg-deep)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 'var(--space-lg)', gap: 'var(--space-lg)' }}>
         <div style={{ textAlign: 'center' }}>
           <div style={{ fontSize: '3rem', marginBottom: 'var(--space-sm)' }}>🏆</div>
-          <h2 style={{ color: 'var(--text-primary)', fontFamily: 'Syne, sans-serif', fontSize: '1.5rem', marginBottom: 'var(--space-sm)' }}>
+          <h2 style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-display)', fontSize: '1.5rem', marginBottom: 'var(--space-sm)' }}>
             Benvenuto su FantaBrain AI
           </h2>
           <p style={{ color: 'var(--text-secondary)', marginBottom: 'var(--space-lg)' }}>
@@ -770,13 +770,13 @@ export default function Dashboard() {
                   padding: '8px 10px',
                   borderRadius: 'var(--radius-sm)',
                   background: team.isUser
-                    ? 'rgba(0, 212, 255, 0.06)'
+                    ? 'rgba(126, 173, 212, 0.06)'
                     : 'transparent',
                   border: team.isUser
-                    ? '1px solid rgba(0, 212, 255, 0.18)'
+                    ? '1px solid rgba(126, 173, 212, 0.18)'
                     : '1px solid transparent',
                   boxShadow: team.isUser
-                    ? '0 0 14px rgba(0, 212, 255, 0.08)'
+                    ? '0 0 14px rgba(126, 173, 212, 0.08)'
                     : 'none',
                   marginBottom: 2,
                 }}>
@@ -805,7 +805,7 @@ export default function Dashboard() {
                     borderRadius: '50%',
                     flexShrink: 0,
                     background: team.isUser
-                      ? 'rgba(0, 212, 255, 0.15)'
+                      ? 'rgba(126, 173, 212, 0.15)'
                       : 'var(--bg-elevated)',
                     display: 'flex',
                     alignItems: 'center',
@@ -986,7 +986,7 @@ export default function Dashboard() {
             <div key={team.id} style={{
               display: 'flex', alignItems: 'center', gap: 8,
               padding: '6px 0',
-              borderBottom: '1px solid rgba(0,212,255,0.07)',
+              borderBottom: '1px solid rgba(126, 173, 212,0.07)',
             }}>
               <div style={{
                 width: 20, height: 20, borderRadius: '50%', flexShrink: 0,
@@ -1031,7 +1031,7 @@ export default function Dashboard() {
             {nextMatches.slice(0, 5).map((m) => (
               <div key={m.id} style={{
                 display: 'flex', alignItems: 'center', gap: 6,
-                padding: '5px 0', borderBottom: '1px solid rgba(0,212,255,0.07)',
+                padding: '5px 0', borderBottom: '1px solid rgba(126, 173, 212,0.07)',
                 fontSize: 12,
               }}>
                 {m.homeTeam.crest && <img src={m.homeTeam.crest} alt="" style={{ width: 14, height: 14, objectFit: 'contain' }} />}
@@ -1061,7 +1061,7 @@ export default function Dashboard() {
             {lastResults.slice(0, 5).map((m) => (
               <div key={m.id} style={{
                 display: 'flex', alignItems: 'center', gap: 6,
-                padding: '5px 0', borderBottom: '1px solid rgba(0,212,255,0.07)',
+                padding: '5px 0', borderBottom: '1px solid rgba(126, 173, 212,0.07)',
                 fontSize: 12,
               }}>
                 {m.homeTeam.crest && <img src={m.homeTeam.crest} alt="" style={{ width: 14, height: 14, objectFit: 'contain' }} />}

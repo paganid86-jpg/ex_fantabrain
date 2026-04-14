@@ -96,13 +96,13 @@ export default function FormationEditor({ rosa, modulo, titolariIds, onModuloCha
           <select
             value={modulo}
             onChange={(e) => onModuloChange(e.target.value)}
-            style={{ background: '#1E1E2E', border: '1px solid #F59E0B55', borderRadius: '6px', padding: '5px 10px', fontSize: '12px', color: '#F59E0B', cursor: 'pointer', outline: 'none' }}
+            style={{ background: 'var(--bg-elevated)', border: '1px solid rgba(184,134,11,0.33)', borderRadius: '6px', padding: '5px 10px', fontSize: '12px', color: 'var(--gold)', cursor: 'pointer', outline: 'none' }}
           >
             {MODULI_LIST.map((m) => (
               <option key={m} value={m}>{MODULI[m].label}</option>
             ))}
           </select>
-          <div style={{ background: '#1E1E2E', borderRadius: '6px', padding: '5px 10px', fontSize: '10px', color: '#94A3B8' }}>
+          <div style={{ background: 'var(--bg-elevated)', borderRadius: '6px', padding: '5px 10px', fontSize: '10px', color: 'var(--text-secondary)' }}>
             Punteggio atteso: <span style={{ color: '#22C55E', fontWeight: 'bold' }}>{puntoAtteso?.toFixed(1) ?? '—'}</span>
           </div>
         </div>

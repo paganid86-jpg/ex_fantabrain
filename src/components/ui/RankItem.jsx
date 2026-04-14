@@ -11,7 +11,7 @@ export default function RankItem({ posizione, nome, punti, isUser, ultimoTurno }
         width: 24, height: 24, borderRadius: '50%',
         background: posizione <= 3 ? 'var(--accent-amber)' : 'var(--bg-elevated)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: 12,
+        fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 12,
         color: posizione <= 3 ? '#000' : 'var(--text-muted)',
         flexShrink: 0,
       }}>
@@ -28,7 +28,7 @@ export default function RankItem({ posizione, nome, punti, isUser, ultimoTurno }
         </div>
       </div>
       <div style={{ textAlign: 'right' }}>
-        <div style={{ fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 16, color: 'var(--text-primary)' }}>
+        <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 16, color: 'var(--text-primary)' }}>
           {punti}
         </div>
         {ultimoTurno !== undefined && (

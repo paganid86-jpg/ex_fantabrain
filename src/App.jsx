@@ -1,7 +1,6 @@
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { useState } from 'react';
-import Sidebar from './components/layout/Sidebar';
-import Topbar from './components/layout/Topbar';
+import FloatingPanel from './components/layout/FloatingPanel';
+import Dock from './components/layout/Dock';
 import Dashboard from './pages/Dashboard';
 import AIAnalisi from './pages/AIAnalisi';
 import LaRosa from './pages/LaRosa';
@@ -26,31 +25,26 @@ function RequireAuth({ children }) {
 }
 
 function AppLayout() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-
   return (
     <div className="app-layout">
-      <Sidebar mobileOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-      <div className="main-content">
-        <Topbar onMenuClick={() => setSidebarOpen((o) => !o)} />
-        <div className="page-content">
-          <Routes>
-            <Route index element={<Dashboard />} />
-            <Route path="dashboard" element={<Dashboard />} />
-            <Route path="ai-analisi" element={<AIAnalisi />} />
-            <Route path="la-rosa" element={<LaRosa />} />
-            <Route path="schieramento" element={<Schieramento />} />
-            <Route path="classifica" element={<Classifica />} />
-            <Route path="calendario" element={<Calendario />} />
-            <Route path="mercato" element={<Mercato />} />
-            <Route path="scouting" element={<Scouting />} />
-            <Route path="war-room" element={<WarRoom />} />
-            <Route path="statistiche" element={<Statistiche />} />
-            <Route path="crea-lega" element={<LeagueCreation />} />
-            <Route path="impostazioni-lega" element={<LeagueSettings />} />
-          </Routes>
-        </div>
-      </div>
+      <FloatingPanel>
+        <Routes>
+          <Route index element={<Dashboard />} />
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="ai-analisi" element={<AIAnalisi />} />
+          <Route path="la-rosa" element={<LaRosa />} />
+          <Route path="schieramento" element={<Schieramento />} />
+          <Route path="classifica" element={<Classifica />} />
+          <Route path="calendario" element={<Calendario />} />
+          <Route path="mercato" element={<Mercato />} />
+          <Route path="scouting" element={<Scouting />} />
+          <Route path="war-room" element={<WarRoom />} />
+          <Route path="statistiche" element={<Statistiche />} />
+          <Route path="crea-lega" element={<LeagueCreation />} />
+          <Route path="impostazioni-lega" element={<LeagueSettings />} />
+        </Routes>
+      </FloatingPanel>
+      <Dock />
     </div>
   );
 }
