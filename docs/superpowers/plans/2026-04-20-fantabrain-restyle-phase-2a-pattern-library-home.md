@@ -848,7 +848,7 @@ import { Link } from 'react-router-dom'
 
 export default function Dashboard() {
   // ── State reads (selettori reattivi inline) ────────────
-  const userName = useAppStore((s) => s.user?.username || 'Fantallenatore')
+  const userName = useAppStore((s) => s.user?.name || 'Fantallenatore')
   const rosa = useAppStore((s) => s.rosa)
   const calendario = useAppStore((s) => s.calendario)
   const classifica = useAppStore((s) => s.classifica)
@@ -882,7 +882,7 @@ export default function Dashboard() {
     .reverse()
     .find((g) => g.giocata)
   const puntiUltima = ultimaGiocata?.puntiUser ?? null
-  const userRow = classifica?.find((r) => r.nome === userName) || classifica?.[0]
+  const userRow = classifica?.find((r) => r.isUser) || null
   const puntiMedia = userRow?.puntimedia ?? null
   const diff =
     puntiUltima != null && puntiMedia != null
@@ -895,9 +895,9 @@ export default function Dashboard() {
 
   // ── KPI rapidi per QuickCard ───────────────────────────
   const posizione = userRow
-    ? classifica.findIndex((r) => r.nome === userName) + 1
+    ? classifica.findIndex((r) => r.isUser) + 1
     : null
-  const infortunati = rosa.filter((p) => p.stato === 'infortunato').length
+  const infortunati = rosa.filter((p) => p.infortunato).length
 
   return (
     <div className="home-stack">
