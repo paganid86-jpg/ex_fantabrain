@@ -1,14 +1,33 @@
+// src/components/formation/FormationEditor.jsx
+
 import { useState } from 'react';
 import { DndContext, DragOverlay, PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
-import { MODULI, MODULI_LIST, isCompatibile } from '../../data/moduli';
+import { MODULI } from '../../data/moduli';
 import FormationSlot from './FormationSlot';
 import PlayerToken from './PlayerToken';
-import PlayerList from './PlayerList';
 
-export default function FormationEditor({ rosa, modulo, titolariIds, onModuloChange, onTitolariChange, puntoAtteso }) {
+/**
+ * FormationEditor — campo drag-and-drop.
+ *
+ * Props:
+ * - rosa: array giocatori
+ * - modulo: string chiave modulo attivo
+ * - titolariIds: number[] (lunghezza = numero slot)
+ * - onTitolariChange: (ids: number[]) => void
+ * - puntoAtteso: number
+ * - onModuloChipClick: () => void — apre il BottomSheet modulo
+ * - onSlotTap: (slotIdx: number, slot: object) => void — tocco su slot vuoto (player picker)
+ */
+export default function FormationEditor({
+  rosa,
+  modulo,
+  titolariIds,
+  onTitolariChange,
+  puntoAtteso,
+  onModuloChipClick,
+  onSlotTap,
+}) {
   const [activeGiocatoreId, setActiveGiocatoreId] = useState(null);
-  const [selectedSlotId, setSelectedSlotId] = useState(null);
-  const [highlightedIds, setHighlightedIds] = useState([]);
 
   const moduloDef = MODULI[modulo] || MODULI['4-3-3'];
   const slots = moduloDef.slots;
@@ -44,42 +63,28 @@ export default function FormationEditor({ rosa, modulo, titolariIds, onModuloCha
     const occupantId = newIds[targetSlotIdx];
 
     if (currentSlotIdx >= 0) {
-      // Drag from field slot: swap
+      // Drag da slot in campo: swap
       newIds[targetSlotIdx] = draggedId;
       newIds[currentSlotIdx] = occupantId ?? null;
     } else {
-      // Drag from roster list: place, kick existing to bench if any
+      // Drag dalla panchina: piazza nello slot
       newIds[targetSlotIdx] = draggedId;
     }
     onTitolariChange(newIds.filter((id) => id != null));
   }
 
   function handleSlotClick(slotIdx) {
-    const slot = slots[slotIdx];
     if (slotMap[slotIdx]) {
-      // Deselect
-      setSelectedSlotId(null);
-      setHighlightedIds([]);
+      // Slot occupato: rimuovi (manda in panchina)
+      const newIds = titolariIds.filter((id) => id !== slotMap[slotIdx]);
+      onTitolariChange(newIds);
     } else {
-      setSelectedSlotId(slotIdx);
-      // Highlight compatible players not yet in starting XI
-      const compatible = rosa
-        .filter((g) => !titolariIds.includes(g.id) && isCompatibile(g.ruoloMantra, slot.ruoli))
-        .map((g) => g.id);
-      setHighlightedIds(compatible);
+      // Slot vuoto: apri player picker
+      onSlotTap?.(slotIdx, slots[slotIdx]);
     }
   }
 
-  function handlePlayerListClick(gId) {
-    if (selectedSlotId == null) return;
-    const newIds = [...titolariIds];
-    newIds[selectedSlotId] = gId;
-    onTitolariChange(newIds);
-    setSelectedSlotId(null);
-    setHighlightedIds([]);
-  }
-
-  // Group slots by row
+  // Raggruppa gli slot per riga
   const rows = slots.reduce((acc, slot, idx) => {
     (acc[slot.row] = acc[slot.row] || []).push({ slot, idx });
     return acc;
@@ -89,65 +94,55 @@ export default function FormationEditor({ rosa, modulo, titolariIds, onModuloCha
 
   return (
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-      <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#0A0A12' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
 
-        {/* Toolbar */}
-        <div style={{ background: '#12121A', borderBottom: '1px solid #ffffff10', padding: '8px 12px', display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
-          <select
-            value={modulo}
-            onChange={(e) => onModuloChange(e.target.value)}
-            style={{ background: 'var(--bg-elevated)', border: '1px solid rgba(184,134,11,0.33)', borderRadius: '6px', padding: '5px 10px', fontSize: '12px', color: 'var(--gold)', cursor: 'pointer', outline: 'none' }}
+        {/* Toolbar: modulo chip + punteggio atteso */}
+        <div className="campo-toolbar">
+          <button
+            className="modulo-chip"
+            onClick={onModuloChipClick}
+            aria-label={`Modulo attivo: ${moduloDef.label}. Tocca per cambiare`}
           >
-            {MODULI_LIST.map((m) => (
-              <option key={m} value={m}>{MODULI[m].label}</option>
-            ))}
-          </select>
-          <div style={{ background: 'var(--bg-elevated)', borderRadius: '6px', padding: '5px 10px', fontSize: '10px', color: 'var(--text-secondary)' }}>
-            Punteggio atteso: <span style={{ color: '#22C55E', fontWeight: 'bold' }}>{puntoAtteso?.toFixed(1) ?? '—'}</span>
-          </div>
+            {moduloDef.label}
+            <span className="modulo-chip-arrow" aria-hidden="true">▼</span>
+          </button>
+          <span className="campo-kpi">
+            Atteso: <strong>{puntoAtteso?.toFixed(1) ?? '—'}</strong>
+          </span>
         </div>
 
-        {/* Field + Lateral panel */}
-        <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-
-          {/* Field */}
+        {/* Campo */}
+        <div style={{
+          flex: 1,
+          background: 'linear-gradient(180deg, #0F3320 0%, #155228 30%, #1A6030 50%, #155228 70%, #0F3320 100%)',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'space-around',
+          padding: '16px 8px',
+          position: 'relative',
+          overflowY: 'auto',
+        }}>
+          {/* Linea di centrocampo */}
           <div style={{
-            flex: 1,
-            background: 'linear-gradient(180deg, #0F3320 0%, #155228 30%, #1A6030 50%, #155228 70%, #0F3320 100%)',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'space-around',
-            padding: '16px 8px',
-            position: 'relative',
-            overflowY: 'auto',
-          }}>
-            {/* Center line */}
-            <div style={{ position: 'absolute', top: '50%', left: '10%', right: '10%', height: '1px', background: '#ffffff15', pointerEvents: 'none' }} />
+            position: 'absolute', top: '50%', left: '10%', right: '10%',
+            height: '1px', background: '#ffffff15', pointerEvents: 'none',
+          }} />
 
-            {Object.keys(rows).sort((a, b) => b - a).map((rowKey) => (
-              <div key={rowKey} style={{ display: 'flex', gap: '16px', alignItems: 'center', zIndex: 1 }}>
-                {rows[rowKey].map(({ slot, idx }) => (
-                  <FormationSlot
-                    key={slot.id}
-                    slotId={`slot-${idx}`}
-                    slot={slot}
-                    giocatore={getGiocatoreBySlotIndex(idx)}
-                    isSelected={selectedSlotId === idx}
-                    onClick={() => handleSlotClick(idx)}
-                  />
-                ))}
-              </div>
-            ))}
-          </div>
-
-          {/* Lateral panel */}
-          <PlayerList
-            rosa={rosa}
-            titolariIds={titolariIds}
-            onPlayerClick={handlePlayerListClick}
-            highlightedIds={highlightedIds}
-          />
+          {Object.keys(rows).sort((a, b) => b - a).map((rowKey) => (
+            <div key={rowKey} style={{ display: 'flex', gap: '16px', alignItems: 'center', zIndex: 1 }}>
+              {rows[rowKey].map(({ slot, idx }) => (
+                <FormationSlot
+                  key={slot.id}
+                  slotId={`slot-${idx}`}
+                  slot={slot}
+                  giocatore={getGiocatoreBySlotIndex(idx)}
+                  isSelected={false}
+                  onClick={() => handleSlotClick(idx)}
+                />
+              ))}
+            </div>
+          ))}
         </div>
       </div>
 
