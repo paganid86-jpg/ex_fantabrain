@@ -1,2 +1,48 @@
 @import "tailwindcss";
 @import "./styles/design-system.css";
+
+/* ──────────────────────────────────────────────────────────
+   Tailwind v4 · theme config
+   Espone i design tokens come utility: bg-plum, text-fg,
+   font-display, rounded-xl (28px), shadow-md, duration-standard…
+   ────────────────────────────────────────────────────────── */
+@theme {
+  /* Colors — brand + semantic */
+  --color-plum: #381932;
+  --color-milk: #FFF3E6;
+  --color-success: #0E8C5F;
+  --color-danger:  #D64545;
+  --color-gold:    #E6B325;
+  --color-info:    #3B5B8C;
+
+  /* Colors — runtime (seguono data-theme via var(--bg)/var(--fg)) */
+  --color-bg: var(--bg);
+  --color-fg: var(--fg);
+  --color-fg-70: var(--fg-70);
+  --color-fg-55: var(--fg-55);
+  --color-fg-15: var(--fg-15);
+  --color-fg-08: var(--fg-08);
+  --color-surface: var(--surface);
+  --color-border: var(--border);
+  --color-border-subtle: var(--border-subtle);
+
+  /* Font families */
+  --font-display: 'Unbounded', system-ui, sans-serif;
+  --font-body:    'Inter', system-ui, sans-serif;
+  --font-mono:    'JetBrains Mono', ui-monospace, monospace;
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 28px;
+
+  /* Shadows — in dark (i token runtime cambiano già in light via :root override) */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.50);
+
+  /* Durations + easings per utility transition-*/
+  --default-transition-duration: 240ms;
+  --default-transition-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
