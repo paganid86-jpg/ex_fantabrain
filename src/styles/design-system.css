@@ -959,6 +959,289 @@ select.input-field {
 .chrome-line::before { content: none; }
 
 /* ══════════════════════════════════════════════════════════
+   PATTERN LIBRARY — Fase 2a
+   HeroBlock · DeadlinePill · QuickCard · Stripe · NewsPreview
+   ══════════════════════════════════════════════════════════ */
+
+/* ── Stripe decorativa (riusabile in più pattern) ───────── */
+.stripe-decor {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.stripe-decor::before,
+.stripe-decor::after {
+  content: '';
+  position: absolute;
+  left: -20%;
+  right: -20%;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.18;
+  transform: rotate(-6deg);
+}
+
+.stripe-decor::before { top: 30%; }
+.stripe-decor::after  { top: 70%; }
+
+/* ── HeroBlock ──────────────────────────────────────────── */
+.hero-block {
+  position: relative;
+  background: var(--fg);
+  color: var(--bg);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6) var(--space-6) var(--space-5);
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4);
+  min-height: 168px;
+}
+
+.hero-block-main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.hero-kicker {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: currentColor;
+  opacity: 0.7;
+}
+
+.hero-value {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(72px, 18vw, 120px);
+  line-height: 0.9;
+  letter-spacing: -0.05em;
+  color: currentColor;
+}
+
+.hero-label {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  color: currentColor;
+  opacity: 0.7;
+}
+
+.diff-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  background: rgba(0, 0, 0, 0.08);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  color: currentColor;
+}
+
+.diff-pill--pos { background: rgba(14, 140, 95, 0.18); }
+.diff-pill--neg { background: rgba(214, 69, 69, 0.18); }
+
+/* ── DeadlinePill ───────────────────────────────────────── */
+.deadline-pill {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: rgba(214, 69, 69, 0.10);
+  border: 1px solid rgba(214, 69, 69, 0.28);
+  color: var(--color-danger);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.deadline-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-danger);
+  flex-shrink: 0;
+  animation: pulseDanger 1.6s ease-out infinite;
+}
+
+.deadline-label {
+  flex: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--fg);
+  opacity: 0.85;
+}
+
+.deadline-timer {
+  font-variant-numeric: tabular-nums;
+  color: var(--color-danger);
+  letter-spacing: 0.04em;
+}
+
+/* ── QuickCard grid + card ──────────────────────────────── */
+.quick-card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+}
+
+.quick-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  min-height: 120px;
+  background: var(--surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  color: var(--fg);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background var(--motion-micro) ease-out,
+              border-color var(--motion-micro) ease-out,
+              transform var(--motion-micro) ease-out;
+}
+
+.quick-card:hover {
+  background: var(--surface-hover);
+  border-color: var(--border);
+  transform: translateY(-2px);
+}
+
+.quick-card--accent {
+  background: var(--fg);
+  color: var(--bg);
+  border-color: var(--fg);
+}
+
+.quick-card--accent:hover {
+  background: var(--fg);
+  opacity: 0.92;
+}
+
+.quick-card-icon {
+  font-size: 22px;
+  line-height: 1;
+  opacity: 0.9;
+}
+
+.quick-card-label {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: inherit;
+}
+
+.quick-card-value {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 28px;
+  line-height: 1;
+  color: inherit;
+}
+
+.quick-card-hint {
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: inherit;
+  opacity: 0.7;
+}
+
+/* ── NewsPreviewStub ────────────────────────────────────── */
+.news-preview {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.news-preview-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.news-preview-cta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--fg-70);
+  text-decoration: none;
+}
+
+.news-preview-cta:hover { color: var(--fg); }
+
+.news-preview-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: var(--space-4);
+  background: var(--surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  color: var(--fg);
+  transition: background var(--motion-micro) ease-out;
+}
+
+.news-preview-card:hover { background: var(--surface-hover); }
+
+.news-preview-kicker {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--fg-55);
+}
+
+.news-preview-title {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--fg);
+}
+
+/* ── Home layout wrapper ────────────────────────────────── */
+.home-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.home-greeting {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.home-greeting-title {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(28px, 7vw, 40px);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--fg);
+}
+
+/* ══════════════════════════════════════════════════════════
    RESPONSIVE
    ══════════════════════════════════════════════════════════ */
 
