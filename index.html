@@ -21,6 +21,26 @@
     <meta name="twitter:title" content="FantaAI — Il primo Coach AI per il Fantacalcio" />
     <meta name="twitter:description" content="Il Coach AI analizza statistiche, infortuni e form — e ti dice chi schierare." />
 
+    <!-- Anti-FOUC: applica data-theme prima del primo paint.
+         Ordine risoluzione identico a ThemeContext.jsx:
+         localStorage('fantabrain-theme') > prefers-color-scheme > 'dark' -->
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('fantabrain-theme');
+          var theme =
+            stored === 'light' || stored === 'dark'
+              ? stored
+              : window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches
+                ? 'light'
+                : 'dark';
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {
+          document.documentElement.setAttribute('data-theme', 'dark');
+        }
+      })();
+    </script>
+
     <!-- Performance: preconnect font origins -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

@@ -109,10 +109,12 @@ html[data-theme="light"] {
   --bg-deep: var(--bg);
   --bg-panel: var(--surface);
   --bg-surface: var(--surface);
+  --bg-card: var(--surface);
   --bg-elevated: var(--surface-hover);
   --bg-dock: var(--surface);
   --bg-glass: var(--fg-04);
   --bg-glass-hover: var(--fg-08);
+  --glass-blur: 18px;
 
   --text-primary: var(--fg);
   --text-secondary: var(--fg-70);
