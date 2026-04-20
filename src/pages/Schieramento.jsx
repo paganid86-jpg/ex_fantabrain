@@ -1,93 +1,179 @@
+// src/pages/Schieramento.jsx
+
 import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import useAppStore from '../store/useAppStore';
+import { MODULI, MODULI_LIST, isCompatibile } from '../data/moduli';
 import FormationEditor from '../components/formation/FormationEditor';
-import { analizzaSchieramento } from '../lib/claudeApi';
-import { MODULI } from '../data/moduli';
+import SchieraTabBar from '../components/patterns/SchieraTabBar';
+import BottomSheet from '../components/patterns/BottomSheet';
+import LaRosa from './LaRosa';
 
 export default function Schieramento() {
+  // ── URL tab sync ───────────────────────────────────────
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get('tab') === 'rosa' ? 'rosa' : 'campo';
+
+  function handleTabChange(tab) {
+    setSearchParams(tab === 'campo' ? {} : { tab });
+  }
+
+  // ── Store ──────────────────────────────────────────────
   const rosa = useAppStore((s) => s.rosa);
   const modulo = useAppStore((s) => s.modulo);
   const setModulo = useAppStore((s) => s.setModulo);
   const titolariIds = useAppStore((s) => s.titolariIds);
   const setTitolariIds = useAppStore((s) => s.setTitolariIds);
-  const giornataCorrente = useAppStore((s) => s.giornataCorrente);
 
-  const [aiLoading, setAiLoading] = useState(false);
-  const [aiRisultato, setAiRisultato] = useState('');
-  const [aiError, setAiError] = useState('');
+  // ── Bottom sheet state ─────────────────────────────────
+  const [moduloSheetOpen, setModuloSheetOpen] = useState(false);
+  const [pickerSlot, setPickerSlot] = useState(null); // { slotIdx, slot } | null
 
+  // ── Calcoli ────────────────────────────────────────────
   const titolari = rosa.filter((g) => titolariIds.includes(g.id));
   const puntoAtteso = titolari.reduce((sum, g) => sum + (g.votoMedia || 0), 0);
 
-  async function handleOttimizza() {
-    if (aiLoading) return;
-    setAiLoading(true);
-    setAiError('');
-    try {
-      const moduloDef = MODULI[modulo];
-      const schieramentoData = {
-        modulo,
-        titolari: titolari.map((g, i) => ({
-          nome: `${g.nome} ${g.cognome}`,
-          ruolo: g.ruoloMantra,
-          slot: moduloDef?.slots[i]?.id,
-          media: g.votoMedia,
-          infortunato: g.infortunato,
-          diffidato: g.diffidato,
-        })),
-      };
-      const risultato = await analizzaSchieramento(schieramentoData, rosa, giornataCorrente);
-      setAiRisultato(risultato);
-    } catch (err) {
-      setAiError(err.message);
-    } finally {
-      setAiLoading(false);
-    }
+  // ── Handlers ───────────────────────────────────────────
+
+  /** Cambia modulo con slot preservation: mantieni il giocatore in slot[i]
+   *  solo se il suo ruolo è compatibile con il nuovo slot[i]. */
+  function handleModuloChange(newModulo) {
+    const newSlots = MODULI[newModulo]?.slots ?? [];
+    const newIds = newSlots.map((newSlot, idx) => {
+      const currentId = titolariIds[idx];
+      if (currentId == null) return null;
+      const giocatore = rosa.find((g) => g.id === currentId);
+      if (!giocatore) return null;
+      return isCompatibile(giocatore.ruoloMantra, newSlot.ruoli) ? currentId : null;
+    });
+    setModulo(newModulo);
+    setTitolariIds(newIds.filter(Boolean));
+    setModuloSheetOpen(false);
   }
 
+  /** Tap su slot vuoto → apri player picker */
+  function handleSlotTap(slotIdx, slot) {
+    setPickerSlot({ slotIdx, slot });
+  }
+
+  /** Scelta giocatore nel picker → assegna allo slot */
+  function handlePickerSelect(gId) {
+    if (pickerSlot == null) return;
+    const newIds = [...titolariIds];
+    // Rimuovi il giocatore da un altro slot se già titolare
+    const existingIdx = newIds.indexOf(gId);
+    if (existingIdx >= 0) newIds[existingIdx] = null;
+    newIds[pickerSlot.slotIdx] = gId;
+    setTitolariIds(newIds.filter(Boolean));
+    setPickerSlot(null);
+  }
+
+  // ── Giocatori compatibili per il player picker ─────────
+  const compatibiliPicker = pickerSlot
+    ? rosa
+        .filter(
+          (g) =>
+            !titolariIds.includes(g.id) &&
+            isCompatibile(g.ruoloMantra, pickerSlot.slot.ruoli)
+        )
+        .sort((a, b) => (b.votoMedia || 0) - (a.votoMedia || 0))
+    : [];
+
   return (
-    <div style={{ display: 'flex', height: 'calc(100vh - 60px)', overflow: 'hidden' }}>
-      {/* Formation Editor — takes remaining width */}
-      <div style={{ flex: 1, overflow: 'hidden' }}>
-        <FormationEditor
-          rosa={rosa}
-          modulo={modulo}
-          titolariIds={titolariIds}
-          onModuloChange={setModulo}
-          onTitolariChange={setTitolariIds}
-          puntoAtteso={puntoAtteso}
-        />
-      </div>
+    <div className="schiera-page">
+      {/* Sub-tab bar */}
+      <SchieraTabBar
+        activeTab={activeTab}
+        onTabChange={handleTabChange}
+        rosaCount={rosa.length > 0 ? rosa.length : undefined}
+      />
 
-      {/* AI Sidebar */}
-      <div style={{ width: '280px', background: 'var(--bg-deep)', borderLeft: '1px solid var(--border-glass)', padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px', overflowY: 'auto' }}>
-        <h3 style={{ color: 'var(--gold)', fontSize: '14px', fontWeight: 'bold', margin: 0 }}>⚡ Analisi AI</h3>
-        <button
-          onClick={handleOttimizza}
-          disabled={aiLoading}
-          className="btn-ai"
-          style={{ width: '100%' }}
-        >
-          {aiLoading ? '⏳ Analisi in corso...' : '⚡ Ottimizza Schieramento'}
-        </button>
-        {aiError && <div style={{ color: 'var(--danger)', fontSize: '11px' }}>{aiError}</div>}
-        {aiRisultato && (
-          <div style={{ background: 'var(--bg-glass)', border: '1px solid rgba(245, 158, 11, 0.20)', borderRadius: '8px', padding: '10px', fontSize: '11px', color: 'var(--text-primary)', lineHeight: '1.6' }}>
-            {aiRisultato}
-          </div>
-        )}
+      {/* Tab: Campo */}
+      {activeTab === 'campo' && (
+        <div className="schiera-tab-content schiera-tab-content--campo">
+          <FormationEditor
+            rosa={rosa}
+            modulo={modulo}
+            titolariIds={titolariIds}
+            onTitolariChange={setTitolariIds}
+            puntoAtteso={puntoAtteso}
+            onModuloChipClick={() => setModuloSheetOpen(true)}
+            onSlotTap={handleSlotTap}
+          />
+        </div>
+      )}
 
-        {/* Legenda */}
-        <div style={{ marginTop: 'auto', fontSize: '10px', color: 'var(--text-muted)' }}>
-          <div style={{ marginBottom: '6px', fontWeight: 'bold', color: 'var(--text-secondary)' }}>Legenda ruoli</div>
-          {[['Por', 'var(--gold)'], ['DC/DD/DS', 'var(--blue)'], ['M/C', 'var(--success)'], ['T/A/W', 'var(--ice-light)'], ['PC', 'var(--danger)']].map(([label, color]) => (
-            <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '3px' }}>
-              <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: color }} />
-              <span>{label}</span>
-            </div>
+      {/* Tab: Rosa */}
+      {activeTab === 'rosa' && (
+        <div className="schiera-tab-content">
+          <LaRosa />
+        </div>
+      )}
+
+      {/* BottomSheet: selezione modulo */}
+      <BottomSheet
+        isOpen={moduloSheetOpen}
+        onClose={() => setModuloSheetOpen(false)}
+        title="Scegli modulo"
+      >
+        <div className="modulo-list">
+          {MODULI_LIST.map((m) => (
+            <button
+              key={m}
+              className={`modulo-list-item${m === modulo ? ' modulo-list-item--active' : ''}`}
+              onClick={() => handleModuloChange(m)}
+            >
+              {MODULI[m].label}
+              {m === modulo && <span aria-hidden="true">✓</span>}
+            </button>
           ))}
         </div>
-      </div>
+      </BottomSheet>
+
+      {/* BottomSheet: player picker */}
+      <BottomSheet
+        isOpen={pickerSlot != null}
+        onClose={() => setPickerSlot(null)}
+        title={
+          pickerSlot
+            ? `Scegli — ${pickerSlot.slot.ruoli.join('/')}`
+            : 'Scegli giocatore'
+        }
+      >
+        {compatibiliPicker.length === 0 ? (
+          <p style={{
+            color: 'var(--fg-55)',
+            fontSize: 14,
+            textAlign: 'center',
+            padding: 'var(--space-4)',
+          }}>
+            Nessun giocatore compatibile disponibile in panchina.
+          </p>
+        ) : (
+          <div className="player-picker-list">
+            {compatibiliPicker.map((g) => (
+              <button
+                key={g.id}
+                className={`player-picker-item${g.infortunato ? ' player-picker-item--infortunato' : ''}`}
+                onClick={() => !g.infortunato && handlePickerSelect(g.id)}
+                disabled={g.infortunato}
+                aria-label={`${g.nome} ${g.cognome}${g.infortunato ? ' (infortunato)' : ''}`}
+              >
+                <span className="player-picker-role">{g.ruoloMantra}</span>
+                <span className="player-picker-name">
+                  {g.nome} {g.cognome}
+                  {g.infortunato && (
+                    <span style={{ fontSize: 11, marginLeft: 6, color: 'var(--color-danger)' }}>
+                      ⚠ infort.
+                    </span>
+                  )}
+                </span>
+                <span className="player-picker-media">{g.votoMedia?.toFixed(1) ?? '—'}</span>
+              </button>
+            ))}
+          </div>
+        )}
+      </BottomSheet>
     </div>
   );
 }
