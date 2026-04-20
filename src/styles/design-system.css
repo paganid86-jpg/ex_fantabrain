@@ -1242,6 +1242,271 @@ select.input-field {
 }
 
 /* ══════════════════════════════════════════════════════════
+   PATTERN LIBRARY — Fase 2b
+   BottomSheet · SchieraTabBar · ModuloChip · CampoToolbar
+   ══════════════════════════════════════════════════════════ */
+
+/* ── BottomSheet ────────────────────────────────────────── */
+.bottom-sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 200;
+  animation: fadeIn 180ms ease-out;
+}
+
+.bottom-sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 201;
+  background: var(--surface);
+  border-top: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  padding: var(--space-5) var(--space-5) calc(var(--space-5) + env(safe-area-inset-bottom));
+  max-height: 70vh;
+  overflow-y: auto;
+  animation: slideUp 220ms ease-out;
+}
+
+.bottom-sheet-handle {
+  width: 40px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--fg-55);
+  margin: 0 auto var(--space-4);
+}
+
+.bottom-sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+
+.bottom-sheet-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--fg);
+}
+
+.bottom-sheet-close {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--surface-hover);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--fg-70);
+  flex-shrink: 0;
+}
+
+/* ── SchieraTabBar ──────────────────────────────────────── */
+.schiera-tab-bar {
+  display: flex;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  background: var(--bg);
+  border-bottom: 1px solid var(--border-subtle);
+  flex-shrink: 0;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  background: transparent;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--fg-55);
+  cursor: pointer;
+  transition: background var(--motion-micro) ease-out,
+              color var(--motion-micro) ease-out,
+              border-color var(--motion-micro) ease-out;
+}
+
+.tab-btn:hover {
+  background: var(--surface-hover);
+  color: var(--fg);
+}
+
+.tab-btn--active {
+  background: var(--fg);
+  color: var(--bg);
+  border-color: var(--fg);
+}
+
+/* ── Modulo chip (nel toolbar del campo) ────────────────── */
+.campo-toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--bg);
+  border-bottom: 1px solid var(--border-subtle);
+  flex-shrink: 0;
+}
+
+.modulo-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-full);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--fg);
+  cursor: pointer;
+  transition: background var(--motion-micro) ease-out,
+              border-color var(--motion-micro) ease-out;
+}
+
+.modulo-chip:hover {
+  background: var(--surface-hover);
+  border-color: var(--fg-55);
+}
+
+.modulo-chip-arrow {
+  font-size: 10px;
+  opacity: 0.6;
+  margin-left: 2px;
+}
+
+.campo-kpi {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--fg-55);
+  margin-left: auto;
+}
+
+.campo-kpi strong {
+  color: var(--fg);
+  font-weight: 600;
+}
+
+/* ── Modulo list nel BottomSheet ────────────────────────── */
+.modulo-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.modulo-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  border: 1px solid var(--border-subtle);
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--fg);
+  transition: background var(--motion-micro) ease-out,
+              border-color var(--motion-micro) ease-out;
+}
+
+.modulo-list-item:hover {
+  background: var(--surface-hover);
+  border-color: var(--border);
+}
+
+.modulo-list-item--active {
+  background: var(--fg);
+  color: var(--bg);
+  border-color: var(--fg);
+}
+
+/* ── Player picker nel BottomSheet ──────────────────────── */
+.player-picker-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.player-picker-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  border: 1px solid var(--border-subtle);
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  transition: background var(--motion-micro) ease-out;
+}
+
+.player-picker-item:hover:not(:disabled) {
+  background: var(--surface-hover);
+}
+
+.player-picker-item--infortunato {
+  opacity: 0.5;
+}
+
+.player-picker-role {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--fg-55);
+  min-width: 32px;
+}
+
+.player-picker-name {
+  flex: 1;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--fg);
+}
+
+.player-picker-media {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--fg-70);
+}
+
+/* ── Schiera page wrapper ───────────────────────────────── */
+.schiera-page {
+  display: flex;
+  flex-direction: column;
+  height: calc(100dvh - var(--bottom-nav-height, 72px));
+  overflow: hidden;
+}
+
+.schiera-tab-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.schiera-tab-content--campo {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ══════════════════════════════════════════════════════════
    RESPONSIVE
    ══════════════════════════════════════════════════════════ */
 
