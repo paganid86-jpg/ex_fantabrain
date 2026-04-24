@@ -1645,7 +1645,7 @@ select.input-field {
   align-items: center;
   justify-content: center;
   font-size: 10px;
-  color: #fff;
+  color: var(--color-milk);
 }
 .slot__badge--danger { background: var(--color-danger); }
 .slot__badge--warn   { background: var(--color-gold); }
@@ -1773,7 +1773,9 @@ html[data-theme="light"] .bench-ai-button {
   font-size: 10px;
   color: var(--fg-70);
   cursor: pointer;
-  transition: all var(--motion-micro) var(--ease-standard);
+  transition: background var(--motion-micro) var(--ease-standard),
+              color var(--motion-micro) var(--ease-standard),
+              border-color var(--motion-micro) var(--ease-standard);
 }
 
 .bench-filter__chip--active {
