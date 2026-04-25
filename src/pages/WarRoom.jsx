@@ -129,7 +129,7 @@ export default function WarRoom() {
           <button
             className="btn-ai"
             onClick={lanciaAnalisi}
-            disabled={loading || aiCrediti === 0 || !nomeAvversario.trim()}
+            disabled={loading || aiCrediti < 3 || !nomeAvversario.trim()}
             style={{
               padding: '14px 40px', fontSize: 16,
               letterSpacing: '0.06em', fontFamily: 'var(--font-display)',

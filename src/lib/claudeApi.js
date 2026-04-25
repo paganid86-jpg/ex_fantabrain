@@ -1,5 +1,5 @@
-// serieAContext: { currentMatchday, standings, scorers, nextMatches } — opzionale
-function buildSystemPrompt(rosa, giornata, avversario, serieAContext = null) {
+// serieAContext: { currentMatchday, standings, scorers, nextMatches } - opzionale
+function buildSystemPrompt(rosa = [], giornata, avversario, serieAContext = null) {
   const rosaJson = JSON.stringify(
     rosa.map((g) => ({
       nome: `${g.nome} ${g.cognome}`,
@@ -37,12 +37,14 @@ Giornata corrente: ${giornata}
 Prossimo avversario: ${avversario || 'da definire'}${serieAStr}`;
 }
 
-async function callApi({ systemPrompt, messages, maxTokens }) {
+async function getAppStore() {
   const { default: useAppStore } = await import('../store/useAppStore.js');
-  const { user } = useAppStore.getState();
+  return useAppStore.getState();
+}
 
-  // messages è sempre [{ role: 'user', content: '...' }] per callClaude
-  const userMessage = messages.find(m => m.role === 'user')?.content || '';
+async function callApi({ systemPrompt, messages, maxTokens }) {
+  const { user } = await getAppStore();
+  const userMessage = messages.find((m) => m.role === 'user')?.content || '';
 
   const response = await fetch('/api/ai/groq', {
     method: 'POST',
@@ -62,15 +64,42 @@ async function callApi({ systemPrompt, messages, maxTokens }) {
   return data.content;
 }
 
+async function callOrbitalAction(action, payload = {}) {
+  const { user, setAiCrediti, setResetAt } = await getAppStore();
+
+  const response = await fetch('/api/ai/orbital-action', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${user?.token}`,
+    },
+    body: JSON.stringify({ action, payload }),
+  });
+
+  if (response.status === 402) {
+    const data = await response.json();
+    setAiCrediti(0);
+    if (data.resetAt) setResetAt(data.resetAt);
+    throw new Error('NO_CREDITS');
+  }
+  if (response.status === 401) throw new Error('UNAUTHORIZED');
+  if (!response.ok) {
+    const data = await response.json().catch(() => ({}));
+    throw new Error(data.error || 'AI_ERROR');
+  }
+
+  const data = await response.json();
+  if (data.creditsRemaining != null) setAiCrediti(data.creditsRemaining);
+  return data;
+}
+
 export async function callClaude({ systemPrompt, userMessage, maxTokens = 500 }) {
   return callApi({ systemPrompt, messages: [{ role: 'user', content: userMessage }], maxTokens });
 }
 
 // chatClaude routes to backend /api/ai/chat (Anthropic SDK, credit-gated)
 export async function chatClaude({ messages, systemPrompt, maxTokens = 600 }) {
-  const { default: useAppStore } = await import('../store/useAppStore.js');
-  const store = useAppStore.getState();
-  const { user, setAiCrediti, setResetAt } = store;
+  const { user, setAiCrediti, setResetAt } = await getAppStore();
 
   const response = await fetch('/api/ai/chat', {
     method: 'POST',
@@ -102,45 +131,35 @@ export async function analizzaSchieramento(schieramento, rosa, giornata) {
 }
 
 export async function valutaOfferta(offerta, rosa) {
-  const systemPrompt = buildSystemPrompt(rosa, 28, null);
-  const userMessage = `Valuta questa offerta di mercato: ${JSON.stringify(offerta)}. Conviene accettare? Considera la qualità del giocatore offerto rispetto a quello richiesto, il calendario futuro e le esigenze della rosa. Dammi un consiglio chiaro (ACCETTA / RIFIUTA / CONTROPROPONI) con motivazione breve.`;
-  return callClaude({ systemPrompt, userMessage, maxTokens: 400 });
+  const data = await callOrbitalAction('valutaOfferta', { offerta, rosa });
+  return data.content;
 }
 
 export async function reportScouting(giocatore) {
-  const systemPrompt = `Sei FantaBrain AI, esperto di Fantacalcio Mantra Serie A. Parla in italiano. Sei conciso e diretto.`;
-  const userMessage = `Genera un report scouting per ${giocatore.nome} ${giocatore.cognome} (${giocatore.squadra}, ${giocatore.ruoloMantra}) nel Fantacalcio Mantra. Dati: media voti ${giocatore.votoMedia}, ultimi 5: ${giocatore.votiUltimi5?.join(', ')}. Includi: punti di forza, debolezze, consiglio acquisto (SI/NO/FORSE) con motivazione. Max 150 parole.`;
-  return callClaude({ systemPrompt, userMessage, maxTokens: 300 });
+  const { rosa } = await getAppStore();
+  const data = await callOrbitalAction('reportScouting', { giocatore, rosa });
+  return data.content;
 }
 
 export async function warRoomAnalisi(miaRosa, rosaAvversario, nomeAvversario, giornata) {
-  const systemPrompt = buildSystemPrompt(miaRosa, giornata, nomeAvversario);
-
-  const step1 = await callClaude({
-    systemPrompt,
-    userMessage: `War Room Giornata ${giornata}. Analizza la rosa avversaria di ${nomeAvversario}: ${JSON.stringify(rosaAvversario?.slice(0, 5))}. Quali sono i loro punti di forza e debolezza principali?`,
-    maxTokens: 250,
+  const data = await callOrbitalAction('warRoomAnalisi', {
+    miaRosa,
+    rosaAvversario,
+    nomeAvversario,
+    giornata,
   });
 
-  const step2 = await callClaude({
-    systemPrompt,
-    userMessage: `Dato che l'avversario ha queste caratteristiche: "${step1}". Quali miei giocatori hanno i match migliori contro di loro? Considera ruoli e rendimento recente.`,
-    maxTokens: 250,
-  });
-
-  const step3 = await callClaude({
-    systemPrompt,
-    userMessage: `Basandoti sull'analisi "${step2}", suggerisci: 1) Il modulo ottimale 2) I 3 giocatori da assolutamente schierare 3) Un rischio da evitare. Sii diretto e pratico.`,
-    maxTokens: 250,
-  });
-
-  return { analisiAvversario: step1, vantaggi: step2, pianoTattico: step3 };
+  return {
+    analisiAvversario: data.analisiAvversario || data.content,
+    vantaggi: data.vantaggi || '',
+    pianoTattico: data.pianoTattico || '',
+  };
 }
 
 export async function analizzaGiornata(titolari, partite, giornata) {
-  const systemPrompt = `Sei FantaBrain AI, esperto di Fantacalcio Mantra. Parla in italiano. Sii conciso.`;
-  const userMessage = `Analizza la giornata ${giornata} per questi titolari: ${JSON.stringify(titolari.map(g => `${g.nome} ${g.cognome} (${g.squadra})`))}. Partite della giornata: ${JSON.stringify(partite)}. Dimmi chi ha i match migliori e chi rischia. Max 200 parole.`;
-  return callClaude({ systemPrompt, userMessage, maxTokens: 400 });
+  const { rosa } = await getAppStore();
+  const data = await callOrbitalAction('analizzaGiornata', { titolari, partite, giornata, rosa });
+  return data.content;
 }
 
 export async function warRoomShare(token, analysisText, matchContext) {
