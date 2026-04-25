@@ -30,7 +30,7 @@ export default function PlayerToken({ giocatore, disabled }) {
       ref={setNodeRef}
       {...listeners}
       {...attributes}
-      className={`player-token${disabled ? ' player-token--disabled' : ''}${isDragging ? ' player-token--dragging' : ''}${
+      className={`player-token player-token--luxury${disabled ? ' player-token--disabled' : ''}${isDragging ? ' player-token--dragging' : ''}${
         giocatore.infortunato ? ' player-token--injured' : ''
       }`}
       style={{
