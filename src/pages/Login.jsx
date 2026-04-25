@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import useAppStore from '../store/useAppStore';
+import { canUseDevPreview, enableDevPreviewSession } from '../lib/devPreview';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -11,6 +12,7 @@ export default function Login() {
   const setAiCrediti = useAppStore((s) => s.setAiCrediti);
   const setResetAt = useAppStore((s) => s.setResetAt);
   const navigate = useNavigate();
+  const showDevPreview = canUseDevPreview();
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -33,6 +35,11 @@ export default function Login() {
     } finally {
       setLoading(false);
     }
+  }
+
+  function handleDevPreview() {
+    enableDevPreviewSession();
+    navigate('/');
   }
 
   return (
@@ -62,6 +69,22 @@ export default function Login() {
             {loading ? 'Accesso...' : 'Accedi'}
           </button>
         </form>
+        {showDevPreview && (
+          <>
+            <div style={{ margin: '16px 0 12px', height: 1, background: 'var(--border-subtle)' }} />
+            <button
+              type="button"
+              className="btn-secondary"
+              style={{ width: '100%' }}
+              onClick={handleDevPreview}
+            >
+              Entra in anteprima locale
+            </button>
+            <p className="text-sm mt-3 text-center" style={{ color: 'var(--text-secondary)' }}>
+              Bypass solo locale per vedere UI e restyle senza backend auth.
+            </p>
+          </>
+        )}
         <p className="text-sm mt-4 text-center" style={{ color: 'var(--text-secondary)' }}>
           Non hai un account?{' '}
           <Link to="/register" style={{ color: 'var(--gold)' }}>Registrati</Link>

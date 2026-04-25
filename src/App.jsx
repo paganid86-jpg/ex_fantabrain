@@ -18,6 +18,7 @@ import WarroomShare from './pages/WarroomShare';
 import LeagueCreation from './pages/LeagueCreation';
 import LeagueSettings from './pages/LeagueSettings';
 import LandingPage from './pages/LandingPage';
+import LuxurySportsOSPreview from './pages/LuxurySportsOSPreview';
 import useAppStore from './store/useAppStore';
 
 function RequireAuth({ children }) {
@@ -72,6 +73,7 @@ export default function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/warroom/:id" element={<WarroomShare />} />
         <Route path="/landing" element={<LandingPage />} />
+        <Route path="/luxury-os-preview" element={<LuxurySportsOSPreview />} />
         <Route path="/*" element={<RequireAuth><AppLayout /></RequireAuth>} />
       </Routes>
     </HashRouter>
