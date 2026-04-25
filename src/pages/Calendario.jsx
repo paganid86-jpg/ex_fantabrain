@@ -41,7 +41,7 @@ export default function Calendario() {
     setAiError(null);
     setAiRisultato(null);
     try {
-      const partite = [{ mio: 'Serie A', avversario: 'Avversario giornata' }];
+      const partite = nextSerieAMatches;
       const testo = await analizzaGiornata(titolari, partite, giornataCorrente);
       setAiRisultato(testo);
     } catch {
