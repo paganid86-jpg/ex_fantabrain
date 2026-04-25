@@ -22,6 +22,14 @@ export default function DeadlinePill({ deadline, label = 'SCHIERAMENTO' }) {
 
   const diffMs = deadline.getTime() - now;
   const isExpired = diffMs <= 0;
+  const hoursLeft = diffMs / (1000 * 60 * 60);
+  const urgencyClass = isExpired
+    ? 'deadline-pill--expired'
+    : hoursLeft <= 12
+      ? 'deadline-pill--danger'
+      : hoursLeft <= 24
+        ? 'deadline-pill--warning'
+        : 'deadline-pill--safe';
 
   let timerText = 'SCADUTA';
   if (!isExpired) {
@@ -38,7 +46,7 @@ export default function DeadlinePill({ deadline, label = 'SCHIERAMENTO' }) {
   }
 
   return (
-    <div className="deadline-pill" role="timer" aria-live="off">
+    <div className={`deadline-pill ${urgencyClass}`} role="timer" aria-live="off">
       <span className="deadline-dot" aria-hidden="true" />
       <span className="deadline-label">{label}</span>
       <span className="deadline-timer">{timerText}</span>

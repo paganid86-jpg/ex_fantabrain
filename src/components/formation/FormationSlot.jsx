@@ -25,43 +25,38 @@ export default function FormationSlot({ slotId, slot, giocatore, isSelected, onC
   const { setNodeRef, isOver } = useDroppable({ id: slotId })
 
   const isIncompatible = giocatore && !isCompatibile(giocatore.ruoloMantra, slot.ruoli)
-  const discClassName = [
-    'slot__disc',
-    giocatore ? 'slot__disc--filled' : 'slot__disc--empty',
-    isOver ? 'slot__disc--over' : '',
-    isIncompatible ? 'slot__disc--incompatible' : '',
-    isSelected ? 'slot__disc--selected' : '',
+  const slotClassName = [
+    'slot',
+    'slot--luxury',
+    giocatore ? 'slot--filled' : 'slot--empty',
+    isOver ? 'slot--over' : '',
+    isIncompatible ? 'slot--incompatible' : '',
+    isSelected ? 'slot--selected' : '',
   ]
     .filter(Boolean)
     .join(' ')
+  const playerName = giocatore?.cognome || giocatore?.nome || slot.ruoli[0]
+  const playerTeam = giocatore?.squadra || 'Slot'
+  const playerRole = giocatore?.ruoloMantra || slot.ruoli.join('/')
+  const playerScore = giocatore?.votoMedia?.toFixed(1) ?? '--'
 
   return (
     <div
       ref={setNodeRef}
       onClick={onClick}
-      className="slot"
+      className={slotClassName}
       style={{ '--slot-role-color': getRoleColor(giocatore?.ruoloMantra || slot.ruoli[0]) }}
     >
-      <div className={discClassName}>
-        {giocatore ? (
-          <span className="slot__initial">{giocatore.ruoloMantra?.split('/')[0]}</span>
-        ) : (
-          <span className="slot__empty-plus">+</span>
-        )}
+      <span className="slot__topline">
+        <span className="slot__role">{playerRole}</span>
+        <span className="slot__media">{playerScore}</span>
+      </span>
+      <strong className="slot__name">{giocatore ? playerName : '+'}</strong>
+      <span className="slot__team">{playerTeam}</span>
 
-        {giocatore?.infortunato && <span className="slot__badge slot__badge--danger">!</span>}
-        {giocatore?.diffidato && !giocatore?.infortunato && (
-          <span className="slot__badge slot__badge--warn">!</span>
-        )}
-      </div>
-
-      {giocatore ? (
-        <>
-          <span className="slot__label">{giocatore.cognome || giocatore.nome}</span>
-          <span className="slot__media">{giocatore.votoMedia?.toFixed(1) ?? '--'}</span>
-        </>
-      ) : (
-        <span className="slot__role-hint">{slot.ruoli[0]}</span>
+      {giocatore?.infortunato && <span className="slot__badge slot__badge--danger">!</span>}
+      {giocatore?.diffidato && !giocatore?.infortunato && (
+        <span className="slot__badge slot__badge--warn">!</span>
       )}
     </div>
   )

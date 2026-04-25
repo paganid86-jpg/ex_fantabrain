@@ -21,6 +21,7 @@ const PAGE_META = {
 export default function PanelHeader() {
   const location = useLocation()
   const user = useAppStore((state) => state.user)
+  const aiCrediti = useAppStore((state) => state.aiCrediti)
 
   const meta = PAGE_META[location.pathname] || { eyebrow: 'FantaBrain', title: 'Dashboard' }
   const initialsSource = user?.name || user?.username || 'FB'
@@ -39,6 +40,7 @@ export default function PanelHeader() {
       </div>
 
       <div className="panel-header-actions">
+        <span className="panel-ai-credits">Crediti AI: {aiCrediti ?? 0}</span>
         <span className="panel-status">Live app</span>
         <div className="panel-avatar" aria-label={`Profilo ${initials}`}>
           {initials}

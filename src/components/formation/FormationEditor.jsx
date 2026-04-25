@@ -73,6 +73,9 @@ export default function FormationEditor({
   }, {})
 
   const activeGiocatore = rosa.find((giocatore) => giocatore.id === activeGiocatoreId) || null
+  const benchPlayers = rosa
+    .filter((giocatore) => !titolariIds.includes(giocatore.id))
+    .sort((a, b) => (b.votoMedia || 0) - (a.votoMedia || 0))
   const filledCount = titolariIds.length
   const emptyCount = Math.max(0, slots.length - filledCount)
   const statusLabel = emptyCount === 0 ? 'Formazione completa' : `${emptyCount} slot vuoti`
@@ -84,7 +87,14 @@ export default function FormationEditor({
   return (
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       <div className="formation-editor">
-        <div className="campo-toolbar">
+        <div className="lineup-studio-header">
+          <div>
+            <span className="lineup-studio-kicker">Lineup Studio</span>
+            <h2 className="lineup-studio-title">Schiera</h2>
+          </div>
+        </div>
+
+        <div className="campo-toolbar campo-toolbar--luxury">
           <button
             type="button"
             className="modulo-chip"
@@ -105,7 +115,7 @@ export default function FormationEditor({
         </div>
 
         <div className="pitch-shell">
-          <div className="pitch">
+          <div className="pitch pitch--luxury">
             <svg className="pitch__markings" viewBox="0 0 100 140" preserveAspectRatio="none" aria-hidden="true">
               <rect x="4" y="4" width="92" height="132" rx="8" fill="none" stroke="var(--pitch-line)" />
               <line x1="4" y1="70" x2="96" y2="70" stroke="var(--pitch-line-strong)" />
@@ -134,6 +144,23 @@ export default function FormationEditor({
               ))}
           </div>
         </div>
+
+        <section className="bench-tray" aria-label="Panchina">
+          <div className="bench-tray__header">
+            <span>Panchina</span>
+            <small>{benchPlayers.length} disponibili</small>
+          </div>
+
+          {benchPlayers.length > 0 ? (
+            <div className="bench-tray__grid">
+              {benchPlayers.map((giocatore) => (
+                <PlayerToken key={giocatore.id} giocatore={giocatore} disabled={giocatore.infortunato} />
+              ))}
+            </div>
+          ) : (
+            <div className="bench-tray__empty">Aggiungi giocatori alla rosa per popolare la panchina.</div>
+          )}
+        </section>
 
         <div className="formation-status-bar">
           <div className="formation-status-bar__text">
