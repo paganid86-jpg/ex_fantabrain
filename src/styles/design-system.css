@@ -12,26 +12,40 @@ html[data-theme="dark"] {
   /* Core brand */
   --color-plum: #381932;
   --color-milk: #FFF3E6;
+  --color-noir: #0a090b;
+  --color-noir-panel: #121013;
+  --color-noir-elevated: #181417;
+  --color-gold-light: #f0dba7;
+
+  --noir-bg-glow:
+    radial-gradient(circle at 20% -10%, rgba(216, 180, 106, 0.12), transparent 34%),
+    radial-gradient(circle at 90% 18%, rgba(255, 243, 230, 0.05), transparent 30%),
+    linear-gradient(135deg, #151015 0%, #080708 68%, #120f0c 100%);
+  --noir-surface: rgba(255, 243, 230, 0.045);
+  --noir-surface-hover: rgba(255, 243, 230, 0.075);
+  --noir-border-subtle: rgba(255, 243, 230, 0.09);
+  --noir-border: rgba(255, 243, 230, 0.14);
+  --noir-border-gold: rgba(216, 180, 106, 0.26);
 
   /* Ruoli semantici (stabili in entrambe le mode) */
-  --color-success: #0E8C5F;
-  --color-danger:  #D64545;
-  --color-gold:    #E6B325;
-  --color-info:    #3B5B8C;
+  --color-success: #82aa8b;
+  --color-danger:  #d97872;
+  --color-gold:    #d8b46a;
+  --color-info:    #7f92ad;
 
   /* Background + foreground (dark) */
-  --bg: #381932;
-  --fg: #FFF3E6;
+  --bg: var(--color-noir);
+  --fg: var(--color-milk);
   --fg-70: rgba(255, 243, 230, 0.70);
   --fg-55: rgba(255, 243, 230, 0.55);
   --fg-35: rgba(255, 243, 230, 0.35);
   --fg-15: rgba(255, 243, 230, 0.15);
   --fg-08: rgba(255, 243, 230, 0.08);
   --fg-04: rgba(255, 243, 230, 0.04);
-  --surface: rgba(255, 243, 230, 0.04);
-  --surface-hover: rgba(255, 243, 230, 0.08);
-  --border-subtle: rgba(255, 243, 230, 0.08);
-  --border: rgba(255, 243, 230, 0.15);
+  --surface: var(--noir-surface);
+  --surface-hover: var(--noir-surface-hover);
+  --border-subtle: var(--noir-border-subtle);
+  --border: var(--noir-border);
 
   /* Shadows — dark */
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.25);
@@ -209,7 +223,7 @@ body {
   font-size: 14px;
   line-height: 1.5;
   color: var(--fg);
-  background: var(--bg);
+  background: var(--noir-bg-glow);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -259,15 +273,11 @@ h1, h2, h3, h4, h5, h6 {
   width: min(calc(100% - 16px), 560px);
   bottom: calc(var(--bottom-nav-height) + 14px + env(safe-area-inset-bottom, 0px));
   background:
-    radial-gradient(circle at 14% 0%, rgba(199, 165, 109, 0.18), transparent 30%),
-    radial-gradient(circle at 92% 12%, rgba(20, 51, 34, 0.34), transparent 28%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.055) 0%, rgba(255, 255, 255, 0.018) 42%),
-    rgba(9, 12, 15, 0.86);
-  border: 1px solid rgba(255, 255, 255, 0.11);
+    linear-gradient(180deg, rgba(255, 243, 230, 0.045), rgba(255, 243, 230, 0.018)),
+    rgba(10, 9, 11, 0.92);
+  border: 1px solid var(--noir-border-subtle);
   border-radius: 34px;
-  box-shadow:
-    0 34px 90px rgba(0, 0, 0, 0.36),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.34);
   backdrop-filter: blur(24px) saturate(150%);
   display: flex;
   flex-direction: column;
@@ -410,6 +420,7 @@ h1, h2, h3, h4, h5, h6 {
 .page-content {
   flex: 1;
   overflow-y: auto;
+  background: transparent;
   padding: 20px 18px calc(var(--bottom-nav-height) + 22px);
   scrollbar-width: thin;
   scrollbar-color: rgba(199, 165, 109, 0.36) transparent;
