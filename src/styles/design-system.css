@@ -1997,6 +1997,54 @@ select.input-field {
   color: var(--fg);
 }
 
+.home-stack--noir {
+  position: relative;
+  margin: calc(var(--space-4) * -1);
+  min-height: calc(100% + var(--space-8));
+  padding: 18px;
+  background: transparent;
+}
+
+.home-noir-intro {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.home-noir-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.home-noir-credit {
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 10px;
+  border: 1px solid var(--noir-border-subtle);
+  border-radius: var(--radius-full);
+  background: var(--noir-surface);
+  color: var(--fg-70);
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.home-noir-title {
+  color: var(--fg);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(36px, 10vw, 48px);
+  font-weight: 400;
+  letter-spacing: -0.055em;
+  line-height: 0.96;
+}
+
+.home-noir-signals {
+  display: grid;
+  gap: var(--space-2);
+}
+
 /* -- Noir Gold shared patterns ------------------------------------- */
 .metric-hero {
   position: relative;
