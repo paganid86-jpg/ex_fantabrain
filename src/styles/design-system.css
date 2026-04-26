@@ -1997,6 +1997,208 @@ select.input-field {
   color: var(--fg);
 }
 
+/* -- Noir Gold shared patterns ------------------------------------- */
+.metric-hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-height: 172px;
+  padding: var(--space-5);
+  overflow: hidden;
+  border: 1px solid var(--noir-border-gold);
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(circle at 12% 0%, rgba(216, 180, 106, 0.16), transparent 34%),
+    linear-gradient(145deg, rgba(255, 243, 230, 0.08), rgba(255, 243, 230, 0.025)),
+    var(--surface);
+  color: var(--fg);
+  box-shadow: var(--shadow-md);
+}
+
+.metric-hero--gold {
+  background:
+    radial-gradient(circle at 14% 0%, rgba(255, 243, 230, 0.26), transparent 34%),
+    linear-gradient(135deg, #f0dba7 0%, var(--color-gold) 100%);
+  color: var(--color-noir);
+}
+
+.metric-hero__kicker,
+.signal-row__hint {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: currentColor;
+  opacity: 0.62;
+}
+
+.metric-hero__value {
+  font-family: var(--font-display);
+  font-size: clamp(54px, 16vw, 92px);
+  font-weight: 900;
+  line-height: 0.9;
+  color: currentColor;
+}
+
+.metric-hero__footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 13px;
+  font-weight: 650;
+  color: currentColor;
+  opacity: 0.78;
+}
+
+.metric-hero__delta {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 800;
+  opacity: 1;
+}
+
+.metric-hero__delta--pos { color: var(--color-success); }
+.metric-hero__delta--neg { color: var(--color-danger); }
+
+.metric-hero__action {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 0 var(--space-4);
+  border: 1px solid currentColor;
+  border-radius: var(--radius-full);
+  color: currentColor;
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: none;
+  opacity: 0.9;
+  transition: opacity var(--motion-micro) ease-out,
+              transform var(--motion-micro) ease-out;
+}
+
+.metric-hero__action:hover {
+  opacity: 1;
+  transform: translateY(-1px);
+}
+
+.signal-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 58px;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--fg);
+  text-decoration: none;
+}
+
+a.signal-row {
+  transition: background var(--motion-micro) ease-out,
+              border-color var(--motion-micro) ease-out,
+              transform var(--motion-micro) ease-out;
+}
+
+a.signal-row:hover {
+  background: var(--surface-hover);
+  border-color: var(--border);
+  transform: translateY(-1px);
+}
+
+.signal-row__dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--fg-35);
+  box-shadow: 0 0 0 4px var(--fg-08);
+}
+
+.signal-row__dot--success { background: var(--color-success); }
+.signal-row__dot--danger { background: var(--color-danger); }
+.signal-row__dot--warning,
+.signal-row__dot--gold { background: var(--color-gold); }
+
+.signal-row__body {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.signal-row__label {
+  overflow: hidden;
+  color: var(--fg);
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.signal-row__value {
+  color: var(--fg);
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.noir-action-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.noir-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 0 var(--space-4);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-full);
+  font-size: 13px;
+  font-weight: 900;
+  text-align: center;
+  text-decoration: none;
+  transition: border-color var(--motion-micro) ease-out,
+              opacity var(--motion-micro) ease-out,
+              transform var(--motion-micro) ease-out;
+}
+
+.noir-action:hover {
+  transform: translateY(-1px);
+}
+
+.noir-action--primary {
+  border-color: var(--color-gold);
+  background: linear-gradient(135deg, #f0dba7 0%, var(--color-gold) 100%);
+  color: var(--color-noir);
+}
+
+.noir-action--secondary {
+  background: var(--surface);
+  color: var(--fg);
+}
+
+.noir-action--secondary:hover {
+  border-color: var(--border);
+  opacity: 0.92;
+}
+
+@media (max-width: 420px) {
+  .noir-action-row {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ══════════════════════════════════════════════════════════
    PATTERN LIBRARY — Fase 2b
    BottomSheet · SchieraTabBar · ModuloChip · CampoToolbar
