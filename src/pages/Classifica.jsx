@@ -84,7 +84,7 @@ export default function Classifica() {
   ];
 
   return (
-    <div>
+    <div className="classifica-page">
       {/* Tab switcher */}
       <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
         {[

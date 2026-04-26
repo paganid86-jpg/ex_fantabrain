@@ -1250,10 +1250,10 @@ h1, h2, h3, h4, h5, h6 {
 .segmented-tab {
   min-height: 44px;
   padding: 0 16px;
-  border: 1px solid var(--border-subtle);
+  border: 1px solid rgba(255, 243, 230, 0.14);
   border-radius: var(--radius-full);
-  background: var(--surface);
-  color: var(--fg-70);
+  background: rgba(15, 18, 22, 0.82);
+  color: rgba(244, 239, 230, 0.74);
   font-family: var(--font-body);
   font-size: 13px;
   font-weight: 800;
@@ -1265,33 +1265,21 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .segmented-tab:hover {
-  border-color: var(--border);
-  color: var(--fg);
+  border-color: rgba(216, 180, 106, 0.34);
+  color: #f4efe6;
 }
 
 .segmented-tab--active {
-  background: rgba(216, 180, 106, 0.14);
-  border-color: var(--noir-border-gold);
-  color: var(--fg);
-  box-shadow: 0 0 0 1px rgba(216, 180, 106, 0.12);
+  background: linear-gradient(135deg, #f3ddba 0%, #c7a56d 100%);
+  border-color: rgba(216, 180, 106, 0.48);
+  color: #0f1216;
+  box-shadow: 0 12px 28px rgba(199, 165, 109, 0.18);
 }
 
-html[data-theme="dark"] .league-choice-mark,
-html[data-theme="dark"] .segmented-tab {
+html[data-theme="dark"] .league-choice-mark {
   border-color: rgba(255, 243, 230, 0.14);
   background: rgba(255, 243, 230, 0.045);
   color: rgba(255, 243, 230, 0.72);
-}
-
-html[data-theme="dark"] .segmented-tab:hover {
-  border-color: rgba(216, 180, 106, 0.34);
-  color: var(--color-milk);
-}
-
-html[data-theme="dark"] .segmented-tab--active {
-  background: rgba(216, 180, 106, 0.18);
-  border-color: rgba(216, 180, 106, 0.48);
-  color: var(--color-gold-light);
 }
 
 .btn-ghost {
@@ -2052,6 +2040,14 @@ select.input-field {
 }
 
 .home-stack--noir {
+  --fg: #f4efe6;
+  --fg-70: rgba(244, 239, 230, 0.7);
+  --fg-55: rgba(244, 239, 230, 0.55);
+  --fg-35: rgba(244, 239, 230, 0.35);
+  --surface: rgba(255, 243, 230, 0.055);
+  --surface-hover: rgba(255, 243, 230, 0.09);
+  --border: rgba(255, 243, 230, 0.18);
+  --border-subtle: rgba(255, 243, 230, 0.1);
   position: relative;
   margin: calc(var(--space-4) * -1);
   min-height: calc(100% + var(--space-8));
@@ -2090,7 +2086,7 @@ select.input-field {
   font-family: Georgia, 'Times New Roman', serif;
   font-size: clamp(36px, 10vw, 48px);
   font-weight: 400;
-  letter-spacing: -0.055em;
+  letter-spacing: 0;
   line-height: 0.96;
 }
 
@@ -3596,6 +3592,14 @@ html[data-theme="light"] .bench-ai-button {
 
 /* Luxury Sports OS - Home and AI Coach real pages */
 .home-stack--luxury {
+  --fg: #f4efe6;
+  --fg-70: rgba(244, 239, 230, 0.7);
+  --fg-55: rgba(244, 239, 230, 0.55);
+  --fg-35: rgba(244, 239, 230, 0.35);
+  --surface: rgba(255, 243, 230, 0.055);
+  --surface-hover: rgba(255, 243, 230, 0.09);
+  --border: rgba(255, 243, 230, 0.18);
+  --border-subtle: rgba(255, 243, 230, 0.1);
   position: relative;
   margin: calc(var(--space-4) * -1);
   padding: 18px;
@@ -3605,6 +3609,24 @@ html[data-theme="light"] .bench-ai-button {
     radial-gradient(circle at 88% 12%, rgba(20, 51, 34, 0.48), transparent 28%),
     linear-gradient(180deg, #080a0d 0%, #101319 100%);
   color: #f4efe6;
+}
+
+.classifica-page {
+  --fg: #f4efe6;
+  --fg-70: rgba(244, 239, 230, 0.7);
+  --fg-55: rgba(244, 239, 230, 0.55);
+  --surface: rgba(255, 243, 230, 0.055);
+  --surface-hover: rgba(255, 243, 230, 0.09);
+  --border: rgba(255, 243, 230, 0.18);
+  --border-subtle: rgba(255, 243, 230, 0.1);
+}
+
+.classifica-page .empty-state-title {
+  color: #f4efe6;
+}
+
+.classifica-page .empty-state-desc {
+  color: rgba(244, 239, 230, 0.7);
 }
 
 .home-stack--luxury .kicker,
