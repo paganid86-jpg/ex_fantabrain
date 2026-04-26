@@ -1136,10 +1136,10 @@ h1, h2, h3, h4, h5, h6 {
   display: inline-grid;
   place-items: center;
   margin-bottom: var(--space-sm);
-  border: 1px solid rgba(216, 180, 106, 0.34);
+  border: 1px solid var(--border);
   border-radius: 18px;
-  background: rgba(255, 243, 230, 0.06);
-  color: var(--color-gold-light);
+  background: var(--surface);
+  color: var(--fg);
   font-family: var(--font-mono);
   font-size: 13px;
   font-weight: 900;
@@ -1248,12 +1248,12 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .segmented-tab {
-  min-height: 40px;
+  min-height: 44px;
   padding: 0 16px;
-  border: 1px solid rgba(255, 243, 230, 0.14);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-full);
-  background: rgba(255, 243, 230, 0.045);
-  color: rgba(255, 243, 230, 0.72);
+  background: var(--surface);
+  color: var(--fg-70);
   font-family: var(--font-body);
   font-size: 13px;
   font-weight: 800;
@@ -1265,15 +1265,33 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .segmented-tab:hover {
+  border-color: var(--border);
+  color: var(--fg);
+}
+
+.segmented-tab--active {
+  background: rgba(216, 180, 106, 0.14);
+  border-color: var(--noir-border-gold);
+  color: var(--fg);
+  box-shadow: 0 0 0 1px rgba(216, 180, 106, 0.12);
+}
+
+html[data-theme="dark"] .league-choice-mark,
+html[data-theme="dark"] .segmented-tab {
+  border-color: rgba(255, 243, 230, 0.14);
+  background: rgba(255, 243, 230, 0.045);
+  color: rgba(255, 243, 230, 0.72);
+}
+
+html[data-theme="dark"] .segmented-tab:hover {
   border-color: rgba(216, 180, 106, 0.34);
   color: var(--color-milk);
 }
 
-.segmented-tab--active {
+html[data-theme="dark"] .segmented-tab--active {
   background: rgba(216, 180, 106, 0.18);
   border-color: rgba(216, 180, 106, 0.48);
   color: var(--color-gold-light);
-  box-shadow: 0 0 0 1px rgba(216, 180, 106, 0.12);
 }
 
 .btn-ghost {
