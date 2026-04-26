@@ -35,6 +35,7 @@ html[data-theme="dark"] {
 
   /* Background + foreground (dark) */
   --bg: var(--color-noir);
+  --app-bg: var(--noir-bg-glow);
   --fg: var(--color-milk);
   --fg-70: rgba(255, 243, 230, 0.70);
   --fg-55: rgba(255, 243, 230, 0.55);
@@ -70,6 +71,7 @@ html[data-theme="dark"] {
    ────────────────────────────────────────────────────────── */
 html[data-theme="light"] {
   --bg: #FFF3E6;
+  --app-bg: var(--bg);
   --fg: #381932;
   --fg-70: rgba(56, 25, 50, 0.70);
   --fg-55: rgba(56, 25, 50, 0.55);
@@ -223,7 +225,7 @@ body {
   font-size: 14px;
   line-height: 1.5;
   color: var(--fg);
-  background: var(--noir-bg-glow);
+  background: var(--app-bg);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
