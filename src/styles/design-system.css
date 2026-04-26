@@ -3465,6 +3465,56 @@ html[data-theme="light"] .bench-ai-button {
   }
 }
 
+.schiera-page {
+  background:
+    radial-gradient(circle at 50% -10%, rgba(216, 180, 106, 0.12), transparent 34%),
+    linear-gradient(180deg, #141114 0%, #09080a 100%);
+}
+
+.lineup-studio-title {
+  max-width: 320px;
+  color: var(--fg);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(36px, 10vw, 46px);
+  font-weight: 400;
+  letter-spacing: -0.055em;
+  line-height: 0.96;
+}
+
+.schiera-page .campo-toolbar--luxury {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 9px;
+}
+
+.schiera-page .modulo-chip,
+.schiera-page .campo-kpi {
+  min-height: 62px;
+  border-radius: 20px;
+  background: var(--noir-surface);
+  border-color: var(--noir-border-subtle);
+}
+
+.schiera-page .modulo-chip__label,
+.schiera-page .campo-kpi__label {
+  color: var(--fg-55);
+}
+
+.pitch--luxury {
+  min-height: 430px;
+  border-radius: 32px;
+  background:
+    linear-gradient(90deg, transparent 49.5%, rgba(255, 243, 230, 0.15) 50%, transparent 50.5%),
+    radial-gradient(circle at 50% 50%, transparent 0 37px, rgba(255, 243, 230, 0.15) 38px 39px, transparent 40px),
+    linear-gradient(180deg, #143929, #0d2119);
+}
+
+.schiera-page .bench-tray,
+.schiera-page .formation-status-bar {
+  background: var(--noir-surface);
+  border-color: var(--noir-border-subtle);
+}
+
 /* Luxury Sports OS - Home and AI Coach real pages */
 .home-stack--luxury {
   position: relative;

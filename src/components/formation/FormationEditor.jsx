@@ -89,8 +89,8 @@ export default function FormationEditor({
       <div className="formation-editor">
         <div className="lineup-studio-header">
           <div>
-            <span className="lineup-studio-kicker">Lineup Studio</span>
-            <h2 className="lineup-studio-title">Schiera</h2>
+            <span className="lineup-studio-kicker">Studio XI</span>
+            <h2 className="lineup-studio-title">Forma il tuo undici.</h2>
           </div>
         </div>
 
