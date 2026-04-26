@@ -54,6 +54,7 @@ export default function Dashboard() {
 
   const phrase = getHeroPhrase({ puntiUltima, puntiMedia, giornataAperta });
   const deadline = getNextMatchdayDeadline();
+  const leagueName = currentLeague.settings?.nome ?? currentLeague.nome ?? 'Lega';
 
   // KPI rapidi per segnali home
   const posizione = userRow ? classifica.findIndex((r) => r.isUser) + 1 : null;
@@ -64,7 +65,7 @@ export default function Dashboard() {
       <section className="home-noir-intro">
         <div className="home-noir-topline">
           <span className="kicker">
-            GIORNATA {giornataCorrente ?? '-'} · {currentLeague.nome}
+            GIORNATA {giornataCorrente ?? '-'} · {leagueName}
           </span>
           <span className="home-noir-credit">{aiCrediti} crediti AI</span>
         </div>
