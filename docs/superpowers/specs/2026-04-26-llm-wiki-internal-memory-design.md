@@ -82,13 +82,17 @@ llm-memory/
     specs/
 ```
 
-The exact filesystem home should be decided before implementation. Reasonable candidates are:
+The canonical filesystem home is:
 
-- A standalone repo, for example `C:\Users\DantePagani\llm-memory`.
-- A private GitHub repository dedicated to the memory system.
+- `C:\Users\DantePagani\llm-memory`
+
+The memory should also be initialized as a dedicated Git repository and connected to a private remote repository. This gives us a local standalone workspace for fast agentic work plus a private versioned backup that can move across machines and sessions.
+
+Rejected alternatives:
+
 - A temporary prototype folder inside an existing repo only if we explicitly treat it as disposable.
 
-The preferred canonical home is a standalone private repository or top-level workspace folder, because the memory is meant to span multiple projects.
+The memory must not be created as a permanent subfolder of the FantaBrain repo, because it is meant to span multiple projects.
 
 ## Agent Conventions
 
@@ -174,4 +178,4 @@ The first implementation is documentation-only, so verification should focus on:
 
 ## Approval Gate
 
-After this design is reviewed, the next step is to write an implementation plan. The plan should decide the canonical filesystem home, create the `llm-memory/` tree, seed the first Markdown pages, and define the ongoing maintenance workflow.
+After this design is reviewed, the next step is to write an implementation plan. The plan should create the `C:\Users\DantePagani\llm-memory` tree, initialize it as a Git repository, connect it to a private remote repository, seed the first Markdown pages, and define the ongoing maintenance workflow.
