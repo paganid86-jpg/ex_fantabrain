@@ -326,7 +326,7 @@ h1, h2, h3, h4, h5, h6 {
   height: 36px;
   border-radius: 15px;
   background: rgba(216, 180, 106, 0.12);
-  color: var(--color-gold-light);
+  color: #f0dba7;
   border: 1px solid var(--noir-border-gold);
   display: flex;
   align-items: center;
@@ -377,7 +377,7 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: var(--radius-full);
   background: var(--noir-surface);
   border: 1px solid var(--noir-border-subtle);
-  color: var(--fg-70);
+  color: rgba(255, 243, 230, 0.70);
   font-family: var(--font-mono);
   font-size: 10px;
   font-weight: 900;
@@ -397,7 +397,7 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: var(--fg-70);
+  color: rgba(255, 243, 230, 0.70);
 }
 
 .panel-avatar {
@@ -406,7 +406,7 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: 14px;
   background: var(--noir-surface);
   border: 1px solid var(--noir-border-subtle);
-  color: var(--fg-70);
+  color: rgba(255, 243, 230, 0.70);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -473,7 +473,7 @@ h1, h2, h3, h4, h5, h6 {
   background: transparent;
   border: none;
   min-height: 50px;
-  color: var(--fg-55);
+  color: rgba(255, 243, 230, 0.55);
   text-decoration: none;
   cursor: pointer;
   transition:
@@ -484,12 +484,12 @@ h1, h2, h3, h4, h5, h6 {
 
 .bottom-nav-item:hover {
   background: var(--noir-surface-hover);
-  color: var(--fg);
+  color: #fff3e6;
 }
 
 .bottom-nav-item.active {
   background: rgba(255, 243, 230, 0.12);
-  color: var(--fg);
+  color: #fff3e6;
   box-shadow: none;
 }
 
