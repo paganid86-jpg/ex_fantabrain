@@ -3471,9 +3471,9 @@ html[data-theme="light"] .bench-ai-button {
     linear-gradient(180deg, #141114 0%, #09080a 100%);
 }
 
-.lineup-studio-title {
+.schiera-page .lineup-studio-title {
   max-width: 320px;
-  color: var(--fg);
+  color: #f8f3ea;
   font-family: Georgia, 'Times New Roman', serif;
   font-size: clamp(36px, 10vw, 46px);
   font-weight: 400;
@@ -3497,10 +3497,10 @@ html[data-theme="light"] .bench-ai-button {
 
 .schiera-page .modulo-chip__label,
 .schiera-page .campo-kpi__label {
-  color: var(--fg-55);
+  color: #c7a56d;
 }
 
-.pitch--luxury {
+.schiera-page .pitch--luxury {
   min-height: 430px;
   border-radius: 32px;
   background:
@@ -3513,6 +3513,22 @@ html[data-theme="light"] .bench-ai-button {
 .schiera-page .formation-status-bar {
   background: var(--noir-surface);
   border-color: var(--noir-border-subtle);
+}
+
+@media (max-width: 640px) {
+  .schiera-page .lineup-studio-title {
+    font-size: 30px;
+  }
+
+  .schiera-page .pitch--luxury {
+    min-height: 360px;
+    padding: 18px 12px;
+    gap: 14px;
+  }
+
+  .schiera-page .pitch--luxury .pitch__row {
+    gap: 7px;
+  }
 }
 
 /* Luxury Sports OS - Home and AI Coach real pages */
