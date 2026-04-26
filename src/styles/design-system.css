@@ -1130,6 +1130,22 @@ h1, h2, h3, h4, h5, h6 {
 .glass-card--accent { border-color: var(--border); }
 .glass-card--gold   { border-color: rgba(230, 179, 37, 0.35); }
 
+.league-choice-mark {
+  width: 48px;
+  height: 48px;
+  display: inline-grid;
+  place-items: center;
+  margin-bottom: var(--space-sm);
+  border: 1px solid rgba(216, 180, 106, 0.34);
+  border-radius: 18px;
+  background: rgba(255, 243, 230, 0.06);
+  color: var(--color-gold-light);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+}
+
 .glass-elevated {
   background: var(--surface-hover);
   border: 1px solid var(--border-subtle);
@@ -1229,6 +1245,35 @@ h1, h2, h3, h4, h5, h6 {
 .btn-secondary:hover {
   background: var(--surface-hover);
   border-color: var(--fg-35);
+}
+
+.segmented-tab {
+  min-height: 40px;
+  padding: 0 16px;
+  border: 1px solid rgba(255, 243, 230, 0.14);
+  border-radius: var(--radius-full);
+  background: rgba(255, 243, 230, 0.045);
+  color: rgba(255, 243, 230, 0.72);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background var(--motion-micro) ease-out,
+              border-color var(--motion-micro) ease-out,
+              color var(--motion-micro) ease-out,
+              box-shadow var(--motion-micro) ease-out;
+}
+
+.segmented-tab:hover {
+  border-color: rgba(216, 180, 106, 0.34);
+  color: var(--color-milk);
+}
+
+.segmented-tab--active {
+  background: rgba(216, 180, 106, 0.18);
+  border-color: rgba(216, 180, 106, 0.48);
+  color: var(--color-gold-light);
+  box-shadow: 0 0 0 1px rgba(216, 180, 106, 0.12);
 }
 
 .btn-ghost {
