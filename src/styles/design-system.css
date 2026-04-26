@@ -305,9 +305,8 @@ h1, h2, h3, h4, h5, h6 {
   justify-content: space-between;
   gap: var(--space-3);
   padding: 15px 18px 13px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.012));
+  border-bottom: 1px solid var(--noir-border-subtle);
+  background: rgba(10, 9, 11, 0.58);
   backdrop-filter: blur(20px) saturate(150%);
   flex-shrink: 0;
   position: sticky;
@@ -326,9 +325,9 @@ h1, h2, h3, h4, h5, h6 {
   width: 36px;
   height: 36px;
   border-radius: 15px;
-  background:
-    linear-gradient(135deg, #f3ddba 0%, #c7a56d 100%);
-  color: #0f1216;
+  background: rgba(216, 180, 106, 0.12);
+  color: var(--color-gold-light);
+  border: 1px solid var(--noir-border-gold);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -376,10 +375,9 @@ h1, h2, h3, h4, h5, h6 {
 .panel-ai-credits {
   padding: 7px 11px;
   border-radius: var(--radius-full);
-  background:
-    linear-gradient(135deg, rgba(243, 221, 186, 0.18), rgba(199, 165, 109, 0.08));
-  border: 1px solid rgba(199, 165, 109, 0.28);
-  color: #f3ddba;
+  background: var(--noir-surface);
+  border: 1px solid var(--noir-border-subtle);
+  color: var(--fg-70);
   font-family: var(--font-mono);
   font-size: 10px;
   font-weight: 900;
@@ -392,25 +390,23 @@ h1, h2, h3, h4, h5, h6 {
 .panel-status {
   padding: 7px 10px;
   border-radius: var(--radius-full);
-  background: rgba(255, 255, 255, 0.055);
-  border: 1px solid rgba(255, 255, 255, 0.11);
+  background: var(--noir-surface);
+  border: 1px solid var(--noir-border-subtle);
   font-family: var(--font-mono);
   font-size: 10px;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: rgba(244, 239, 230, 0.7);
+  color: var(--fg-70);
 }
 
 .panel-avatar {
   width: 36px;
   height: 36px;
   border-radius: 14px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent),
-    rgba(255, 255, 255, 0.045);
-  border: 1px solid rgba(255, 255, 255, 0.11);
-  color: #f8f3ea;
+  background: var(--noir-surface);
+  border: 1px solid var(--noir-border-subtle);
+  color: var(--fg-70);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -445,10 +441,7 @@ h1, h2, h3, h4, h5, h6 {
   left: 50%;
   transform: translateX(-50%);
   width: min(calc(100% - 16px), 440px);
-  background:
-    radial-gradient(circle at 50% 0%, rgba(199, 165, 109, 0.2), transparent 46%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.035)),
-    rgba(9, 12, 15, 0.9);
+  background: rgba(10, 9, 11, 0.74);
   color: rgba(244, 239, 230, 0.68);
   border-radius: 28px;
   padding: 7px;
@@ -456,11 +449,9 @@ h1, h2, h3, h4, h5, h6 {
   grid-template-columns: repeat(5, 1fr);
   gap: 4px;
   z-index: 50;
-  box-shadow:
-    0 24px 70px rgba(0, 0, 0, 0.38),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(22px) saturate(150%);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.36);
+  border: 1px solid var(--noir-border-subtle);
+  backdrop-filter: blur(18px);
   transition:
     transform var(--motion-standard) var(--ease-standard),
     opacity var(--motion-standard) var(--ease-standard);
@@ -481,7 +472,8 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: 20px;
   background: transparent;
   border: none;
-  color: inherit;
+  min-height: 50px;
+  color: var(--fg-55);
   text-decoration: none;
   cursor: pointer;
   transition:
@@ -491,15 +483,14 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .bottom-nav-item:hover {
-  background: rgba(255, 255, 255, 0.055);
-  color: #f8f3ea;
+  background: var(--noir-surface-hover);
+  color: var(--fg);
 }
 
 .bottom-nav-item.active {
-  background:
-    linear-gradient(135deg, #f3ddba 0%, #c7a56d 100%);
-  color: #0f1216;
-  box-shadow: 0 10px 24px rgba(199, 165, 109, 0.22);
+  background: rgba(255, 243, 230, 0.12);
+  color: var(--fg);
+  box-shadow: none;
 }
 
 .bottom-nav-item-icon-wrap {
@@ -513,7 +504,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .bottom-nav-item.active .bottom-nav-item-icon-wrap {
-  background: rgba(15, 18, 22, 0.1);
+  background: rgba(255, 243, 230, 0.08);
 }
 
 .bottom-nav-item[aria-label="Apri menu AI"] .bottom-nav-item-icon-wrap,
