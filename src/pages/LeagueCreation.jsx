@@ -169,7 +169,7 @@ function HomeView({ onCreate, onJoin }) {
         <div className="glass-card glass-card--accent" onClick={onCreate} style={{ padding: 'var(--space-lg)', borderRadius: 'var(--radius-lg)', cursor: 'pointer', textAlign: 'center', transition: 'transform 0.2s' }}
           onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
           onMouseLeave={(e) => e.currentTarget.style.transform = 'none'}>
-          <div style={{ fontSize: '2.5rem', marginBottom: 'var(--space-sm)' }}>⚽</div>
+          <div className="league-choice-mark" aria-hidden="true">CL</div>
           <h2 style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-display)', marginBottom: 'var(--space-sm)' }}>Crea una Lega</h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: 'var(--space-lg)' }}>
             Crea la tua lega e invita i tuoi amici
@@ -180,7 +180,7 @@ function HomeView({ onCreate, onJoin }) {
         <div className="glass-card" onClick={onJoin} style={{ padding: 'var(--space-lg)', borderRadius: 'var(--radius-lg)', cursor: 'pointer', textAlign: 'center', transition: 'transform 0.2s' }}
           onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
           onMouseLeave={(e) => e.currentTarget.style.transform = 'none'}>
-          <div style={{ fontSize: '2.5rem', marginBottom: 'var(--space-sm)' }}>🔗</div>
+          <div className="league-choice-mark" aria-hidden="true">IN</div>
           <h2 style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-display)', marginBottom: 'var(--space-sm)' }}>Unisciti a una Lega</h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: 'var(--space-lg)' }}>
             Hai un codice invito? Entra in una lega esistente

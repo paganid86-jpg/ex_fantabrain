@@ -103,9 +103,9 @@ export default function AIAnalisi() {
         <header className="coach-header">
           <div>
             <span className="coach-kicker">Private Analyst</span>
-            <h1 className="coach-title">AI Coach</h1>
+            <h1 className="coach-title">Coach, senza rumore.</h1>
             <p className="coach-subtitle">
-              Giornata {giornataCorrente} · lettura contestuale sulla tua rosa.
+              Giornata {giornataCorrente} · analisi privata sulla tua rosa.
             </p>
           </div>
 
@@ -165,6 +165,11 @@ export default function AIAnalisi() {
             <span>Accesso illimitato alla console privata.</span>
           </div>
         )}
+
+        <div className="coach-context-card">
+          <span className="coach-kicker">Contesto letto</span>
+          <p>Rosa, giornata {giornataCorrente}, classifica{serieAContext ? ' e dati Serie A reali.' : '.'}</p>
+        </div>
 
         <div className="coach-thread">
           {messaggi.length === 0 && (

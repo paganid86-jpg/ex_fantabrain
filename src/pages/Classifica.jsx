@@ -84,24 +84,17 @@ export default function Classifica() {
   ];
 
   return (
-    <div>
+    <div className="classifica-page">
       {/* Tab switcher */}
       <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
         {[
-          { val: 'lega',   label: '🏆 La mia Lega' },
-          { val: 'seriea', label: '⚽ Serie A Reale' },
+          { val: 'lega', label: 'La mia Lega' },
+          { val: 'seriea', label: 'Serie A Reale' },
         ].map((t) => (
           <button
             key={t.val}
             onClick={() => setVista(t.val)}
-            style={{
-              background: vista === t.val ? 'rgba(126, 173, 212,0.15)' : 'var(--bg-glass)',
-              border: `1px solid ${vista === t.val ? 'rgba(126, 173, 212,0.45)' : 'rgba(255,255,255,0.08)'}`,
-              color: vista === t.val ? 'var(--accent-primary)' : 'var(--text-secondary)',
-              borderRadius: 20, padding: '7px 20px',
-              fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 13,
-              cursor: 'pointer', transition: 'all 0.15s',
-            }}
+            className={`segmented-tab${vista === t.val ? ' segmented-tab--active' : ''}`}
           >
             {t.label}
           </button>

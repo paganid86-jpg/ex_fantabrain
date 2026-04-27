@@ -3,15 +3,15 @@
 import { Link } from 'react-router-dom';
 import useAppStore from '../store/useAppStore';
 import useLeagueStore from '../stores/useLeagueStore';
-import HeroBlock from '../components/patterns/HeroBlock';
-import DeadlinePill from '../components/patterns/DeadlinePill';
-import QuickCard from '../components/patterns/QuickCard';
+import MetricHero from '../components/patterns/MetricHero';
+import SignalRow from '../components/patterns/SignalRow';
+import NoirActionRow from '../components/patterns/NoirActionRow';
 import NewsPreviewStub from '../components/patterns/NewsPreviewStub';
 import { getNextMatchdayDeadline } from '../lib/matchdayDeadline';
 import { getHeroPhrase } from '../lib/heroPhrase';
 
 export default function Dashboard() {
-  // ── State reads (selettori reattivi inline) ────────────
+  // State reads (selettori reattivi inline)
   const userName = useAppStore((s) => s.user?.name || 'Fantallenatore');
   const rosa = useAppStore((s) => s.rosa);
   const calendario = useAppStore((s) => s.calendario);
@@ -23,7 +23,7 @@ export default function Dashboard() {
     s.leagues.find((l) => l.id === s.currentLeagueId)
   );
 
-  // ── LeagueGate — onboarding per utenti senza lega attiva ────
+  // LeagueGate - onboarding per utenti senza lega attiva
   if (!currentLeagueId || !currentLeague) {
     return (
       <div className="empty-state home-empty-state">
@@ -41,7 +41,7 @@ export default function Dashboard() {
     );
   }
 
-  // ── Calcoli per hero ───────────────────────────────────
+  // Calcoli per hero
   const ultimaGiocata = [...calendario].reverse().find((g) => g.giocata);
   const puntiUltima = ultimaGiocata?.puntiUser ?? null;
   const userRow = classifica?.find((r) => r.isUser) || null;
@@ -54,73 +54,66 @@ export default function Dashboard() {
 
   const phrase = getHeroPhrase({ puntiUltima, puntiMedia, giornataAperta });
   const deadline = getNextMatchdayDeadline();
+  const leagueName = currentLeague.settings?.nome ?? currentLeague.nome ?? 'Lega';
 
-  // ── KPI rapidi per QuickCard ───────────────────────────
+  // KPI rapidi per segnali home
   const posizione = userRow ? classifica.findIndex((r) => r.isUser) + 1 : null;
   const infortunati = rosa.filter((p) => p.infortunato).length;
 
   return (
-    <div className="home-stack home-stack--luxury">
-      {/* Greeting */}
-      <section className="home-greeting">
-        <span className="kicker">
-          GIORNATA {giornataCorrente ?? '-'} · {currentLeague.nome}
-        </span>
-        <h1 className="home-greeting-title">
+    <div className="home-stack home-stack--noir">
+      <section className="home-noir-intro">
+        <div className="home-noir-topline">
+          <span className="kicker">
+            GIORNATA {giornataCorrente ?? '-'} · {leagueName}
+          </span>
+          <span className="home-noir-credit">{aiCrediti} crediti AI</span>
+        </div>
+        <h1 className="home-noir-title">
           Ciao {userName}. {phrase}
         </h1>
-        <div className="home-greeting-actions" aria-label="Azioni rapide principali">
-          <Link to="/schieramento" className="home-action home-action--gold">Schiera ora</Link>
-          <Link to="/ai-analisi" className="home-action">Chiedi al coach</Link>
-        </div>
       </section>
 
-      {/* Hero punti ultima giornata */}
-      <HeroBlock
+      <MetricHero
         kicker={
           ultimaGiocata
             ? `GIORNATA ${ultimaGiocata.giornata} · PUNTI`
             : 'PUNTI · NESSUNA GIOCATA'
         }
         value={puntiUltima ?? '—'}
-        diff={diff}
+        delta={diff}
         label={puntiUltima != null ? 'ultima giornata' : 'nessun dato'}
       />
 
-      {/* Deadline schieramento */}
-      <DeadlinePill deadline={deadline} label="Schieramento" />
+      <NoirActionRow
+        primary={{ label: 'Schiera ora', to: '/schieramento' }}
+        secondary={{ label: 'Coach', to: '/ai-analisi' }}
+      />
 
-      {/* Quick cards 2x2 */}
-      <section className="quick-card-grid">
-        <QuickCard
-          icon="CL"
-          label="Classifica"
-          value={posizione ?? '—'}
-          hint={posizione ? `su ${classifica.length}` : 'non disponibile'}
-          to="/classifica"
-        />
-        <QuickCard
-          icon="XI"
-          label="Schiera"
-          hint="tocca per schierare"
+      <section className="home-noir-signals" aria-label="Segnali giornata">
+        <SignalRow
+          tone="gold"
+          label="Deadline schieramento"
+          value={deadline.toLocaleDateString('it-IT', { weekday: 'short', day: 'numeric', month: 'short' })}
+          hint="Controlla prima del blocco"
           to="/schieramento"
         />
-        <QuickCard
-          icon="MED"
-          label="Infortuni"
+        <SignalRow
+          tone={infortunati > 0 ? 'danger' : 'success'}
+          label="Rischi rosa"
           value={infortunati}
-          hint={infortunati > 0 ? 'in rosa' : 'tutti ok'}
+          hint={infortunati > 0 ? 'giocatori da valutare' : 'nessun infortunio'}
           to="/la-rosa"
         />
-        <QuickCard
-          icon="AI"
-          label="AI Coach"
-          hint="apri console"
-          to="/ai-analisi"
+        <SignalRow
+          tone="neutral"
+          label="Posizione lega"
+          value={posizione ? `${posizione}/${classifica.length}` : '—'}
+          hint={posizione ? 'classifica aggiornata' : 'non disponibile'}
+          to="/classifica"
         />
       </section>
 
-      {/* News preview stub */}
       <NewsPreviewStub players={rosa} />
     </div>
   );
