@@ -1,5 +1,4 @@
 import { Router } from 'express';
-import Anthropic from '@anthropic-ai/sdk';
 import pool from '../db/pool.js';
 import { authenticateJWT } from '../middleware/auth.js';
 import { sendMetric } from '../middleware/cloudwatch.js';
@@ -10,7 +9,6 @@ import {
 } from '../lib/orbitalActions.js';
 
 const router = Router();
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
 const GROQ_MODEL = 'llama-3.3-70b-versatile';
@@ -114,25 +112,40 @@ router.post('/chat', authenticateJWT, async (req, res, next) => {
       .map(m => ({ role: m.role, content: String(m.content).slice(0, 2000) }))
       .slice(0, 20);
 
-    // Call Anthropic
+    const groqKey = process.env.GROQ_API_KEY;
+    if (!groqKey) {
+      return res.status(500).json({ error: 'GROQ_API_KEY non configurata sul server' });
+    }
+
     const apiStart = Date.now();
-    const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
-      max_tokens: safeMaxTokens,
-      system: systemPrompt || 'Sei FantaBrain AI, assistente per il Fantacalcio Mantra italiano. Parla in italiano.',
-      messages: sanitized,
+    const groqResponse = await fetch(GROQ_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${groqKey}`,
+      },
+      body: JSON.stringify({
+        model: GROQ_MODEL,
+        max_tokens: safeMaxTokens,
+        messages: [
+          { role: 'system', content: systemPrompt || 'Sei FantaBrain AI, assistente per il Fantacalcio Mantra italiano. Parla in italiano.' },
+          ...sanitized,
+        ],
+      }),
     });
+
+    if (!groqResponse.ok) {
+      const errText = await groqResponse.text();
+      throw new Error(`Groq errore ${groqResponse.status}: ${errText}`);
+    }
+
+    const data = await groqResponse.json();
     const apiLatency = Date.now() - apiStart;
 
-    const inputTokens = response.usage?.input_tokens ?? 0;
-    const outputTokens = response.usage?.output_tokens ?? 0;
-    const estimatedCost = (inputTokens * 0.000003) + (outputTokens * 0.000015);
+    sendMetric('GroqChatLatency', apiLatency, 'Milliseconds');
+    sendMetric('GroqChatCall', 1, 'Count');
 
-    sendMetric('AnthropicAPILatency', apiLatency, 'Milliseconds');
-    sendMetric('AnthropicAPICall', 1, 'Count');
-    sendMetric('AnthropicEstimatedCostUSD', estimatedCost, 'None');
-
-    const content = response.content[0]?.text || '';
+    const content = data.choices[0]?.message?.content || '';
 
     // Decrement credits for non-Gold users
     let creditsRemaining = null;
