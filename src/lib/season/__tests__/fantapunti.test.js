@@ -40,3 +40,25 @@ describe('computeFantapunti — base', () => {
     assert.equal(computeFantapunti(rawScore, SETTINGS_CLASSIC), 0);
   });
 });
+
+describe('computeFantapunti — portiere', () => {
+  it('portiere con clean sheet → +1', () => {
+    const rs = { player: SAMPLE_PORTIERE, voto: 6.5, cleanSheet: true, golSubiti: 0 };
+    assert.equal(computeFantapunti(rs, SETTINGS_CLASSIC), 7.5);
+  });
+
+  it('portiere con 2 gol subiti → -2', () => {
+    const rs = { player: SAMPLE_PORTIERE, voto: 6, golSubiti: 2 };
+    assert.equal(computeFantapunti(rs, SETTINGS_CLASSIC), 4);
+  });
+
+  it('portiere con rigore parato → +3', () => {
+    const rs = { player: SAMPLE_PORTIERE, voto: 6.5, rigoreParato: 1 };
+    assert.equal(computeFantapunti(rs, SETTINGS_CLASSIC), 9.5);
+  });
+
+  it('giocatore di movimento NON conta golSubiti', () => {
+    const rs = { player: SAMPLE_ATTACCANTE, voto: 7, golSubiti: 5 };
+    assert.equal(computeFantapunti(rs, SETTINGS_CLASSIC), 7);
+  });
+});
