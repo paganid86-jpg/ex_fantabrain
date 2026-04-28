@@ -30,3 +30,20 @@ export function computeFantapunti(rawScore, leagueSettings) {
 
   return Math.round(pts * 10) / 10;
 }
+
+const PROGRESSIVE_THRESHOLDS = [66, 72, 77, 82, 87, 92, 97, 102, 107, 112];
+
+/**
+ * Converte i fantapunti totali della squadra in numero di gol.
+ * @param {number} totalPts
+ * @param {string} fasceConfig — 'progressive' | 'fisse' | 'custom'
+ * @returns {number} gol fatti (0..10)
+ */
+export function computeFasciaGol(totalPts, fasceConfig = 'progressive') {
+  let goals = 0;
+  for (const threshold of PROGRESSIVE_THRESHOLDS) {
+    if (totalPts >= threshold) goals++;
+    else break;
+  }
+  return Math.min(goals, 10);
+}
