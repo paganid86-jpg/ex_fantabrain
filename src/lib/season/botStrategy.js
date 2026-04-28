@@ -103,3 +103,53 @@ export function draftBotRoster(archetype, allPlayers, budget, rosterSize, seed, 
 
   return taken;
 }
+
+const ARCHETYPE_MODULI = {
+  OffensivePush: ['3-4-3', '4-3-3'],
+  DefensiveWall: ['5-3-2', '5-4-1'],
+};
+
+const MODULI = {
+  '3-4-3': { P: 1, D: 3, C: 4, A: 3 },
+  '4-3-3': { P: 1, D: 4, C: 3, A: 3 },
+  '5-3-2': { P: 1, D: 5, C: 3, A: 2 },
+  '5-4-1': { P: 1, D: 5, C: 4, A: 1 },
+};
+
+function macroRuolo(player) {
+  const r = (player.ruoloMantra || '').toLowerCase();
+  if (r === 'por') return 'P';
+  if (DIFESA.has(r) && r !== 'por') return 'D';
+  if (ATTACCO.has(r)) return 'A';
+  return 'C';
+}
+
+export function pickBotLineup(bot, matchday) {
+  const rng = mulberry32(hashStr(`${bot.id}|${matchday}|lineup`));
+  const moduliPool = ARCHETYPE_MODULI[bot.archetype] ?? ['4-3-3', '4-4-2'];
+
+  const modulo = rng() < 0.8 ? moduliPool[0] : (moduliPool[1] ?? moduliPool[0]);
+  const need = MODULI[modulo];
+
+  const groups = { P: [], D: [], C: [], A: [] };
+  for (const p of bot.roster) groups[macroRuolo(p)].push(p);
+  for (const k of Object.keys(groups)) {
+    groups[k].sort((a, b) => (b.votoMedia ?? 0) - (a.votoMedia ?? 0));
+  }
+
+  const lineup = [];
+  for (const macro of ['P', 'D', 'C', 'A']) {
+    const list = groups[macro];
+    for (let i = 0; i < need[macro]; i++) {
+      let pick = list[i];
+      if (i + 1 < list.length && rng() < 0.05) {
+        pick = list[i + 1];
+        list[i + 1] = list[i];
+        list[i] = pick;
+      }
+      if (pick) lineup.push(pick.id);
+    }
+  }
+
+  return { lineup, modulo };
+}

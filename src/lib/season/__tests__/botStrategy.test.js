@@ -72,3 +72,49 @@ describe('BOT_NAME_POOL', () => {
     assert.equal(new Set(BOT_NAME_POOL).size, BOT_NAME_POOL.length);
   });
 });
+
+import { pickBotLineup } from '../botStrategy.js';
+
+describe('pickBotLineup', () => {
+  const pool = buildLargePool(300);
+  const rosterOff = draftBotRoster('OffensivePush', pool, 500, 25, 'L1');
+  const botOff = { id: 'bot-1', archetype: 'OffensivePush', roster: rosterOff };
+
+  it('schiera 11 giocatori', () => {
+    const r = pickBotLineup(botOff, 1);
+    assert.equal(r.lineup.length, 11);
+  });
+
+  it('tutti i giocatori sono nella rosa', () => {
+    const r = pickBotLineup(botOff, 1);
+    const rosterIds = new Set(rosterOff.map((p) => p.id));
+    for (const id of r.lineup) assert.ok(rosterIds.has(id), `${id} fuori rosa`);
+  });
+
+  it('include sempre 1 portiere', () => {
+    const r = pickBotLineup(botOff, 1);
+    const portieri = r.lineup.filter((id) => {
+      const p = rosterOff.find((x) => x.id === id);
+      return (p?.ruoloMantra || '').toLowerCase() === 'por';
+    });
+    assert.equal(portieri.length, 1);
+  });
+
+  it('determinismo per stesso (bot, matchday)', () => {
+    const a = pickBotLineup(botOff, 5);
+    const b = pickBotLineup(botOff, 5);
+    assert.deepEqual(a, b);
+  });
+
+  it('OffensivePush usa modulo offensivo (3-4-3 o 4-3-3)', () => {
+    const r = pickBotLineup(botOff, 1);
+    assert.ok(['3-4-3', '4-3-3'].includes(r.modulo));
+  });
+
+  it('DefensiveWall usa modulo difensivo (5-3-2 o 5-4-1)', () => {
+    const rosterDef = draftBotRoster('DefensiveWall', pool, 500, 25, 'L2');
+    const botDef = { id: 'bot-2', archetype: 'DefensiveWall', roster: rosterDef };
+    const r = pickBotLineup(botDef, 1);
+    assert.ok(['5-3-2', '5-4-1'].includes(r.modulo));
+  });
+});
