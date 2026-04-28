@@ -60,3 +60,51 @@ export function simulateVoto(player, matchday) {
 
   return { voto, gol, assist, ammonizione, espulsione, rigoreParato, rigoreSegnato, rigoreSbagliato, autogol, golSubiti, cleanSheet };
 }
+
+/**
+ * Carica i voti di una giornata.
+ * Tenta GET /api/voti/{season}/matchday/{matchday}. Se fallisce o se nessun player è mappato,
+ * cade su simulazione totale.
+ */
+export async function loadMatchdayVoti(season, matchday, players) {
+  let dataset = null;
+  try {
+    const res = await fetch(`/api/voti/${season}/matchday/${matchday}`);
+    if (res.ok) {
+      const json = await res.json();
+      dataset = json?.players ?? null;
+    }
+  } catch (_e) {
+    dataset = null;
+  }
+
+  const out = {};
+  let datasetHits = 0;
+
+  for (const p of players) {
+    const fromDs = dataset?.[p.id];
+    if (fromDs) {
+      datasetHits++;
+      out[p.id] = {
+        voto: fromDs.voto ?? 0,
+        gol: fromDs.gol ?? 0,
+        assist: fromDs.assist ?? 0,
+        ammonizione: fromDs.ammonizione ?? 0,
+        espulsione: fromDs.espulsione ?? 0,
+        rigoreParato: fromDs.rigoreParato ?? 0,
+        rigoreSegnato: fromDs.rigoreSegnato ?? 0,
+        rigoreSbagliato: fromDs.rigoreSbagliato ?? 0,
+        autogol: fromDs.autogol ?? 0,
+        golSubiti: fromDs.golSubiti ?? 0,
+        cleanSheet: !!fromDs.cleanSheet,
+      };
+    } else {
+      out[p.id] = simulateVoto(p, matchday);
+    }
+  }
+
+  return {
+    mode: datasetHits > 0 ? 'dataset' : 'simulated',
+    players: out,
+  };
+}

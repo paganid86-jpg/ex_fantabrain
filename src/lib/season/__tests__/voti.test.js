@@ -1,6 +1,6 @@
-import { describe, it } from 'node:test';
+import { describe, it, mock } from 'node:test';
 import assert from 'node:assert/strict';
-import { simulateVoto } from '../voti.js';
+import { simulateVoto, loadMatchdayVoti } from '../voti.js';
 import { SAMPLE_ATTACCANTE, SAMPLE_PORTIERE, SAMPLE_DIFENSORE } from '../__fixtures__/playerSamples.js';
 
 describe('simulateVoto', () => {
@@ -51,5 +51,62 @@ describe('simulateVoto', () => {
     for (const k of ['voto', 'gol', 'assist', 'ammonizione', 'espulsione', 'autogol', 'rigoreSegnato', 'rigoreSbagliato', 'rigoreParato', 'golSubiti', 'cleanSheet']) {
       assert.ok(k in r, `manca chiave ${k}`);
     }
+  });
+});
+
+describe('loadMatchdayVoti', () => {
+  it('200 dataset → mode "dataset", merge con player non mappati simulati', async () => {
+    const fakeFetch = mock.fn(async () => ({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        players: {
+          'p-lautaro': { voto: 7.5, gol: 1, assist: 0 },
+        },
+      }),
+    }));
+    globalThis.fetch = fakeFetch;
+
+    const players = [SAMPLE_ATTACCANTE, SAMPLE_PORTIERE];
+    const r = await loadMatchdayVoti('2025-26', 1, players);
+
+    assert.equal(r.mode, 'dataset');
+    assert.equal(r.players[SAMPLE_ATTACCANTE.id].voto, 7.5);
+    assert.equal(r.players[SAMPLE_ATTACCANTE.id].gol, 1);
+    assert.ok(r.players[SAMPLE_PORTIERE.id]);
+    assert.ok('voto' in r.players[SAMPLE_PORTIERE.id]);
+  });
+
+  it('404 → mode "simulated", tutti i player simulati', async () => {
+    globalThis.fetch = mock.fn(async () => ({
+      ok: false,
+      status: 404,
+      json: async () => ({ error: 'not found' }),
+    }));
+
+    const players = [SAMPLE_ATTACCANTE, SAMPLE_PORTIERE];
+    const r = await loadMatchdayVoti('2025-26', 99, players);
+
+    assert.equal(r.mode, 'simulated');
+    assert.ok(r.players[SAMPLE_ATTACCANTE.id]);
+    assert.ok(r.players[SAMPLE_PORTIERE.id]);
+  });
+
+  it('network error → mode "simulated"', async () => {
+    globalThis.fetch = mock.fn(async () => { throw new Error('ECONNREFUSED'); });
+
+    const r = await loadMatchdayVoti('2025-26', 1, [SAMPLE_ATTACCANTE]);
+    assert.equal(r.mode, 'simulated');
+    assert.ok(r.players[SAMPLE_ATTACCANTE.id]);
+  });
+
+  it('dataset vuoto (zero player mappati) → mode "simulated"', async () => {
+    globalThis.fetch = mock.fn(async () => ({
+      ok: true, status: 200,
+      json: async () => ({ players: {} }),
+    }));
+
+    const r = await loadMatchdayVoti('2025-26', 1, [SAMPLE_ATTACCANTE]);
+    assert.equal(r.mode, 'simulated');
   });
 });
