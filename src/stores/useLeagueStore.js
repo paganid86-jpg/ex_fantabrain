@@ -1,6 +1,10 @@
 // src/stores/useLeagueStore.js
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { playMatchday as runMatchday } from '../lib/season/playMatchday.js';
+import useAppStore from '../store/useAppStore.js';
+import { draftBotRoster, BOT_NAME_POOL } from '../lib/season/botStrategy.js';
+import { generateRoundRobin } from '../lib/season/calendar.js';
 
 function todayLocalISO() {
   const d = new Date();
@@ -67,6 +71,49 @@ const DEFAULT_LEAGUE_DOMAIN = {
   seasonStatus: 'pending',           // 'pending' | 'active' | 'completed'
   isPlayingMatchday: false,
 };
+
+function hash01(s) {
+  let h = 2166136261;
+  for (let i = 0; i < (s || '').length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+  return ((h >>> 0) / 4294967296);
+}
+
+function initializeSeason(league, allPlayersPool) {
+  const userRoster = useAppStore.getState().rosa || [];
+  const usedIds = new Set(userRoster.map((p) => p.id));
+
+  const archetypes = ['OffensivePush', 'DefensiveWall', 'OffensivePush', 'DefensiveWall', 'OffensivePush', 'DefensiveWall', 'OffensivePush'];
+
+  const namesShuffled = [...BOT_NAME_POOL]
+    .sort(() => 0.5 - hash01(league.id))
+    .slice(0, 7);
+
+  const bots = [];
+  for (let i = 0; i < 7; i++) {
+    const archetype = archetypes[i];
+    const roster = draftBotRoster(
+      archetype,
+      allPlayersPool,
+      league.settings.creditiIniziali ?? 500,
+      league.settings.numGiocatoriRosa ?? 25,
+      `${league.id}-bot-${i + 1}`,
+      { excludeIds: usedIds }
+    );
+    roster.forEach((p) => usedIds.add(p.id));
+    bots.push({
+      id: `bot-${i + 1}`,
+      name: namesShuffled[i] || `Bot ${i + 1}`,
+      archetype,
+      roster,
+      currentLineup: null,
+    });
+  }
+
+  const teamIds = ['user', ...bots.map((b) => b.id)];
+  const calendar = generateRoundRobin(teamIds, 'andata_ritorno', league.id);
+
+  return { bots, calendar };
+}
 
 const useLeagueStore = create(
   persist(
@@ -190,6 +237,103 @@ const useLeagueStore = create(
               : x
           ),
         }));
+      },
+
+      playMatchday: async (leagueId, opts = {}) => {
+        const { leagues } = get();
+        const l = leagues.find((x) => x.id === leagueId);
+        if (!l) throw new Error('NoLeague');
+
+        if (l.isPlayingMatchday) throw new Error('AlreadyRunning');
+        set((state) => ({
+          leagues: state.leagues.map((x) =>
+            x.id === leagueId ? { ...x, isPlayingMatchday: true } : x
+          ),
+        }));
+
+        try {
+          let league = get().leagues.find((x) => x.id === leagueId);
+          if (league.seasonStatus === 'pending') {
+            const userRoster = useAppStore.getState().rosa || [];
+            if (userRoster.length < 15) throw new Error('RosterTooSmall');
+            const playersPool = opts.playersPool;
+            if (!playersPool || playersPool.length < 25 * 7 + userRoster.length) {
+              throw new Error('PlayerPoolMissing');
+            }
+            const { bots, calendar } = initializeSeason(league, playersPool);
+            set((state) => ({
+              leagues: state.leagues.map((x) =>
+                x.id === leagueId
+                  ? { ...x, bots, calendar, seasonStatus: 'active' }
+                  : x
+              ),
+            }));
+            league = get().leagues.find((x) => x.id === leagueId);
+          }
+
+          const userRoster = useAppStore.getState().rosa || [];
+          const userLineup = useAppStore.getState().titolariIds || [];
+          const userModulo = useAppStore.getState().modulo || '4-3-3';
+
+          const snapshot = {
+            ...league,
+            userRoster,
+            userLineup,
+            userModulo,
+          };
+
+          const { matchdayResult, updatedStandings } = await runMatchday(snapshot);
+
+          const enrichedStandings = updatedStandings.map((s) => {
+            if (s.teamId === 'user') {
+              return { ...s, name: useAppStore.getState().user?.league || 'La mia squadra', isUser: true };
+            }
+            const b = league.bots.find((x) => x.id === s.teamId);
+            return { ...s, name: b?.name || s.teamId, isUser: false };
+          });
+
+          const nextMatchday = league.currentMatchday + 1;
+          const seasonCompleted = nextMatchday > league.calendar.length;
+
+          set((state) => ({
+            leagues: state.leagues.map((x) =>
+              x.id === leagueId
+                ? {
+                    ...x,
+                    matchdayResults: [...(x.matchdayResults || []), matchdayResult],
+                    standings: enrichedStandings,
+                    currentMatchday: nextMatchday,
+                    nextMatchdayUnlocksAt: new Date(Date.now() + (x.cooldownHours ?? 24) * 3600 * 1000).toISOString(),
+                    seasonStatus: seasonCompleted ? 'completed' : 'active',
+                    isPlayingMatchday: false,
+                  }
+                : x
+            ),
+          }));
+
+          return matchdayResult;
+        } catch (err) {
+          set((state) => ({
+            leagues: state.leagues.map((x) =>
+              x.id === leagueId ? { ...x, isPlayingMatchday: false } : x
+            ),
+          }));
+          throw err;
+        }
+      },
+
+      recomputeStandings: (leagueId) => {
+        const { leagues } = get();
+        const l = leagues.find((x) => x.id === leagueId);
+        if (!l) return;
+        import('../lib/season/playMatchday.js').then((m) => {
+          const updated = m.recomputeStandings(l.matchdayResults || [], l.calendar || []);
+          set((state) => ({
+            leagues: state.leagues.map((x) =>
+              x.id === leagueId ? { ...x, standings: updated } : x
+            ),
+          }));
+        });
       },
 
       removeLeague: (leagueId) =>
