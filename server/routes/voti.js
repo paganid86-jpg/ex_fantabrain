@@ -37,7 +37,8 @@ router.get('/:season/matchday/:n', async (req, res) => {
     if (err.code === 'ENOENT') {
       return res.status(404).json({ error: 'matchday not found' });
     }
-    res.status(500).json({ error: 'internal', detail: err.message });
+    console.error('[voti] failed to read matchday file', err);
+    res.status(500).json({ error: 'internal' });
   }
 });
 

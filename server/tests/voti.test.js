@@ -54,7 +54,7 @@ describe('GET /api/voti/:season/matchday/:n', () => {
   it('400 se :season ha caratteri non sicuri (path traversal)', async () => {
     const { port, close } = await startTestServer();
     const r = await getJson(port, '/api/voti/..%2Fetc/matchday/1');
-    assert.ok(r.status === 400 || r.status === 404);
+    assert.equal(r.status, 400);
     await close();
   });
 });
