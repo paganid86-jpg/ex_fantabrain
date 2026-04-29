@@ -1,0 +1,11 @@
+{
+  "season": "2025-26",
+  "matchday": 1,
+  "source": "fixture-example-not-real-data",
+  "players": {
+    "p-lautaro": { "voto": 7.5, "gol": 1, "assist": 0, "ammonizione": 0 },
+    "p-maignan": { "voto": 6.5, "cleanSheet": true, "golSubiti": 0 },
+    "p-bastoni": { "voto": 6.0 },
+    "p-barella": { "voto": 7.0, "assist": 1 }
+  }
+}
