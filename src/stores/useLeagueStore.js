@@ -84,9 +84,12 @@ function initializeSeason(league, allPlayersPool) {
 
   const archetypes = ['OffensivePush', 'DefensiveWall', 'OffensivePush', 'DefensiveWall', 'OffensivePush', 'DefensiveWall', 'OffensivePush'];
 
-  const namesShuffled = [...BOT_NAME_POOL]
-    .sort(() => 0.5 - hash01(league.id))
-    .slice(0, 7);
+  const namesShuffled = [...BOT_NAME_POOL];
+  for (let k = namesShuffled.length - 1; k > 0; k--) {
+    const j = Math.floor(hash01(`${league.id}:shuffle:${k}`) * (k + 1));
+    [namesShuffled[k], namesShuffled[j]] = [namesShuffled[j], namesShuffled[k]];
+  }
+  namesShuffled.length = Math.min(namesShuffled.length, 7);
 
   const bots = [];
   for (let i = 0; i < 7; i++) {
@@ -322,18 +325,21 @@ const useLeagueStore = create(
         }
       },
 
-      recomputeStandings: (leagueId) => {
+      recomputeStandings: async (leagueId) => {
         const { leagues } = get();
         const l = leagues.find((x) => x.id === leagueId);
         if (!l) return;
-        import('../lib/season/playMatchday.js').then((m) => {
+        try {
+          const m = await import('../lib/season/playMatchday.js');
           const updated = m.recomputeStandings(l.matchdayResults || [], l.calendar || []);
           set((state) => ({
             leagues: state.leagues.map((x) =>
               x.id === leagueId ? { ...x, standings: updated } : x
             ),
           }));
-        });
+        } catch (err) {
+          console.error('[league-store] recomputeStandings failed', err);
+        }
       },
 
       removeLeague: (leagueId) =>
