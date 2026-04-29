@@ -2,6 +2,14 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
+function todayLocalISO() {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
 const generateInviteCode = () =>
   'FBRAIN-' + Math.random().toString(36).substring(2, 8).toUpperCase();
 
@@ -138,6 +146,51 @@ const useLeagueStore = create(
               : l
           ),
         })),
+
+      canPlayNow: (leagueId) => {
+        const { leagues } = get();
+        const l = leagues.find((x) => x.id === leagueId);
+        if (!l) return { ok: false, reason: 'no-league' };
+        if (l.seasonStatus === 'completed') return { ok: false, reason: 'season-completed' };
+        if (l.isPlayingMatchday) return { ok: false, reason: 'in-progress' };
+        if (l.matchdayResults?.find((r) => r.matchday === l.currentMatchday)) {
+          return { ok: false, reason: 'already-played' };
+        }
+        if (l.nextMatchdayUnlocksAt) {
+          const t = Date.parse(l.nextMatchdayUnlocksAt);
+          if (Number.isFinite(t) && t > Date.now()) {
+            return { ok: false, reason: 'cooldown', unlocksAt: l.nextMatchdayUnlocksAt };
+          }
+        }
+        return { ok: true };
+      },
+
+      skipCooldown: (leagueId) => {
+        const today = todayLocalISO();
+        const { leagues } = get();
+        const l = leagues.find((x) => x.id === leagueId);
+        if (!l) throw new Error('NoLeague');
+
+        const sToday = l.skipsToday?.date === today
+          ? l.skipsToday
+          : { date: today, count: 0 };
+
+        if (sToday.count >= 3) {
+          throw new Error('SkipsExhausted');
+        }
+
+        set((state) => ({
+          leagues: state.leagues.map((x) =>
+            x.id === leagueId
+              ? {
+                  ...x,
+                  nextMatchdayUnlocksAt: new Date().toISOString(),
+                  skipsToday: { date: today, count: sToday.count + 1 },
+                }
+              : x
+          ),
+        }));
+      },
 
       removeLeague: (leagueId) =>
         set((state) => ({
