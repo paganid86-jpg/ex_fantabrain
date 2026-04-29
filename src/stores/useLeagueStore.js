@@ -48,6 +48,18 @@ const DEFAULT_SETTINGS = {
   votoRiserva: 4,
 };
 
+const DEFAULT_LEAGUE_DOMAIN = {
+  bots: [],
+  calendar: [],
+  matchdayResults: [],
+  currentMatchday: 1,
+  nextMatchdayUnlocksAt: null,
+  cooldownHours: Number(import.meta.env.VITE_MATCHDAY_COOLDOWN_HOURS ?? 24),
+  skipsToday: { date: null, count: 0 },
+  seasonStatus: 'pending',           // 'pending' | 'active' | 'completed'
+  isPlayingMatchday: false,
+};
+
 const useLeagueStore = create(
   persist(
     (set, get) => ({
@@ -68,6 +80,7 @@ const useLeagueStore = create(
           myRoster: [],
           standings: [],
           settings: { ...DEFAULT_SETTINGS, ...settingsData },
+          ...DEFAULT_LEAGUE_DOMAIN,
         };
         set((state) => ({
           leagues: [...state.leagues, newLeague],
@@ -133,7 +146,21 @@ const useLeagueStore = create(
             state.currentLeagueId === leagueId ? null : state.currentLeagueId,
         })),
     }),
-    { name: 'fantabrain-leagues' }
+    {
+      name: 'fantabrain-leagues',
+      version: 2,
+      migrate: (persistedState, fromVersion) => {
+        if (!persistedState) return persistedState;
+        if (fromVersion < 2) {
+          const leagues = (persistedState.leagues || []).map((l) => ({
+            ...DEFAULT_LEAGUE_DOMAIN,
+            ...l,
+          }));
+          return { ...persistedState, leagues };
+        }
+        return persistedState;
+      },
+    }
   )
 );
 
