@@ -21,7 +21,7 @@ Deploy: https://webapp-fantabrain.onrender.com/ (Render, auto-deploy da `main`)
 
 1. **Branch**: sempre `claude/descrizione-SESSIONID` — mai pushare su `main` direttamente
 2. **Store Zustand**: tutti e tre usano **default export** — importare SEMPRE senza `{}`
-3. **Sistema leghe**: MVP localStorage-only (`fantabrain-leagues`) — NO chiamate backend per le leghe
+3. **Sistema leghe**: MVP localStorage-only (`fantabrain-leagues v2`) per leghe/rose/calendario/risultati. Il backend espone solo voti come dataset statici (`/api/voti/:season/matchday/:n`, read-only, no JWT). Niente schema dominio leghe in Postgres.
 4. **AI calls**: ogni chiamata client deve passare da backend (`/api/ai/groq` o `/api/ai/chat`) — mai Groq o Anthropic direttamente dal frontend
 5. **Proxy calcio**: tutte le chiamate a football-data.org passano da `/api/football/` (Vite proxy in dev, Express in prod)
 6. **CSS**: usare classi e custom properties già definite in `src/styles/design-system.css` — non inventarne di nuove
@@ -69,6 +69,11 @@ ADMIN_SECRET=<segreto admin>
 - `src/components/ui/PlayerSearchInput.jsx` — autocomplete giocatori reali Serie A
 - `src/pages/LeagueCreation.jsx` — form multi-step creazione lega
 - `src/styles/design-system.css` — CSS variables glassmorphism
+- `src/lib/season/` — engine puro single-player (fantapunti, voti, calendar, botStrategy, playMatchday)
+- `src/components/dashboard/MatchdayCard.jsx` — card "Gioca giornata" con stati pending/locked/ready/playing/completed
+- `src/hooks/useCountdown.js` — ticker condiviso HH:MM:SS
+- `src/lib/players.js` — `flattenSerieAPlayers` helper per il pool da `useSerieAStore.teams`
+- `server/routes/voti.js` + `server/data/voti-{season}/` — dataset voti statico
 
 ## Regole dettagliate
 
