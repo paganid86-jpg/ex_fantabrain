@@ -17,6 +17,7 @@ import Register from './pages/Register';
 import WarroomShare from './pages/WarroomShare';
 import LeagueCreation from './pages/LeagueCreation';
 import LeagueSettings from './pages/LeagueSettings';
+import MatchdayDetail from './pages/MatchdayDetail';
 import LandingPage from './pages/LandingPage';
 import LuxurySportsOSPreview from './pages/LuxurySportsOSPreview';
 import useAppStore from './store/useAppStore';
@@ -58,6 +59,7 @@ function AppLayout() {
           <Route path="hub/analisi" element={<HubAnalisi />} />
           <Route path="crea-lega" element={<LeagueCreation />} />
           <Route path="impostazioni-lega" element={<LeagueSettings />} />
+          <Route path="giornata/:n" element={<MatchdayDetail />} />
         </Routes>
       </FloatingPanel>
       <BottomNav />

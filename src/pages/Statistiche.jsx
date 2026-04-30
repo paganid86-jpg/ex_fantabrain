@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import useAppStore from '../store/useAppStore';
+import useLeagueStore from '../stores/useLeagueStore';
 import useSerieAStore from '../stores/useSerieAStore';
 
 function BarChart({ data, max, height = 80, labels }) {
@@ -52,8 +53,11 @@ function StatBar({ value, max = 10, color = 'var(--gold)' }) {
 
 export default function Statistiche() {
   const rosa = useAppStore((s) => s.rosa);
-  const classifica = useAppStore((s) => s.classifica);
-  const calendario = useAppStore((s) => s.calendario);
+  const currentLeague = useLeagueStore((s) =>
+    s.leagues.find((l) => l.id === s.currentLeagueId) || null
+  );
+  const matchdayResults = currentLeague?.matchdayResults || [];
+  const standings = currentLeague?.standings || [];
 
   // Dati reali Serie A
   const scorers        = useSerieAStore((s) => s.scorers);
@@ -63,30 +67,33 @@ export default function Statistiche() {
 
   useEffect(() => { fetchScorers(); }, [fetchScorers]);
 
-  const userRow = classifica.find((c) => c.isUser);
+  const userRow = standings.find((c) => c.isUser);
 
   // Empty state se non ci sono dati
-  if (rosa.length === 0 && classifica.length === 0) {
+  if (rosa.length === 0 && matchdayResults.length === 0) {
     return (
       <div className="empty-state" style={{ paddingTop: 80 }}>
         <div className="empty-state-icon">📈</div>
-        <div className="empty-state-title">Nessun dato disponibile</div>
+        <div className="empty-state-title">Nessuna giornata giocata</div>
         <div className="empty-state-desc">
-          Aggiungi giocatori e gioca le tue partite per vedere le statistiche della stagione.
+          Apri la dashboard per iniziare la stagione e raccogliere statistiche.
         </div>
       </div>
     );
   }
 
-  // Calcoli da dati live
-  const giornateGiocate = calendario.filter((g) => g.giocata && g.puntiUser);
-  const andamentoPunti = giornateGiocate.map((g) => g.puntiUser);
-  const labelsGiornate = giornateGiocate.map((g) => `G${g.giornata}`);
+  // Calcoli da matchdayResults reali
+  const userResults = matchdayResults.map((r) => ({
+    md: r.matchday,
+    fp: r.teams?.user?.fantapunti ?? 0,
+  }));
+  const andamentoPunti = userResults.map((r) => r.fp);
+  const labelsGiornate = userResults.map((r) => `G${r.md}`);
 
-  const puntiTotali = userRow?.punti ?? andamentoPunti.reduce((s, v) => s + v, 0);
+  const puntiTotali = userRow?.fantaTotali ?? andamentoPunti.reduce((s, v) => s + v, 0);
   const media = andamentoPunti.length > 0
     ? (andamentoPunti.reduce((s, v) => s + v, 0) / andamentoPunti.length).toFixed(1)
-    : (userRow?.puntimedia?.toFixed(1) ?? '—');
+    : '—';
 
   const migliore = andamentoPunti.length > 0
     ? { punti: Math.max(...andamentoPunti), giornata: labelsGiornate[andamentoPunti.indexOf(Math.max(...andamentoPunti))] }
@@ -141,7 +148,7 @@ export default function Statistiche() {
       ? { label: 'Peggior Giornata', value: `${peggiore.punti}pt`, sub: peggiore.giornata, color: 'var(--red)' }
       : { label: 'Peggior Giornata', value: '—', color: 'var(--red)' },
     userRow
-      ? { label: 'V / P / S', value: `${userRow.vittorie}/${userRow.pareggi}/${userRow.sconfitte}`, color: 'var(--text-primary)' }
+      ? { label: 'V / N / P', value: `${userRow.V ?? 0}/${userRow.N ?? 0}/${userRow.P ?? 0}`, color: 'var(--text-primary)' }
       : null,
   ].filter(Boolean);
 

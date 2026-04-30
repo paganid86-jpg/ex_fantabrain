@@ -1,23 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-const CLASSIFICA_DEMO = [
-  { id: 1, nome: 'FC Drago', punti: 487, ultimoTurno: 78, puntimedia: 81.2 },
-  { id: 2, nome: 'La Mia Squadra', punti: 462, ultimoTurno: 74, puntimedia: 77.0, isUser: true },
-  { id: 3, nome: 'Guerrieri', punti: 451, ultimoTurno: 65, puntimedia: 75.2 },
-  { id: 4, nome: 'FC Fulmine', punti: 438, ultimoTurno: 71, puntimedia: 73.0 },
-  { id: 5, nome: 'I Leoni', punti: 420, ultimoTurno: 60, puntimedia: 70.0 },
-  { id: 6, nome: 'Aquile Rosse', punti: 405, ultimoTurno: 58, puntimedia: 67.5 },
-  { id: 7, nome: 'Tornado FC', punti: 388, ultimoTurno: 62, puntimedia: 64.7 },
-  { id: 8, nome: 'Stella Blu', punti: 371, ultimoTurno: 55, puntimedia: 61.8 },
-];
-
-const CALENDARIO_DEMO = Array.from({ length: 14 }, (_, i) => ({
-  giornata: i + 1,
-  giocata: true,
-  puntiUser: 58 + Math.round(Math.sin(i) * 18 + Math.random() * 10),
-})).concat([{ giornata: 15, giocata: false, puntiUser: null }]);
-
 const useAppStore = create(
   persist(
     (set) => ({
@@ -61,8 +44,8 @@ const useAppStore = create(
         set((state) => ({ rosa: state.rosa.map((g) => g.id === id ? { ...g, diffidato: !g.diffidato } : g) })),
 
       // ── Lega ───────────────────────────────────────────────
-      classifica: CLASSIFICA_DEMO,
-      calendario: CALENDARIO_DEMO,
+      classifica: [],
+      calendario: [],
       setGiornataCorrente: (n) => set({ giornataCorrente: n }),
       setClassifica: (classifica) => set({ classifica }),
       setCalendario: (calendario) => set({ calendario }),

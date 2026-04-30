@@ -7,6 +7,7 @@ import MetricHero from '../components/patterns/MetricHero';
 import SignalRow from '../components/patterns/SignalRow';
 import NoirActionRow from '../components/patterns/NoirActionRow';
 import NewsPreviewStub from '../components/patterns/NewsPreviewStub';
+import MatchdayCard from '../components/dashboard/MatchdayCard';
 import { getNextMatchdayDeadline } from '../lib/matchdayDeadline';
 import { getHeroPhrase } from '../lib/heroPhrase';
 
@@ -14,9 +15,6 @@ export default function Dashboard() {
   // State reads (selettori reattivi inline)
   const userName = useAppStore((s) => s.user?.name || 'Fantallenatore');
   const rosa = useAppStore((s) => s.rosa);
-  const calendario = useAppStore((s) => s.calendario);
-  const classifica = useAppStore((s) => s.classifica);
-  const giornataCorrente = useAppStore((s) => s.giornataCorrente);
   const aiCrediti = useAppStore((s) => s.aiCrediti);
   const currentLeagueId = useLeagueStore((s) => s.currentLeagueId);
   const currentLeague = useLeagueStore((s) =>
@@ -41,23 +39,31 @@ export default function Dashboard() {
     );
   }
 
-  // Calcoli per hero
-  const ultimaGiocata = [...calendario].reverse().find((g) => g.giocata);
-  const puntiUltima = ultimaGiocata?.puntiUser ?? null;
-  const userRow = classifica?.find((r) => r.isUser) || null;
-  const puntiMedia = userRow?.puntimedia ?? null;
+  // Calcoli per hero — derivati dai dati reali della lega
+  const matchdayResults = currentLeague.matchdayResults || [];
+  const standings = currentLeague.standings || [];
+  const ultimoResult = matchdayResults[matchdayResults.length - 1] || null;
+  const puntiUltima = ultimoResult?.teams?.user?.fantapunti ?? null;
+  const ultimaGiornata = ultimoResult?.matchday ?? null;
+  const userRow = standings.find((r) => r.isUser) || null;
+  const puntiMedia =
+    matchdayResults.length > 0
+      ? matchdayResults.reduce((sum, r) => sum + (r.teams?.user?.fantapunti ?? 0), 0) / matchdayResults.length
+      : null;
   const diff =
     puntiUltima != null && puntiMedia != null
       ? Math.round((puntiUltima - puntiMedia) * 10) / 10
       : null;
-  const giornataAperta = !!(ultimaGiocata && !ultimaGiocata.giocata);
+  const giornataAperta = currentLeague.seasonStatus === 'active' && !ultimoResult;
 
   const phrase = getHeroPhrase({ puntiUltima, puntiMedia, giornataAperta });
   const deadline = getNextMatchdayDeadline();
   const leagueName = currentLeague.settings?.nome ?? currentLeague.nome ?? 'Lega';
+  const giornataCorrente = currentLeague.currentMatchday ?? 1;
 
   // KPI rapidi per segnali home
-  const posizione = userRow ? classifica.findIndex((r) => r.isUser) + 1 : null;
+  const posizione = userRow ? standings.findIndex((r) => r.isUser) + 1 : null;
+  const totaleSquadre = standings.length;
   const infortunati = rosa.filter((p) => p.infortunato).length;
 
   return (
@@ -76,14 +82,16 @@ export default function Dashboard() {
 
       <MetricHero
         kicker={
-          ultimaGiocata
-            ? `GIORNATA ${ultimaGiocata.giornata} · PUNTI`
+          ultimaGiornata != null
+            ? `GIORNATA ${ultimaGiornata} · PUNTI`
             : 'PUNTI · NESSUNA GIOCATA'
         }
         value={puntiUltima ?? '—'}
         delta={diff}
         label={puntiUltima != null ? 'ultima giornata' : 'nessun dato'}
       />
+
+      <MatchdayCard />
 
       <NoirActionRow
         primary={{ label: 'Schiera ora', to: '/schieramento' }}
@@ -108,7 +116,7 @@ export default function Dashboard() {
         <SignalRow
           tone="neutral"
           label="Posizione lega"
-          value={posizione ? `${posizione}/${classifica.length}` : '—'}
+          value={posizione ? `${posizione}/${totaleSquadre}` : '—'}
           hint={posizione ? 'classifica aggiornata' : 'non disponibile'}
           to="/classifica"
         />

@@ -14,6 +14,7 @@ import aiRoutes from './server/routes/ai.js';
 import adminRoutes from './server/routes/admin.js';
 import waitlistRoutes from './server/routes/waitlist.js';
 import warsharesRoutes from './server/routes/warsharesRoutes.js';
+import votiRoutes from './server/routes/voti.js';
 import { startCreditResetCron } from './server/cron/resetCredits.js';
 import { startKeepAliveCron } from './server/cron/keepAlive.js';
 import { authenticateJWT } from './server/middleware/auth.js';
@@ -119,6 +120,9 @@ app.use('/api/admin', adminRoutes);
 
 // ── Waitlist routes ────────────────────────────────────────
 app.use('/api/waitlist', waitlistRoutes);
+
+// ── Voti stagionali (read-only, statici) ───────────────────
+app.use('/api/voti', votiRoutes);
 
 // ── Health check ───────────────────────────────────────────
 app.get('/api/health', (_req, res) => {
