@@ -1,8 +1,10 @@
 // src/components/dashboard/MatchdayCard.jsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import useLeagueStore from '../../stores/useLeagueStore';
 import useAppStore from '../../store/useAppStore';
+import useSerieAStore from '../../stores/useSerieAStore';
 import { useCountdown } from '../../hooks/useCountdown';
+import { flattenSerieAPlayers } from '../../lib/players';
 
 export default function MatchdayCard() {
   const currentLeague = useLeagueStore((s) =>
@@ -12,6 +14,12 @@ export default function MatchdayCard() {
   const skipCooldown = useLeagueStore((s) => s.skipCooldown);
   const canPlayNow = useLeagueStore((s) => s.canPlayNow);
   const rosa = useAppStore((s) => s.rosa);
+  const teams = useSerieAStore((s) => s.teams);
+  const fetchTeams = useSerieAStore((s) => s.fetchTeams);
+
+  useEffect(() => {
+    if (!teams || teams.length === 0) fetchTeams?.();
+  }, [teams, fetchTeams]);
 
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
@@ -30,7 +38,8 @@ export default function MatchdayCard() {
   async function handlePlay() {
     setBusy(true); setError(null);
     try {
-      const playersPool = [...rosa];
+      const seriaAPool = flattenSerieAPlayers(teams || []);
+      const playersPool = seriaAPool.length >= 100 ? seriaAPool : [...rosa, ...generateDummyPool(200)];
       await playMatchday(currentLeague.id, { playersPool });
     } catch (e) {
       setError(e.message);
@@ -151,4 +160,22 @@ export default function MatchdayCard() {
       )}
     </div>
   );
+}
+
+// Helper di fallback se Serie A non caricato (utente offline o store vuoto)
+function generateDummyPool(n) {
+  const ruoli = ['Por', 'DC', 'C', 'A'];
+  const out = [];
+  for (let i = 0; i < n; i++) {
+    out.push({
+      id: `dummy-${i}-${Date.now()}`,
+      cognome: `Bot${i}`,
+      nome: '',
+      ruoloMantra: ruoli[i % 4],
+      squadra: 'Pool',
+      quotazione: 8 + (i % 18),
+      votoMedia: 5.8 + ((i % 25) / 10),
+    });
+  }
+  return out;
 }
