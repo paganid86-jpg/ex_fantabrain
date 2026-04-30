@@ -1,7 +1,7 @@
 // src/stores/useLeagueStore.js
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { playMatchday as runMatchday } from '../lib/season/playMatchday.js';
+import { playMatchday as runMatchday, recomputeStandings as engineRecomputeStandings } from '../lib/season/playMatchday.js';
 import useAppStore from '../store/useAppStore.js';
 import { draftBotRoster, BOT_NAME_POOL } from '../lib/season/botStrategy.js';
 import { generateRoundRobin } from '../lib/season/calendar.js';
@@ -325,13 +325,12 @@ const useLeagueStore = create(
         }
       },
 
-      recomputeStandings: async (leagueId) => {
+      recomputeStandings: (leagueId) => {
         const { leagues } = get();
         const l = leagues.find((x) => x.id === leagueId);
         if (!l) return;
         try {
-          const m = await import('../lib/season/playMatchday.js');
-          const updated = m.recomputeStandings(l.matchdayResults || [], l.calendar || []);
+          const updated = engineRecomputeStandings(l.matchdayResults || [], l.calendar || []);
           set((state) => ({
             leagues: state.leagues.map((x) =>
               x.id === leagueId ? { ...x, standings: updated } : x
