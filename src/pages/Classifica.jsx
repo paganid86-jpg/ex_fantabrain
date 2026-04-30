@@ -32,9 +32,26 @@ export default function Classifica() {
     s.leagues.find((l) => l.id === s.currentLeagueId) || null
   );
 
+  // Adatta le standings dall'engine (V/N/P/Pt/fantaTotali/ultimo) al formato letto dalla pagina
+  function adaptStanding(s, idx) {
+    const giornate = s.G ?? 0;
+    return {
+      id: s.teamId ?? idx,
+      nome: s.name || s.teamId || 'Squadra',
+      punti: s.Pt ?? 0,
+      vittorie: s.V ?? 0,
+      pareggi: s.N ?? 0,
+      sconfitte: s.P ?? 0,
+      puntimedia: giornate > 0 ? (s.fantaTotali ?? 0) / giornate : 0,
+      ultimoTurno: s.ultimo ?? 0,
+      andamento: s.andamento || [],
+      isUser: s.isUser ?? false,
+    };
+  }
+
   // Derive classifica from currentLeague (standings or participants), fall back to appStore
   const classifica = currentLeague?.standings?.length > 0
-    ? currentLeague.standings
+    ? currentLeague.standings.map(adaptStanding)
     : currentLeague?.participants?.map((p, i) => ({
         id: p.id ?? i,
         nome: p.name || 'Squadra',
