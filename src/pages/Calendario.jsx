@@ -1,15 +1,56 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import useAppStore from '../store/useAppStore';
+import useLeagueStore from '../stores/useLeagueStore';
 import useSerieAStore from '../stores/useSerieAStore';
 import { analizzaGiornata } from '../lib/claudeApi';
 import { formatMatchDate } from '../services/footballDataMapper';
 
 export default function Calendario() {
   const rosa = useAppStore((s) => s.rosa);
-  const calendario = useAppStore((s) => s.calendario);
-  const giornataCorrente = useAppStore((s) => s.giornataCorrente);
   const titolariIds = useAppStore((s) => s.titolariIds);
   const aiCrediti = useAppStore((s) => s.aiCrediti);
+  const currentLeague = useLeagueStore((s) =>
+    s.leagues.find((l) => l.id === s.currentLeagueId) || null
+  );
+  const giornataCorrente = currentLeague?.currentMatchday ?? 1;
+
+  // Calendario derivato da currentLeague.calendar + matchdayResults
+  const calendario = useMemo(() => {
+    if (!currentLeague?.calendar) return [];
+    const bots = currentLeague.bots || [];
+    const results = currentLeague.matchdayResults || [];
+    return currentLeague.calendar.map((round) => {
+      const userPairing = round.pairings.find((p) => p.home === 'user' || p.away === 'user');
+      const oppId = userPairing
+        ? (userPairing.home === 'user' ? userPairing.away : userPairing.home)
+        : null;
+      const oppName = oppId
+        ? (oppId === 'user' ? 'La mia squadra' : (bots.find((b) => b.id === oppId)?.name || oppId))
+        : 'Riposo';
+      const result = results.find((r) => r.matchday === round.matchday) || null;
+      const userMatch = result?.matches?.find((m) => m.home === 'user' || m.away === 'user') || null;
+      const giocata = !!result;
+      let risultato = null;
+      let puntiUser = null;
+      if (userMatch) {
+        const userIsHome = userMatch.home === 'user';
+        const userGoals = userIsHome ? userMatch.homeGoals : userMatch.awayGoals;
+        const oppGoals = userIsHome ? userMatch.awayGoals : userMatch.homeGoals;
+        risultato = `${userGoals}-${oppGoals}`;
+        puntiUser = userIsHome ? userMatch.homePts : userMatch.awayPts;
+      }
+      return {
+        giornata: round.matchday,
+        avversario: oppName,
+        data: `Giornata ${round.matchday}`,
+        giocata,
+        inCorso: !giocata && round.matchday === giornataCorrente,
+        risultato,
+        puntiUser,
+        proiezionePunti: null,
+      };
+    });
+  }, [currentLeague, giornataCorrente]);
 
   const [filtro, setFiltro] = useState('tutte');
   const [giornataDettaglio, setGiornataDettaglio] = useState(null);
