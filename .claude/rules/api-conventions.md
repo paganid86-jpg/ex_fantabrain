@@ -32,6 +32,17 @@
 > ⚠️ Migrazione pianificata → API-Football (RapidAPI) nella sessione corrente.
 > Quando completata: aggiornare questo file con i nuovi endpoint e header (`X-RapidAPI-Key`).
 
+## Voti stagionali — endpoint statico
+
+- Rotta: `GET /api/voti/:season/matchday/:n`
+- Read-only, no JWT (è un dataset di stagione pubblico)
+- Cache `Cache-Control: public, max-age=86400, immutable`
+- 200 con shape `{ season, matchday, source, players: { [playerId]: rawScore } }`
+- 404 se la giornata non esiste sul filesystem → frontend cade su `simulateVoto`
+- 400 su season non whitelistata o n fuori range
+- File serviti da `server/data/voti-{season}/matchday-{n}.json`
+- Sourcing del dataset reale è una decisione di prodotto separata
+
 ## Autenticazione
 
 - JWT con scadenza 30 giorni
@@ -41,8 +52,11 @@
 
 ## Sistema leghe
 
-- MVP localStorage-only tramite `useLeagueStore` (Zustand persist, chiave `fantabrain-leagues`)
+- MVP localStorage-only tramite `useLeagueStore` (Zustand persist, chiave `fantabrain-leagues`, version 2)
 - **NON fare chiamate backend per le leghe** — è single-user, nessun multiplayer reale
+- Schema persistito v2: oltre a `myRoster`/`participants`/`settings`, include `bots`, `calendar`, `matchdayResults`, `currentMatchday`, `nextMatchdayUnlocksAt`, `cooldownHours`, `skipsToday`, `seasonStatus`, `isPlayingMatchday`
+- Migration v1→v2 non distruttiva: i campi mancanti vengono inizializzati ai default; le leghe legacy partono da `seasonStatus: 'pending'`
+- Engine puro in `src/lib/season/`: `playMatchday`, `recomputeStandings`, `simulateVoto`, `loadMatchdayVoti`, `draftBotRoster`, `pickBotLineup`, `generateRoundRobin`
 - Il join tramite codice invito tra utenti diversi richiede Supabase (fase futura)
 
 ## Pattern generale
