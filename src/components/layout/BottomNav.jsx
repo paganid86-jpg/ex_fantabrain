@@ -1,95 +1,12 @@
-import { useState } from 'react'
-import { NavLink, useLocation, useNavigate } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
 import useScrollDirection from '../../hooks/useScrollDirection'
-import RadialOrbitalTimeline from '../ui/RadialOrbitalTimeline'
 
 const TABS = [
   { path: '/', icon: 'home', label: 'Home' },
-  { path: '/schieramento', icon: 'pitch', label: 'Schiera' },
-  { path: '/classifica', icon: 'table', label: 'Classif.' },
-  { path: '/news', icon: 'pulse', label: 'News' },
-  { path: '/ai-analisi', icon: 'spark', label: 'AI', orbital: true },
-]
-
-const AI_ORBITAL_ITEMS = [
-  {
-    id: 1,
-    title: 'Analizza',
-    date: 'Giornata',
-    content: 'Match migliori e rischi per i titolari prima della deadline.',
-    category: 'analizzaGiornata',
-    icon: 'calendar',
-    relatedIds: [3, 6],
-    status: 'ready',
-    statusLabel: 'FRONTEND',
-    energy: 88,
-    path: '/calendario',
-  },
-  {
-    id: 2,
-    title: 'Valuta offerta',
-    date: 'Mercato',
-    content: 'Verdetto ACCETTA, RIFIUTA o CONTROPROPONI sulle offerte ricevute.',
-    category: 'valutaOfferta',
-    icon: 'market',
-    relatedIds: [4, 5],
-    status: 'todo',
-    statusLabel: 'BACKEND TODO',
-    energy: 72,
-    path: '/mercato',
-  },
-  {
-    id: 3,
-    title: 'Scouting',
-    date: 'Report',
-    content: 'Report giocatore con forze, debolezze e verdetto SI, NO o FORSE.',
-    category: 'reportScouting',
-    icon: 'scouting',
-    relatedIds: [1, 2],
-    status: 'todo',
-    statusLabel: 'BACKEND TODO',
-    energy: 76,
-    path: '/scouting',
-  },
-  {
-    id: 4,
-    title: 'War Room',
-    date: 'Pre-match',
-    content: 'Analisi in 3 step: avversario, vantaggi e piano tattico.',
-    category: 'warRoomAnalisi',
-    icon: 'war',
-    relatedIds: [2, 5, 6],
-    status: 'todo',
-    statusLabel: 'BACKEND TODO',
-    energy: 94,
-    path: '/war-room',
-  },
-  {
-    id: 5,
-    title: 'Condividi',
-    date: 'Share',
-    content: "Genera un link condivisibile dell'analisi War Room.",
-    category: 'warRoomShare',
-    icon: 'share',
-    relatedIds: [4],
-    status: 'todo',
-    statusLabel: 'BACKEND TODO',
-    energy: 58,
-    path: '/war-room',
-  },
-  {
-    id: 6,
-    title: 'AI Coach',
-    date: 'Console',
-    content: 'Chat privata con lettura contestuale della rosa e prompt rapidi.',
-    category: 'aiCoach',
-    icon: 'spark',
-    relatedIds: [1, 4],
-    status: 'ready',
-    statusLabel: 'LIVE',
-    energy: 100,
-    path: '/ai-analisi',
-  },
+  { path: '/schieramento?tab=rosa', icon: 'team', label: 'Rosa' },
+  { path: '/schieramento', icon: 'pitch', label: 'Partite' },
+  { path: '/ai-analisi', icon: 'spark', label: 'AI Assistant' },
+  { path: '/impostazioni-lega', icon: 'trophy', label: 'Lega' },
 ]
 
 function NavIcon({ name }) {
@@ -110,6 +27,15 @@ function NavIcon({ name }) {
           <circle cx="12" cy="12" r="2.25" />
         </svg>
       )
+    case 'team':
+      return (
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="9" cy="8" r="3" />
+          <path d="M4.5 19c.6-3.1 2.2-5 4.5-5s3.9 1.9 4.5 5" />
+          <path d="M14.5 10.5a2.6 2.6 0 1 0 0-5" />
+          <path d="M15.5 14.5c2 .4 3.3 1.9 4 4.5" />
+        </svg>
+      )
     case 'table':
       return (
         <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -123,6 +49,17 @@ function NavIcon({ name }) {
       return (
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M4 12h3l2-4 4 9 2-5h5" />
+        </svg>
+      )
+    case 'trophy':
+      return (
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M8 4h8v4.5a4 4 0 0 1-8 0V4Z" />
+          <path d="M8 6H5.5v2.5A3.5 3.5 0 0 0 9 12" />
+          <path d="M16 6h2.5v2.5A3.5 3.5 0 0 1 15 12" />
+          <path d="M12 12.5V17" />
+          <path d="M8.5 20h7" />
+          <path d="M10 17h4l1 3H9l1-3Z" />
         </svg>
       )
     case 'spark':
@@ -140,53 +77,42 @@ function NavIcon({ name }) {
 
 export default function BottomNav() {
   const isScrollingDown = useScrollDirection()
-  const navigate = useNavigate()
   const location = useLocation()
-  const [isOrbitalOpen, setIsOrbitalOpen] = useState(false)
+  const params = new URLSearchParams(location.search)
+  const rosterTabIsActive = location.pathname === '/schieramento' && params.get('tab') === 'rosa'
 
-  function handleOrbitalSelect(path) {
-    setIsOrbitalOpen(false)
-    navigate(path)
+  function isTabActive(path) {
+    if (path === '/') {
+      return location.pathname === '/'
+    }
+
+    if (path === '/schieramento?tab=rosa') {
+      return rosterTabIsActive
+    }
+
+    if (path === '/schieramento') {
+      return location.pathname === '/schieramento' && !rosterTabIsActive
+    }
+
+    return location.pathname === path
   }
 
   return (
-    <>
-      {isOrbitalOpen && (
-        <RadialOrbitalTimeline
-          items={AI_ORBITAL_ITEMS}
-          onClose={() => setIsOrbitalOpen(false)}
-          onSelect={handleOrbitalSelect}
-        />
-      )}
+    <nav
+      className={`bottom-nav${isScrollingDown ? ' hidden' : ''}`}
+      aria-label="Navigazione principale"
+    >
+      {TABS.map(({ path, icon, label }) => {
+        const active = isTabActive(path)
 
-      <nav
-        className={`bottom-nav${isScrollingDown ? ' hidden' : ''}`}
-        aria-label="Navigazione principale"
-      >
-        {TABS.map(({ path, icon, label, orbital }) => orbital ? (
-          <button
-            type="button"
-            key={path}
-            className={`bottom-nav-item${location.pathname === path || isOrbitalOpen ? ' active' : ''}`}
-            aria-label="Apri menu AI"
-            aria-expanded={isOrbitalOpen}
-            onClick={() => setIsOrbitalOpen((current) => !current)}
-          >
-            <span className="bottom-nav-item-icon-wrap">
-              <span className="bottom-nav-item-icon" aria-hidden="true">
-                <NavIcon name={icon} />
-              </span>
-            </span>
-            <span className="bottom-nav-item-label">{label}</span>
-          </button>
-        ) : (
+        return (
           <NavLink
             key={path}
             to={path}
             end={path === '/'}
-            className={({ isActive }) => `bottom-nav-item${isActive ? ' active' : ''}`}
+            className={`bottom-nav-item${active ? ' active' : ''}`}
+            aria-current={active ? 'page' : undefined}
             aria-label={label}
-            onClick={() => setIsOrbitalOpen(false)}
           >
             <span className="bottom-nav-item-icon-wrap">
               <span className="bottom-nav-item-icon" aria-hidden="true">
@@ -195,8 +121,8 @@ export default function BottomNav() {
             </span>
             <span className="bottom-nav-item-label">{label}</span>
           </NavLink>
-        ))}
-      </nav>
-    </>
+        )
+      })}
+    </nav>
   )
 }
