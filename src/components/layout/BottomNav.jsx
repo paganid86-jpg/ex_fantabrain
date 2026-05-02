@@ -1,4 +1,4 @@
-import { NavLink, useLocation } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import useScrollDirection from '../../hooks/useScrollDirection'
 
 const TABS = [
@@ -106,10 +106,9 @@ export default function BottomNav() {
         const active = isTabActive(path)
 
         return (
-          <NavLink
+          <Link
             key={path}
             to={path}
-            end={path === '/'}
             className={`bottom-nav-item${active ? ' active' : ''}`}
             aria-current={active ? 'page' : undefined}
             aria-label={label}
@@ -120,7 +119,7 @@ export default function BottomNav() {
               </span>
             </span>
             <span className="bottom-nav-item-label">{label}</span>
-          </NavLink>
+          </Link>
         )
       })}
     </nav>

@@ -598,13 +598,6 @@ h1, h2, h3, h4, h5, h6 {
   background: rgba(255, 243, 230, 0.08);
 }
 
-.bottom-nav-item[aria-label="Apri menu AI"] .bottom-nav-item-icon-wrap,
-.bottom-nav-item[aria-label="Apri menu AI"].active .bottom-nav-item-icon-wrap {
-  width: 30px;
-  height: 30px;
-  background: transparent;
-}
-
 .bottom-nav-item-icon {
   width: 18px;
   height: 18px;
