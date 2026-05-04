@@ -4901,7 +4901,7 @@ html[data-theme="light"] .bench-ai-button {
 }
 
 .home-lux-hero h1 {
-  max-width: 11ch;
+  max-width: min(12.5ch, 100%);
   margin: 14px 0 0;
   color: var(--lux-milk);
   font-family: Georgia, 'Times New Roman', serif;
@@ -4909,6 +4909,7 @@ html[data-theme="light"] .bench-ai-button {
   font-weight: 800;
   line-height: 0.95;
   letter-spacing: 0;
+  overflow-wrap: anywhere;
 }
 
 .home-lux-hero h1 span {
