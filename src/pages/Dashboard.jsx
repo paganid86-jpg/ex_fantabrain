@@ -17,7 +17,6 @@ export default function Dashboard() {
   const calendario = useAppStore((s) => s.calendario);
   const classifica = useAppStore((s) => s.classifica);
   const giornataCorrente = useAppStore((s) => s.giornataCorrente);
-  const aiCrediti = useAppStore((s) => s.aiCrediti);
   const currentLeagueId = useLeagueStore((s) => s.currentLeagueId);
   const currentLeague = useLeagueStore((s) =>
     s.leagues.find((l) => l.id === s.currentLeagueId)
@@ -61,17 +60,27 @@ export default function Dashboard() {
   const infortunati = rosa.filter((p) => p.infortunato).length;
 
   return (
-    <div className="home-stack home-stack--noir">
-      <section className="home-noir-intro">
-        <div className="home-noir-topline">
-          <span className="kicker">
+    <div className="home-stack home-stack--luxury">
+      <section className="home-lux-hero">
+        <div className="home-lux-hero__copy">
+          <span className="lux-kicker">
             GIORNATA {giornataCorrente ?? '-'} · {leagueName}
           </span>
-          <span className="home-noir-credit">{aiCrediti} crediti AI</span>
+          <h1>
+            Ciao {userName}. <span>{phrase}</span>
+          </h1>
+          <p>
+            L'AI ha analizzato i segnali della tua lega. Ecco cosa conta oggi per vincere.
+          </p>
+          <Link to="/ai-analisi" className="home-lux-hero__cta">
+            Chiedi un consiglio all'AI
+          </Link>
         </div>
-        <h1 className="home-noir-title">
-          Ciao {userName}. {phrase}
-        </h1>
+        <div className="home-lux-hero__brain" aria-hidden="true">
+          <span />
+          <span />
+          <span />
+        </div>
       </section>
 
       <MetricHero
