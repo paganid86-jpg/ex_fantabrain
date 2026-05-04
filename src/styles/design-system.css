@@ -76,6 +76,9 @@ html[data-theme="dark"] {
   --lux-line-gold: rgba(245, 207, 114, 0.28);
   --lux-gold: #f5cf72;
   --lux-gold-soft: #fff0bc;
+  --lux-gold-fill-start: var(--lux-gold-soft);
+  --lux-gold-fill-end: var(--lux-gold);
+  --lux-on-gold: #071016;
   --lux-milk: #fff7ea;
   --lux-muted: rgba(255, 247, 234, 0.66);
   --lux-dim: rgba(255, 247, 234, 0.44);
@@ -128,6 +131,9 @@ html[data-theme="light"] {
   --lux-line-gold: rgba(166, 121, 38, 0.28);
   --lux-gold: #a67926;
   --lux-gold-soft: #7c5518;
+  --lux-gold-fill-start: #ffe7a6;
+  --lux-gold-fill-end: #d8a84a;
+  --lux-on-gold: #17100a;
   --lux-milk: #381932;
   --lux-muted: rgba(56, 25, 50, 0.66);
   --lux-dim: rgba(56, 25, 50, 0.44);
@@ -4980,8 +4986,8 @@ a.signal-row:hover,
 
 .noir-action--primary {
   border-color: var(--lux-line-gold);
-  background: linear-gradient(135deg, var(--lux-gold-soft) 0%, var(--lux-gold) 100%);
-  color: var(--lux-bg-deep);
+  background: linear-gradient(135deg, var(--lux-gold-fill-start) 0%, var(--lux-gold-fill-end) 100%);
+  color: var(--lux-on-gold);
   box-shadow: 0 14px 32px rgba(245, 207, 114, 0.18);
 }
 
@@ -5077,8 +5083,8 @@ a.signal-row:hover,
 .formation-status-bar__badge,
 .modulo-list-item--active {
   border-color: var(--lux-line-gold);
-  background: linear-gradient(135deg, var(--lux-gold-soft) 0%, var(--lux-gold) 100%);
-  color: var(--lux-bg-deep);
+  background: linear-gradient(135deg, var(--lux-gold-fill-start) 0%, var(--lux-gold-fill-end) 100%);
+  color: var(--lux-on-gold);
 }
 
 .schiera-tab-bar {
@@ -5110,8 +5116,8 @@ a.signal-row:hover,
 
 .tab-btn--active {
   border-color: var(--lux-line-gold);
-  background: linear-gradient(135deg, var(--lux-gold-soft) 0%, var(--lux-gold) 100%);
-  color: var(--lux-bg-deep);
+  background: linear-gradient(135deg, var(--lux-gold-fill-start) 0%, var(--lux-gold-fill-end) 100%);
+  color: var(--lux-on-gold);
   box-shadow: 0 10px 24px rgba(245, 207, 114, 0.16);
 }
 
