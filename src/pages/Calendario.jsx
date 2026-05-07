@@ -1,8 +1,29 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import useAppStore from '../store/useAppStore';
 import useSerieAStore from '../stores/useSerieAStore';
 import { analizzaGiornata } from '../lib/claudeApi';
 import { formatMatchDate } from '../services/footballDataMapper';
+
+const FILTERS = [
+  { value: 'tutte', label: 'Tutte' },
+  { value: 'giocate', label: 'Giocate' },
+  { value: 'future', label: 'Future' },
+];
+
+function getResultTone(day) {
+  const parts = day.risultato ? day.risultato.split('-').map((value) => parseInt(value, 10)) : [];
+  if (parts.length !== 2) return 'neutral';
+  if (parts[0] > parts[1]) return 'win';
+  if (parts[0] < parts[1]) return 'loss';
+  return 'draw';
+}
+
+function getResultLabel(tone) {
+  if (tone === 'win') return 'Vittoria';
+  if (tone === 'loss') return 'Sconfitta';
+  if (tone === 'draw') return 'Pareggio';
+  return 'Da giocare';
+}
 
 export default function Calendario() {
   const rosa = useAppStore((s) => s.rosa);
@@ -17,361 +38,216 @@ export default function Calendario() {
   const [aiRisultato, setAiRisultato] = useState(null);
   const [aiError, setAiError] = useState(null);
 
-  // Dati reali Serie A
-  const serieAMatchday     = useSerieAStore((s) => s.currentMatchday);
-  const loadingMatches     = useSerieAStore((s) => s.loading.matches);
-  const errorMatches       = useSerieAStore((s) => s.errors.matches);
-  const fetchSerieA        = useSerieAStore((s) => s.fetchAll);
-  const getNextMatches     = useSerieAStore((s) => s.getNextMatchdayMatches);
+  const serieAMatchday = useSerieAStore((s) => s.currentMatchday);
+  const loadingMatches = useSerieAStore((s) => s.loading.matches);
+  const errorMatches = useSerieAStore((s) => s.errors.matches);
+  const fetchSerieA = useSerieAStore((s) => s.fetchAll);
+  const getNextMatches = useSerieAStore((s) => s.getNextMatchdayMatches);
 
-  useEffect(() => { fetchSerieA(); }, [fetchSerieA]);
+  useEffect(() => {
+    fetchSerieA();
+  }, [fetchSerieA]);
 
   const nextSerieAMatches = getNextMatches();
+  const titolari = titolariIds.map((id) => rosa.find((player) => player.id === id)).filter(Boolean);
 
-  const titolari = titolariIds.map((id) => rosa.find((g) => g.id === id)).filter(Boolean);
-
-  const giornate = calendario.filter((g) => {
-    if (filtro === 'giocate') return g.giocata;
-    if (filtro === 'future') return !g.giocata;
+  const giornate = calendario.filter((day) => {
+    if (filtro === 'giocate') return day.giocata;
+    if (filtro === 'future') return !day.giocata;
     return true;
   });
+
+  const totaleGiocate = calendario.filter((day) => day.giocata).length;
+  const puntiTot = calendario
+    .filter((day) => day.giocata && day.puntiUser)
+    .reduce((sum, day) => sum + day.puntiUser, 0);
+  const prossimaGiornata = calendario.find((day) => !day.giocata) || calendario[0] || null;
 
   async function analizzaProssima() {
     setAiLoading(true);
     setAiError(null);
     setAiRisultato(null);
     try {
-      const partite = nextSerieAMatches;
-      const testo = await analizzaGiornata(titolari, partite, giornataCorrente);
-      setAiRisultato(testo);
+      const text = await analizzaGiornata(titolari, nextSerieAMatches, giornataCorrente);
+      setAiRisultato(text);
     } catch {
-      setAiError('Analisi non disponibile. Riprova più tardi.');
+      setAiError('Analisi non disponibile. Riprova piu tardi.');
     } finally {
       setAiLoading(false);
     }
   }
 
-  const totaleGiocate = calendario.filter((g) => g.giocata).length;
-  const puntiTot = calendario.filter((g) => g.giocata && g.puntiUser).reduce((s, g) => s + g.puntiUser, 0);
-
-  if (calendario.length === 0) {
-    return (
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: 16 }}>
-        {/* Empty state principale */}
-        <div className="empty-state" style={{ paddingTop: 80 }}>
-          <div className="empty-state-icon">📅</div>
-          <div className="empty-state-title">Calendario non disponibile</div>
-          <div className="empty-state-desc">
-            Le giornate compariranno man mano che la stagione avanza.
-          </div>
-        </div>
-
-        {/* Sidebar destra anche con calendario vuoto */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <div className="glass-card" style={{ padding: 16 }}>
-            <div style={{
-              fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 15,
-              color: 'var(--text-primary)', marginBottom: 6,
-            }}>
-              🤖 Analisi Giornata {giornataCorrente}
-            </div>
-            <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 14 }}>
-              Analisi AI dei tuoi titolari per la prossima giornata
-            </div>
-
-            <button
-              className="btn-ai"
-              onClick={analizzaProssima}
-              disabled={aiLoading || aiCrediti === 0}
-              style={{ width: '100%' }}
-            >
-              {aiLoading ? '⏳ Analizzando...' : '📅 Analizza Giornata Corrente'}
-            </button>
-
-            {aiError && (
-              <div style={{
-                fontSize: 12, color: 'var(--red)', padding: '8px',
-                background: 'rgba(248,113,113,0.08)', borderRadius: 6, marginTop: 10,
-              }}>
-                {aiError}
-              </div>
-            )}
-            {aiRisultato && (
-              <div className="ai-response" style={{ marginTop: 12, fontSize: 12 }}>
-                {aiRisultato}
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: 16 }}>
-      {/* Lista giornate */}
-      <div>
-        {/* Filtri + stats */}
-        <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap', alignItems: 'center' }}>
-          {[
-            { val: 'tutte', label: 'Tutte' },
-            { val: 'giocate', label: 'Giocate' },
-            { val: 'future', label: 'Future' },
-          ].map((f) => (
-            <button
-              key={f.val}
-              onClick={() => setFiltro(f.val)}
-              style={{
-                background: filtro === f.val ? 'rgba(126, 173, 212,0.15)' : 'var(--bg-glass)',
-                border: `1px solid ${filtro === f.val ? 'rgba(126, 173, 212,0.45)' : 'rgba(255,255,255,0.08)'}`,
-                color: filtro === f.val ? 'var(--accent-primary)' : 'var(--text-secondary)',
-                borderRadius: 20, padding: '6px 18px',
-                fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 13,
-                cursor: 'pointer', transition: 'all 0.15s',
-                backdropFilter: 'blur(8px)',
-              }}
-            >
-              {f.label}
-            </button>
-          ))}
-          <div style={{ flex: 1 }} />
-          <div style={{ fontSize: 12, color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span>{totaleGiocate} giocate</span>
-            {puntiTot > 0 && (
-              <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--green)' }}>
-                {puntiTot}pt totali
-              </span>
-            )}
-          </div>
+    <div className="ops-page calendar-page">
+      <section className="ops-hero calendar-hero">
+        <div className="ops-hero__copy">
+          <span className="lux-kicker">Matchday Timeline</span>
+          <h1>Calendario operativo.</h1>
+          <p>
+            Giornate di lega, prossima Serie A e analisi rapida dei titolari
+            raccolte in una timeline mobile-first.
+          </p>
         </div>
+        <div className="ops-hero__mark" aria-hidden="true">
+          <span />
+          <span />
+          <span />
+        </div>
+      </section>
 
-        {/* Lista */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {giornate.map((g) => {
-            const isCorso = g.inCorso;
-            const isGiocata = g.giocata;
-            const parti = g.risultato ? g.risultato.split('-') : [];
-            const vinta = parti.length === 2 && parseInt(parti[0]) > parseInt(parti[1]);
-            const persa = parti.length === 2 && parseInt(parti[0]) < parseInt(parti[1]);
-            const espanso = giornataDettaglio?.giornata === g.giornata;
+      <section className="ops-stat-grid" aria-label="Sintesi calendario">
+        <div className="ops-stat">
+          <span>Giornata</span>
+          <strong>{giornataCorrente ?? '--'}</strong>
+          <small>fantacampionato</small>
+        </div>
+        <div className="ops-stat">
+          <span>Giocate</span>
+          <strong>{totaleGiocate}</strong>
+          <small>{calendario.length} totali</small>
+        </div>
+        <div className="ops-stat">
+          <span>Punti</span>
+          <strong>{puntiTot || '--'}</strong>
+          <small>totale stagione</small>
+        </div>
+      </section>
 
-            return (
-              <div key={g.giornata}>
-                <div
-                  onClick={() => setGiornataDettaglio(espanso ? null : g)}
-                  className="glass-card"
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: 16,
-                    cursor: 'pointer', padding: '12px 16px',
-                    borderColor: isCorso ? 'rgba(245, 158, 11,0.35)' : undefined,
-                    background: isCorso ? 'rgba(245, 158, 11,0.04)' : undefined,
-                    transition: 'all 0.15s',
-                  }}
-                >
-                  {/* Numero giornata */}
-                  <div style={{
-                    width: 42, height: 42, borderRadius: 8, flexShrink: 0,
-                    background: isCorso ? 'rgba(126, 173, 212,0.2)' : 'rgba(126, 173, 212,0.08)',
-                    border: `1px solid ${isCorso ? 'rgba(126, 173, 212,0.4)' : 'rgba(126, 173, 212,0.15)'}`,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  }}>
-                    <span style={{
-                      fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 14,
-                      color: isCorso ? 'var(--accent-primary)' : 'var(--text-muted)',
-                    }}>
-                      G{g.giornata}
-                    </span>
-                  </div>
+      <div className="calendar-layout">
+        <main className="calendar-main">
+          <div className="ops-tabs calendar-filters" aria-label="Filtri calendario">
+            {FILTERS.map((filter) => (
+              <button
+                key={filter.value}
+                type="button"
+                className={`ops-tab${filtro === filter.value ? ' is-active' : ''}`}
+                onClick={() => setFiltro(filter.value)}
+              >
+                {filter.label}
+              </button>
+            ))}
+          </div>
 
-                  {/* Info */}
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
-                      <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>
-                        vs {g.avversario || 'Da definire'}
+          {calendario.length === 0 ? (
+            <section className="ops-empty calendar-empty">
+              <span className="lux-kicker">Calendario</span>
+              <h2>Non disponibile.</h2>
+              <p>Le giornate compariranno quando il motore stagione sara pronto o quando avrai dati di lega.</p>
+            </section>
+          ) : (
+            <section className="calendar-timeline" aria-label="Giornate lega">
+              {giornate.map((day) => {
+                const expanded = giornataDettaglio?.giornata === day.giornata;
+                const tone = getResultTone(day);
+                const isCurrent = day.inCorso || day.giornata === giornataCorrente;
+
+                return (
+                  <article key={day.giornata} className={`calendar-day-card${isCurrent ? ' is-current' : ''}`}>
+                    <button
+                      type="button"
+                      className="calendar-day-card__summary"
+                      onClick={() => setGiornataDettaglio(expanded ? null : day)}
+                      aria-expanded={expanded}
+                    >
+                      <span className="calendar-day-card__round">G{day.giornata}</span>
+                      <span className="calendar-day-card__body">
+                        <strong>vs {day.avversario || 'Da definire'}</strong>
+                        <small>{day.data || 'Data non disponibile'}</small>
                       </span>
-                      {isCorso && <span className="badge badge-gold">IN CORSO</span>}
-                      {!isGiocata && !isCorso && g.proiezionePunti && (
-                        <span className="badge badge-blue">~{g.proiezionePunti}pt attesi</span>
-                      )}
-                    </div>
-                    <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{g.data}</div>
-                  </div>
-
-                  {/* Risultato */}
-                  {isGiocata && g.risultato && (
-                    <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                      <div style={{
-                        fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 20,
-                        color: vinta ? 'var(--green)' : persa ? 'var(--red)' : 'var(--amber)',
-                      }}>
-                        {g.risultato}
-                      </div>
-                      <div style={{
-                        fontSize: 10,
-                        color: vinta ? 'var(--green)' : persa ? 'var(--red)' : 'var(--amber)',
-                        fontFamily: 'var(--font-display)', fontWeight: 600,
-                      }}>
-                        {vinta ? 'VITTORIA' : persa ? 'SCONFITTA' : 'PAREGGIO'}
-                      </div>
-                    </div>
-                  )}
-
-                  {!isGiocata && !isCorso && (
-                    <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                      <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>Da giocare</div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Dettaglio inline */}
-                {espanso && (
-                  <div className="glass-elevated" style={{
-                    margin: '4px 0 0',
-                    padding: '14px 20px',
-                    borderRadius: 10,
-                    borderTop: 'none',
-                  }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                      <span style={{
-                        fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 14, color: 'var(--text-primary)',
-                      }}>
-                        Giornata {g.giornata} — vs {g.avversario}
+                      <span className={`calendar-day-card__result is-${tone}`}>
+                        {day.giocata && day.risultato ? day.risultato : day.proiezionePunti ? `~${day.proiezionePunti}` : '--'}
+                        <small>{getResultLabel(tone)}</small>
                       </span>
-                      <button
-                        onClick={(e) => { e.stopPropagation(); setGiornataDettaglio(null); }}
-                        style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: 16 }}
-                      >✕</button>
-                    </div>
-                    {isGiocata ? (
-                      <div>
-                        <div style={{
-                          fontFamily: 'var(--font-display)', fontWeight: 800,
-                          fontSize: 28, color: 'var(--text-primary)', marginBottom: 8,
-                        }}>
-                          {g.risultato}
-                        </div>
-                        <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-                          {g.puntiUser ? `Punti: ${g.puntiUser}pt` : 'Punteggio dettagliato non disponibile nel prototipo.'}
-                        </div>
-                      </div>
-                    ) : (
-                      <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-                        Giornata non ancora disputata.
-                        {g.proiezionePunti && (
-                          <span> Proiezione: <span style={{ color: 'var(--blue)', fontWeight: 600 }}>{g.proiezionePunti}pt</span></span>
+                    </button>
+
+                    {expanded && (
+                      <div className="calendar-day-card__detail">
+                        <span className="lux-kicker">Dettaglio giornata</span>
+                        {day.giocata ? (
+                          <p>
+                            Risultato {day.risultato || '--'}.
+                            {day.puntiUser ? ` Punti squadra: ${day.puntiUser}.` : ' Punteggio dettagliato non disponibile.'}
+                          </p>
+                        ) : (
+                          <p>
+                            Giornata non ancora disputata.
+                            {day.proiezionePunti ? ` Proiezione attuale: ${day.proiezionePunti} punti.` : ''}
+                          </p>
                         )}
                       </div>
                     )}
-                  </div>
-                )}
+                  </article>
+                );
+              })}
+            </section>
+          )}
+        </main>
+
+        <aside className="calendar-side">
+          <section className="ops-panel calendar-ai-panel">
+            <span className="lux-kicker">AI Matchday</span>
+            <h2>Analisi G{giornataCorrente}</h2>
+            <p>Usa i titolari schierati e il calendario Serie A come contesto operativo.</p>
+            <button
+              type="button"
+              className="home-lux-hero__cta calendar-ai-panel__button"
+              onClick={analizzaProssima}
+              disabled={aiLoading || aiCrediti === 0}
+            >
+              {aiLoading ? 'Analizzando...' : 'Analizza giornata'}
+            </button>
+            {aiCrediti === 0 && <small className="ops-note">Crediti AI esauriti.</small>}
+            {aiError && <div className="ops-error">{aiError}</div>}
+            {aiRisultato && <div className="ai-response calendar-ai-response">{aiRisultato}</div>}
+          </section>
+
+          <section className="ops-panel seriea-match-panel">
+            <header className="ops-panel__header">
+              <div>
+                <span className="lux-kicker">Serie A</span>
+                <h2>G{serieAMatchday ?? '--'}</h2>
               </div>
-            );
-          })}
-        </div>
-      </div>
+            </header>
 
-      {/* Sidebar AI */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-        <div className="glass-card" style={{ padding: 16 }}>
-          <div style={{
-            fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 15,
-            color: 'var(--text-primary)', marginBottom: 6,
-          }}>
-            🤖 Analisi Giornata {giornataCorrente}
-          </div>
-          <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 14 }}>
-            Analisi AI dei tuoi titolari per la prossima giornata
-          </div>
-
-          <button
-            className="btn-ai"
-            onClick={analizzaProssima}
-            disabled={aiLoading || aiCrediti === 0}
-            style={{ width: '100%' }}
-          >
-            {aiLoading ? '⏳ Analizzando...' : '📅 Analizza Giornata'}
-          </button>
-
-          {aiError && (
-            <div style={{
-              fontSize: 12, color: 'var(--red)', padding: '8px',
-              background: 'rgba(248,113,113,0.08)', borderRadius: 6, marginTop: 10,
-            }}>
-              {aiError}
-            </div>
-          )}
-          {aiRisultato && (
-            <div className="ai-response" style={{ marginTop: 12, fontSize: 12 }}>
-              {aiRisultato}
-            </div>
-          )}
-        </div>
-
-        {/* Prossima giornata Serie A */}
-        <div className="glass-card" style={{ padding: 16 }}>
-          <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 14, color: 'var(--text-primary)', marginBottom: 10 }}>
-            ⚽ Serie A — G{serieAMatchday ?? '…'}
-          </div>
-          {loadingMatches && (
-            <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>caricamento…</div>
-          )}
-          {errorMatches && (
-            <div style={{ fontSize: 11, color: 'var(--red)' }}>
-              {errorMatches.includes('non configurata')
-                ? '⚙️ Aggiungi VITE_FOOTBALL_DATA_API_KEY nel .env'
-                : 'Errore dati Serie A'}
-            </div>
-          )}
-          {nextSerieAMatches.length === 0 && !loadingMatches && !errorMatches && (
-            <div style={{ fontSize: 12, color: 'var(--text-muted)', fontStyle: 'italic' }}>
-              Nessuna partita in programma
-            </div>
-          )}
-          {nextSerieAMatches.map((m) => {
-            const isLive = ['IN_PLAY', 'PAUSED'].includes(m.status);
-            return (
-              <div key={m.id} style={{ padding: '5px 0', borderBottom: '1px solid rgba(126, 173, 212,0.07)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12 }}>
-                  {m.homeTeam.crest && <img src={m.homeTeam.crest} alt="" style={{ width: 14, height: 14, objectFit: 'contain' }} />}
-                  <span style={{ flex: 1, color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {m.homeTeam.shortName} — {m.awayTeam.shortName}
-                  </span>
-                  {m.awayTeam.crest && <img src={m.awayTeam.crest} alt="" style={{ width: 14, height: 14, objectFit: 'contain' }} />}
-                </div>
-                <div style={{ fontSize: 10, color: isLive ? 'var(--green)' : 'var(--text-muted)', marginTop: 2, fontWeight: isLive ? 700 : 400 }}>
-                  {isLive ? 'LIVE' : formatMatchDate(m.date)}
-                </div>
+            {loadingMatches && <div className="ops-inline-empty">Caricamento partite...</div>}
+            {errorMatches && (
+              <div className="ops-error">
+                {errorMatches.includes('non configurata')
+                  ? 'Aggiungi VITE_FOOTBALL_DATA_API_KEY nel .env.'
+                  : 'Errore dati Serie A.'}
               </div>
-            );
-          })}
-        </div>
-
-        {/* Riepilogo stagione */}
-        {totaleGiocate > 0 && (
-          <div className="glass-card" style={{ padding: 16 }}>
-            <div style={{
-              fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 14,
-              color: 'var(--text-primary)', marginBottom: 12,
-            }}>
-              📊 Riepilogo
+            )}
+            {nextSerieAMatches.length === 0 && !loadingMatches && !errorMatches && (
+              <div className="ops-inline-empty">Nessuna partita in programma.</div>
+            )}
+            <div className="seriea-match-list">
+              {nextSerieAMatches.map((match) => {
+                const isLive = ['IN_PLAY', 'PAUSED'].includes(match.status);
+                return (
+                  <article key={match.id} className="seriea-match-item">
+                    <div>
+                      {match.homeTeam.crest && <img src={match.homeTeam.crest} alt="" />}
+                      <strong>{match.homeTeam.shortName}</strong>
+                    </div>
+                    <span>{isLive ? 'LIVE' : formatMatchDate(match.date)}</span>
+                    <div>
+                      {match.awayTeam.crest && <img src={match.awayTeam.crest} alt="" />}
+                      <strong>{match.awayTeam.shortName}</strong>
+                    </div>
+                  </article>
+                );
+              })}
             </div>
-            {[
-              { label: 'Giornate giocate', value: totaleGiocate },
-              { label: 'Punti totali', value: `${puntiTot}pt` },
-            ].map((item) => (
-              <div key={item.label} style={{
-                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                padding: '6px 0', borderBottom: '1px solid rgba(126, 173, 212,0.08)',
-              }}>
-                <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{item.label}</span>
-                <span style={{
-                  fontFamily: 'var(--font-display)', fontWeight: 700,
-                  fontSize: 14, color: 'var(--text-primary)',
-                }}>{item.value}</span>
-              </div>
-            ))}
-          </div>
-        )}
+          </section>
+
+          {prossimaGiornata && (
+            <section className="ops-panel calendar-next-card">
+              <span className="lux-kicker">Prossima lega</span>
+              <h2>G{prossimaGiornata.giornata}</h2>
+              <p>vs {prossimaGiornata.avversario || 'Da definire'}</p>
+            </section>
+          )}
+        </aside>
       </div>
     </div>
   );
