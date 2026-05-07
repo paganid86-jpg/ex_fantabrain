@@ -1,13 +1,13 @@
-import { useState, useRef, useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import useAppStore from '../store/useAppStore';
 import useSerieAStore from '../stores/useSerieAStore';
-import { chatClaude, buildSystemPrompt } from '../lib/claudeApi';
+import { buildSystemPrompt, chatClaude } from '../lib/claudeApi';
 
 const QUICK_PROMPTS = [
   { label: 'Chi schiero questa giornata?', short: 'XI' },
   { label: 'Analizza il mio prossimo avversario', short: 'VS' },
   { label: 'Chi vale la pena acquistare?', short: 'MK' },
-  { label: 'I miei giocatori più in forma', short: 'HOT' },
+  { label: 'I miei giocatori piu in forma', short: 'HOT' },
   { label: 'Infortuni e diffide da valutare', short: 'MED' },
 ];
 
@@ -24,6 +24,10 @@ function MessageBubble({ msg }) {
 
 function formatMedia(value) {
   return Number.isFinite(value) ? value.toFixed(1) : '-';
+}
+
+function getPlayerName(player) {
+  return player?.cognome || player?.nome || 'Giocatore';
 }
 
 export default function AIAnalisi() {
@@ -48,6 +52,8 @@ export default function AIAnalisi() {
   const topPlayers = [...rosa]
     .sort((a, b) => (b.votoMedia || 0) - (a.votoMedia || 0))
     .slice(0, 8);
+  const riskPlayers = rosa.filter((player) => player.infortunato || player.diffidato).slice(0, 4);
+  const availablePlayers = rosa.filter((player) => !player.infortunato).length;
 
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -91,7 +97,7 @@ export default function AIAnalisi() {
       aggiungiMessaggio(pageId, { role: 'assistant', content: risposta });
     } catch (err) {
       if (err.message === 'NO_CREDITS') return;
-      setError('Risposta non disponibile. Riprova più tardi.');
+      setError('Risposta non disponibile. Riprova piu tardi.');
     } finally {
       setLoading(false);
     }
@@ -101,12 +107,18 @@ export default function AIAnalisi() {
     <div className="coach-page">
       <section className="coach-shell" aria-label="Chat AI Coach">
         <header className="coach-header">
-          <div>
+          <div className="coach-header__copy">
             <span className="coach-kicker">Private Analyst</span>
             <h1 className="coach-title">Coach, senza rumore.</h1>
             <p className="coach-subtitle">
-              Giornata {giornataCorrente} · analisi privata sulla tua rosa.
+              Giornata {giornataCorrente} - analisi privata sulla tua rosa.
             </p>
+          </div>
+
+          <div className="coach-orb" aria-hidden="true">
+            <span />
+            <span />
+            <span />
           </div>
 
           <div className="coach-header__actions">
@@ -167,8 +179,15 @@ export default function AIAnalisi() {
         )}
 
         <div className="coach-context-card">
-          <span className="coach-kicker">Contesto letto</span>
-          <p>Rosa, giornata {giornataCorrente}, classifica{serieAContext ? ' e dati Serie A reali.' : '.'}</p>
+          <div>
+            <span className="coach-kicker">Contesto letto</span>
+            <p>Rosa, giornata {giornataCorrente}, classifica{serieAContext ? ' e dati Serie A reali.' : '.'}</p>
+          </div>
+          <div className="coach-context-metrics" aria-label="Sintesi contesto">
+            <span><strong>{rosa.length}</strong> giocatori</span>
+            <span><strong>{availablePlayers}</strong> disponibili</span>
+            <span><strong>{riskPlayers.length}</strong> rischi</span>
+          </div>
         </div>
 
         <div className="coach-thread">
@@ -180,6 +199,11 @@ export default function AIAnalisi() {
                 Posso ragionare su formazione, avversario, mercato e stato fisico
                 della tua rosa prima della deadline.
               </p>
+              <div className="coach-empty__signals" aria-label="Segnali rapidi">
+                <span>{rosa.length > 0 ? `${rosa.length} profili letti` : 'Rosa da completare'}</span>
+                <span>{serieAContext ? 'Serie A attiva' : 'Solo dati rosa'}</span>
+                <span>{isGold ? 'Gold attivo' : `${aiCrediti} crediti`}</span>
+              </div>
             </div>
           )}
 
@@ -275,7 +299,7 @@ export default function AIAnalisi() {
           <p>
             {rosa.length > 0
               ? 'Il coach usa questi profili come contesto prioritario nella chat.'
-              : 'Aggiungi giocatori alla rosa per rendere le risposte più precise.'}
+              : 'Aggiungi giocatori alla rosa per rendere le risposte piu precise.'}
           </p>
         </section>
 
@@ -287,7 +311,7 @@ export default function AIAnalisi() {
 
           {topPlayers.length === 0 ? (
             <p className="coach-side-empty">
-              La rosa è vuota. Inserisci i tuoi giocatori da Schieramento.
+              La rosa e vuota. Inserisci i tuoi giocatori da Schieramento.
             </p>
           ) : (
             <div className="coach-roster-list">
@@ -297,10 +321,29 @@ export default function AIAnalisi() {
                   className={`coach-roster-item${player.infortunato ? ' is-injured' : ''}`}
                 >
                   <span className="coach-roster-role">{player.ruoloMantra}</span>
-                  <span className="coach-roster-name">{player.cognome || player.nome}</span>
+                  <span className="coach-roster-name">{getPlayerName(player)}</span>
                   <span className="coach-roster-media">{formatMedia(player.votoMedia)}</span>
                   {player.infortunato && <span className="coach-roster-status">OUT</span>}
                   {player.diffidato && !player.infortunato && <span className="coach-roster-status">DIFF</span>}
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+
+        <section className="coach-side-card">
+          <div className="coach-side-card__header">
+            <span className="coach-kicker">Rischi</span>
+            <strong>{riskPlayers.length}</strong>
+          </div>
+          {riskPlayers.length === 0 ? (
+            <p className="coach-side-empty">Nessun infortunio o diffida critica nella rosa letta.</p>
+          ) : (
+            <div className="coach-risk-list">
+              {riskPlayers.map((player) => (
+                <div key={player.id} className="coach-risk-item">
+                  <span>{getPlayerName(player)}</span>
+                  <strong>{player.infortunato ? 'OUT' : 'DIFF'}</strong>
                 </div>
               ))}
             </div>

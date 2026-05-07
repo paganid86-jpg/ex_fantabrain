@@ -4109,6 +4109,9 @@ html[data-theme="light"] .bench-ai-button {
   --coach-gold: #c7a56d;
   --coach-gold-light: #f3ddba;
   --coach-gold-soft: rgba(199, 165, 109, 0.16);
+  --coach-ai: #9d67ff;
+  --coach-ai-light: #d9c2ff;
+  --coach-ai-soft: rgba(157, 103, 255, 0.18);
   position: relative;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -4118,7 +4121,8 @@ html[data-theme="light"] .bench-ai-button {
   overflow: hidden;
   background:
     radial-gradient(circle at 18% 0%, rgba(199, 165, 109, 0.18), transparent 30%),
-    radial-gradient(circle at 86% 18%, rgba(255, 243, 230, 0.07), transparent 24%),
+    radial-gradient(circle at 86% 18%, rgba(157, 103, 255, 0.24), transparent 28%),
+    radial-gradient(circle at 72% 76%, rgba(72, 209, 174, 0.08), transparent 32%),
     linear-gradient(180deg, var(--coach-noir) 0%, var(--coach-noir-2) 100%);
   color: var(--coach-milk);
 }
@@ -4131,6 +4135,7 @@ html[data-theme="light"] .bench-ai-button {
   border-radius: 34px;
   background:
     linear-gradient(90deg, transparent 0%, rgba(199, 165, 109, 0.24) 50%, transparent 100%) top / 62% 1px no-repeat,
+    radial-gradient(circle at 78% 10%, rgba(157, 103, 255, 0.12), transparent 28%),
     linear-gradient(180deg, rgba(255, 243, 230, 0.05), transparent 22%);
   opacity: 0.9;
 }
@@ -4155,7 +4160,8 @@ html[data-theme="light"] .bench-ai-button {
   flex-direction: column;
   overflow: hidden;
   background:
-    radial-gradient(circle at 88% 0%, rgba(199, 165, 109, 0.1), transparent 28%),
+    radial-gradient(circle at 88% 0%, rgba(157, 103, 255, 0.16), transparent 30%),
+    radial-gradient(circle at 44% 100%, rgba(199, 165, 109, 0.08), transparent 34%),
     linear-gradient(180deg, rgba(255, 243, 230, 0.055), transparent 70%),
     rgba(9, 10, 12, 0.72);
   backdrop-filter: blur(18px) saturate(145%);
@@ -4167,7 +4173,73 @@ html[data-theme="light"] .bench-ai-button {
   justify-content: space-between;
   gap: 16px;
   padding: 22px 24px 16px;
+  position: relative;
+  overflow: hidden;
   border-bottom: 1px solid rgba(255, 243, 230, 0.08);
+}
+
+.coach-header__copy {
+  position: relative;
+  z-index: 2;
+  min-width: 0;
+}
+
+.coach-orb {
+  position: absolute;
+  top: 18px;
+  right: 150px;
+  z-index: 1;
+  width: 164px;
+  height: 164px;
+  border-radius: 50%;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(216, 194, 255, 0.22), transparent 24%),
+    radial-gradient(circle at 46% 54%, rgba(157, 103, 255, 0.18), transparent 40%),
+    conic-gradient(from 40deg, transparent 0 18%, rgba(199, 165, 109, 0.72) 20% 25%, transparent 27% 48%, rgba(157, 103, 255, 0.65) 52% 57%, transparent 60% 100%);
+  filter: drop-shadow(0 0 34px rgba(157, 103, 255, 0.26));
+  opacity: 0.78;
+}
+
+.coach-orb::before,
+.coach-orb::after {
+  content: '';
+  position: absolute;
+  inset: 18px;
+  border: 1px solid rgba(216, 194, 255, 0.24);
+  border-radius: 50%;
+}
+
+.coach-orb::after {
+  inset: 48px;
+  border-color: rgba(199, 165, 109, 0.34);
+  box-shadow: 0 0 22px rgba(199, 165, 109, 0.18);
+}
+
+.coach-orb span {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--coach-ai-light);
+  box-shadow: 0 0 18px rgba(157, 103, 255, 0.76);
+}
+
+.coach-orb span:nth-child(1) {
+  top: 42px;
+  left: 46px;
+}
+
+.coach-orb span:nth-child(2) {
+  top: 74px;
+  right: 34px;
+  background: var(--coach-gold-light);
+  box-shadow: 0 0 18px rgba(199, 165, 109, 0.76);
+}
+
+.coach-orb span:nth-child(3) {
+  right: 70px;
+  bottom: 28px;
 }
 
 .coach-kicker {
@@ -4203,6 +4275,8 @@ html[data-theme="light"] .bench-ai-button {
   gap: 8px;
   flex-wrap: wrap;
   justify-content: flex-end;
+  position: relative;
+  z-index: 2;
 }
 
 .coach-context-toggle {
@@ -4214,7 +4288,9 @@ html[data-theme="light"] .bench-ai-button {
   padding: 8px 12px;
   border: 1px solid var(--coach-line);
   border-radius: 999px;
-  background: rgba(255, 243, 230, 0.055);
+  background:
+    linear-gradient(135deg, rgba(157, 103, 255, 0.13), rgba(255, 243, 230, 0.045)),
+    rgba(255, 243, 230, 0.035);
   color: var(--coach-milk);
   font-size: 12px;
   font-weight: 800;
@@ -4226,8 +4302,10 @@ html[data-theme="light"] .bench-ai-button {
 }
 
 .coach-context-toggle:hover {
-  border-color: rgba(199, 165, 109, 0.34);
-  background: rgba(255, 243, 230, 0.085);
+  border-color: rgba(157, 103, 255, 0.46);
+  background:
+    linear-gradient(135deg, rgba(157, 103, 255, 0.18), rgba(199, 165, 109, 0.08)),
+    rgba(255, 243, 230, 0.055);
   transform: translateY(-1px);
 }
 
@@ -4242,7 +4320,7 @@ html[data-theme="light"] .bench-ai-button {
   width: 14px;
   height: 2px;
   border-radius: 999px;
-  background: var(--coach-gold-light);
+  background: var(--coach-ai-light);
 }
 
 .coach-credit,
@@ -4317,13 +4395,14 @@ html[data-theme="light"] .bench-ai-button {
 .coach-context-card {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 14px;
   margin: 14px 24px 0;
   padding: 13px 16px;
-  border: 1px solid rgba(199, 165, 109, 0.22);
+  border: 1px solid rgba(157, 103, 255, 0.24);
   border-radius: 20px;
   background:
-    linear-gradient(135deg, rgba(199, 165, 109, 0.14), rgba(255, 243, 230, 0.04)),
+    linear-gradient(135deg, rgba(157, 103, 255, 0.14), rgba(199, 165, 109, 0.08)),
     rgba(8, 9, 11, 0.52);
   color: var(--coach-milk);
   box-shadow:
@@ -4336,6 +4415,35 @@ html[data-theme="light"] .bench-ai-button {
   color: var(--coach-milk-soft);
   font-size: 13px;
   line-height: 1.45;
+}
+
+.coach-context-metrics {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+}
+
+.coach-context-metrics span {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  min-height: 32px;
+  padding: 6px 10px;
+  border: 1px solid rgba(255, 243, 230, 0.09);
+  border-radius: 999px;
+  background: rgba(255, 243, 230, 0.045);
+  color: var(--coach-milk-muted);
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.coach-context-metrics strong {
+  color: var(--coach-gold-light);
+  font-size: 14px;
 }
 
 .coach-thread {
@@ -4372,11 +4480,13 @@ html[data-theme="light"] .bench-ai-button {
   width: 64px;
   height: 64px;
   border-radius: 22px;
-  background: linear-gradient(135deg, var(--coach-gold-light) 0%, var(--coach-gold) 100%);
-  color: #0f1216;
+  background:
+    radial-gradient(circle at 28% 26%, rgba(255, 255, 255, 0.82), transparent 10%),
+    linear-gradient(135deg, var(--coach-ai-light) 0%, var(--coach-ai) 58%, var(--coach-gold) 100%);
+  color: #100f18;
   font-family: var(--font-mono);
   font-weight: 900;
-  box-shadow: 0 18px 44px rgba(199, 165, 109, 0.22);
+  box-shadow: 0 18px 44px rgba(157, 103, 255, 0.24);
 }
 
 .coach-empty h2 {
@@ -4390,6 +4500,27 @@ html[data-theme="light"] .bench-ai-button {
 .coach-empty p {
   color: var(--coach-milk-soft);
   line-height: 1.65;
+}
+
+.coach-empty__signals {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.coach-empty__signals span {
+  min-height: 34px;
+  padding: 8px 12px;
+  border: 1px solid rgba(216, 194, 255, 0.18);
+  border-radius: 999px;
+  background: rgba(157, 103, 255, 0.1);
+  color: rgba(244, 239, 230, 0.78);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
 }
 
 .coach-message {
@@ -4409,8 +4540,8 @@ html[data-theme="light"] .bench-ai-button {
   width: 34px;
   height: 34px;
   border-radius: 12px;
-  background: linear-gradient(135deg, var(--coach-gold-light) 0%, var(--coach-gold) 100%);
-  color: #0f1216;
+  background: linear-gradient(135deg, var(--coach-ai-light) 0%, var(--coach-ai) 100%);
+  color: #100f18;
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 900;
@@ -4422,7 +4553,7 @@ html[data-theme="light"] .bench-ai-button {
   padding: 13px 16px;
   border: 1px solid var(--coach-line);
   background:
-    linear-gradient(180deg, rgba(255, 243, 230, 0.06), rgba(255, 243, 230, 0.03)),
+    linear-gradient(180deg, rgba(157, 103, 255, 0.08), rgba(255, 243, 230, 0.03)),
     rgba(10, 11, 13, 0.5);
   border-radius: 20px 20px 20px 6px;
   color: var(--coach-milk);
@@ -4455,7 +4586,7 @@ html[data-theme="light"] .bench-ai-button {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: var(--coach-gold);
+  background: var(--coach-ai-light);
   animation: dotPulse 1.2s ease-in-out infinite;
 }
 
@@ -4520,8 +4651,8 @@ html[data-theme="light"] .bench-ai-button {
 }
 
 .coach-prompt:hover:not(:disabled) {
-  border-color: rgba(199, 165, 109, 0.36);
-  background: rgba(199, 165, 109, 0.11);
+  border-color: rgba(157, 103, 255, 0.36);
+  background: rgba(157, 103, 255, 0.12);
   color: var(--coach-milk);
   transform: translateY(-1px);
 }
@@ -4533,7 +4664,7 @@ html[data-theme="light"] .bench-ai-button {
   height: 28px;
   border-radius: 10px;
   background: rgba(199, 165, 109, 0.14);
-  color: var(--coach-gold-light);
+  color: var(--coach-ai-light);
   font-family: var(--font-mono);
   font-size: 10px;
   font-weight: 900;
@@ -4561,8 +4692,8 @@ html[data-theme="light"] .bench-ai-button {
 }
 
 .coach-input:focus {
-  border-color: rgba(199, 165, 109, 0.52);
-  box-shadow: 0 0 0 3px rgba(199, 165, 109, 0.12);
+  border-color: rgba(157, 103, 255, 0.52);
+  box-shadow: 0 0 0 3px rgba(157, 103, 255, 0.12);
 }
 
 .coach-send {
@@ -4595,7 +4726,8 @@ html[data-theme="light"] .bench-ai-button {
   border: 1px solid var(--coach-line);
   border-radius: 32px;
   background:
-    radial-gradient(circle at 0% 0%, rgba(199, 165, 109, 0.16), transparent 40%),
+    radial-gradient(circle at 0% 0%, rgba(157, 103, 255, 0.2), transparent 40%),
+    radial-gradient(circle at 100% 22%, rgba(199, 165, 109, 0.12), transparent 36%),
     rgba(9, 12, 15, 0.94);
   box-shadow: -24px 0 80px rgba(0, 0, 0, 0.42);
   backdrop-filter: blur(18px);
@@ -4647,7 +4779,8 @@ html[data-theme="light"] .bench-ai-button {
 
 .coach-side-card--insight {
   background:
-    radial-gradient(circle at 0% 0%, rgba(199, 165, 109, 0.18), transparent 42%),
+    radial-gradient(circle at 0% 0%, rgba(157, 103, 255, 0.22), transparent 42%),
+    radial-gradient(circle at 100% 100%, rgba(199, 165, 109, 0.12), transparent 36%),
     rgba(255, 243, 230, 0.035);
 }
 
@@ -4735,6 +4868,41 @@ html[data-theme="light"] .bench-ai-button {
   letter-spacing: 0.08em;
 }
 
+.coach-risk-list {
+  display: grid;
+  gap: 8px;
+}
+
+.coach-risk-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 38px;
+  padding: 8px 10px;
+  border: 1px solid rgba(255, 243, 230, 0.08);
+  border-radius: 14px;
+  background: rgba(255, 243, 230, 0.04);
+}
+
+.coach-risk-item span {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--coach-milk);
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.coach-risk-item strong {
+  flex: 0 0 auto;
+  color: #ffb1b1;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
 @media (max-width: 900px) {
   .coach-page {
     height: auto;
@@ -4781,6 +4949,14 @@ html[data-theme="light"] .bench-ai-button {
     padding: 20px 18px 14px;
   }
 
+  .coach-orb {
+    top: 2px;
+    right: -20px;
+    width: 134px;
+    height: 134px;
+    opacity: 0.42;
+  }
+
   .coach-header__actions {
     justify-content: flex-start;
   }
@@ -4800,6 +4976,16 @@ html[data-theme="light"] .bench-ai-button {
     gap: 6px;
     margin: 12px 18px 0;
     padding: 12px 14px;
+  }
+
+  .coach-context-metrics {
+    justify-content: flex-start;
+    width: 100%;
+  }
+
+  .coach-context-metrics span {
+    flex: 1 1 auto;
+    justify-content: center;
   }
 
   .coach-thread {
