@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import useAppStore from '../store/useAppStore';
 import useSerieAStore from '../stores/useSerieAStore';
 import { RUOLI_MANTRA } from '../data/mockData';
@@ -7,66 +7,59 @@ import { reportScouting } from '../lib/claudeApi';
 const FASCE = [
   { label: 'Tutti', val: '' },
   { label: '< 10M', val: 'bassa' },
-  { label: '10–20M', val: 'media' },
-  { label: '20–30M', val: 'alta' },
+  { label: '10-20M', val: 'media' },
+  { label: '20-30M', val: 'alta' },
   { label: '> 30M', val: 'top' },
 ];
 
-// Mappa posizione API → ruolo Mantra primario
 const POSITION_TO_MANTRA = {
   Goalkeeper: 'Por',
-  Defence:    'DC',
-  Midfield:   'C',
-  Offence:    'A',
+  Defence: 'DC',
+  Midfield: 'C',
+  Offence: 'A',
 };
 
-// Fasce quotazione per posizione
 const QUOTA_RANGE = {
-  Goalkeeper: [8,  22],
-  Defence:    [6,  20],
-  Midfield:   [8,  26],
-  Offence:    [12, 40],
+  Goalkeeper: [8, 22],
+  Defence: [6, 20],
+  Midfield: [8, 26],
+  Offence: [12, 40],
 };
 
-// Fasce media voto per posizione
 const MEDIA_RANGE = {
   Goalkeeper: [6.1, 6.9],
-  Defence:    [6.0, 6.8],
-  Midfield:   [6.2, 7.1],
-  Offence:    [6.4, 7.5],
+  Defence: [6.0, 6.8],
+  Midfield: [6.2, 7.1],
+  Offence: [6.4, 7.5],
 };
 
-// Genera statistiche stimate deterministiche dal player.id
 function stimaStats(player) {
   const seed = (player.id * 7 + 13) % 100;
-  const pos  = player.position || 'Midfield';
-
-  const [minQ, maxQ] = QUOTA_RANGE[pos] || [8, 20];
-  const [minM, maxM] = MEDIA_RANGE[pos] || [6.2, 6.9];
+  const position = player.position || 'Midfield';
+  const [minQ, maxQ] = QUOTA_RANGE[position] || [8, 20];
+  const [minM, maxM] = MEDIA_RANGE[position] || [6.2, 6.9];
 
   const quota = minQ + Math.round((seed / 100) * (maxQ - minQ));
   const media = +(minM + (seed / 100) * (maxM - minM)).toFixed(1);
-
-  const votiUltimi5 = Array.from({ length: 5 }, (_, i) => {
-    const raw = media + ((seed * (i + 3)) % 20) * 0.05 - 0.5;
+  const votiUltimi5 = Array.from({ length: 5 }, (_, index) => {
+    const raw = media + ((seed * (index + 3)) % 20) * 0.05 - 0.5;
     return Math.round(Math.max(5.0, Math.min(8.5, raw)) * 10) / 10;
   });
 
   return {
-    votoMedia:    media,
-    quotazione:   quota,
+    votoMedia: media,
+    quotazione: quota,
     votiUltimi5,
-    infortunato:  seed % 16 === 0,
-    diffidato:    seed % 9  === 0,
+    infortunato: seed % 16 === 0,
+    diffidato: seed % 9 === 0,
   };
 }
 
-// Converte il nome completo API → { nome, cognome }
 function splitName(fullName = '') {
   const parts = fullName.trim().split(' ');
   if (parts.length === 1) return { nome: '', cognome: parts[0] };
   return {
-    nome:    parts.slice(0, -1).join(' '),
+    nome: parts.slice(0, -1).join(' '),
     cognome: parts[parts.length - 1],
   };
 }
@@ -79,341 +72,338 @@ function estraiConsiglio(testo) {
   return 'FORSE';
 }
 
-function VotiPallini({ voti }) {
+function getPlayerName(player) {
+  return `${player.nome || ''} ${player.cognome || ''}`.trim() || 'Giocatore';
+}
+
+function VotiDots({ voti }) {
   return (
-    <div style={{ display: 'flex', gap: 3 }}>
-      {(voti || []).map((v, i) => {
-        const color = v >= 7 ? 'var(--green)' : v >= 6 ? 'var(--amber)' : 'var(--red)';
-        return (
-          <div
-            key={i}
-            title={v.toString()}
-            style={{ width: 9, height: 9, borderRadius: '50%', background: color }}
-          />
-        );
+    <div className="scout-vote-dots" aria-label="Ultimi voti">
+      {(voti || []).map((vote, index) => {
+        const tone = vote >= 7 ? 'rise' : vote >= 6 ? 'steady' : 'risk';
+        return <span key={`${vote}-${index}`} className={`scout-vote-dot scout-vote-dot--${tone}`} title={vote.toString()} />;
       })}
     </div>
   );
 }
 
-function GiocatoreCard({ g, inRosa, onAggiungi, onGeneraReport, reportStato, onSeleziona, isSelezionato }) {
+function GiocatoreCard({ player, inRosa, onAggiungi, onGeneraReport, reportStato, onSeleziona, isSelezionato }) {
   return (
-    <div
-      className="glass-card"
-      style={{
-        padding: 16,
-        opacity:     g.infortunato ? 0.75 : 1,
-        borderColor: isSelezionato ? 'rgba(96,165,250,0.5)' : undefined,
-        background:  isSelezionato ? 'rgba(96,165,250,0.05)' : undefined,
-      }}
-    >
-      {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-            {g.nome} {g.cognome}
-          </div>
-          <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 2 }}>{g.squadra}</div>
-        </div>
-        <div style={{ textAlign: 'right', flexShrink: 0, marginLeft: 8 }}>
-          <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 16, color: 'var(--amber)' }}>
-            {g.quotazione}M
-          </div>
-          <span className="badge badge-muted" style={{ fontSize: 9 }}>{g.ruoloMantra}</span>
-        </div>
-      </div>
-
-      {/* Stats */}
-      <div style={{ display: 'flex', gap: 16, alignItems: 'center', marginBottom: 12 }}>
+    <article className={`ops-panel scout-player-card${isSelezionato ? ' is-selected' : ''}${player.infortunato ? ' is-injured' : ''}`}>
+      <header className="scout-player-card__header">
         <div>
-          <div style={{ fontSize: 10, color: 'var(--text-muted)', fontFamily: 'var(--font-display)', letterSpacing: '0.06em' }}>MEDIA</div>
-          <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 20, color: g.votoMedia >= 7 ? 'var(--green)' : 'var(--amber)' }}>
-            {g.votoMedia.toFixed(1)}
-          </div>
+          <span className="lux-kicker">{player.squadra}</span>
+          <h2>{getPlayerName(player)}</h2>
         </div>
-        <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 10, color: 'var(--text-muted)', fontFamily: 'var(--font-display)', letterSpacing: '0.06em', marginBottom: 4 }}>ULTIMI 5</div>
-          <VotiPallini voti={g.votiUltimi5} />
+        <div className="scout-player-card__price">
+          <strong>{player.quotazione}M</strong>
+          <span>{player.ruoloMantra}</span>
+        </div>
+      </header>
+
+      <div className="scout-player-card__metrics">
+        <div>
+          <span>Media</span>
+          <strong>{player.votoMedia.toFixed(1)}</strong>
+        </div>
+        <div>
+          <span>Ultimi 5</span>
+          <VotiDots voti={player.votiUltimi5} />
         </div>
       </div>
 
-      {g.infortunato && <div style={{ fontSize: 11, color: 'var(--red)',   marginBottom: 8 }}>🤕 Infortunato</div>}
-      {g.diffidato   && <div style={{ fontSize: 11, color: 'var(--amber)', marginBottom: 8 }}>⚠️ In diffida</div>}
+      <div className="scout-player-card__status">
+        {player.infortunato && <span className="ops-badge ops-badge--red">Infortunato</span>}
+        {player.diffidato && <span className="ops-badge ops-badge--amber">Diffida</span>}
+        {!player.infortunato && !player.diffidato && <span className="ops-badge">Disponibile</span>}
+      </div>
 
-      {/* Azioni */}
-      <div style={{ display: 'flex', gap: 8 }}>
+      <div className="scout-player-card__actions">
         <button
-          onClick={() => onGeneraReport(g)}
-          className="btn-ai"
-          style={{ flex: 1, fontSize: 12, padding: '6px' }}
+          type="button"
+          onClick={() => onGeneraReport(player)}
+          className="home-lux-hero__cta scout-ai-btn"
           disabled={reportStato?.loading}
         >
-          {reportStato?.loading ? '⏳...' : '🔍 Report AI'}
+          {reportStato?.loading ? 'Report...' : 'Report AI'}
         </button>
         <button
-          onClick={() => onSeleziona(g)}
-          className="btn-secondary"
-          style={{ fontSize: 12, padding: '6px 10px', borderColor: isSelezionato ? 'var(--blue)' : undefined, color: isSelezionato ? 'var(--blue)' : undefined }}
+          type="button"
+          onClick={() => onSeleziona(player)}
+          className={`btn-secondary${isSelezionato ? ' is-selected' : ''}`}
         >
-          {isSelezionato ? '✓ Sel.' : 'VS'}
+          {isSelezionato ? 'Selez.' : 'VS'}
         </button>
         <button
-          onClick={() => onAggiungi(g)}
+          type="button"
+          onClick={() => onAggiungi(player)}
           className="btn-secondary"
           disabled={inRosa}
-          style={{ fontSize: 12, padding: '6px 10px', borderColor: inRosa ? 'var(--green)' : undefined, color: inRosa ? 'var(--green)' : undefined }}
         >
-          {inRosa ? '✓' : '+'}
+          {inRosa ? 'In rosa' : '+'}
         </button>
       </div>
 
-      {reportStato?.error && <div style={{ fontSize: 11, color: 'var(--red)', marginTop: 8 }}>{reportStato.error}</div>}
+      {reportStato?.error && <div className="ops-error">{reportStato.error}</div>}
       {reportStato?.testo && (
-        <div className="ai-response" style={{ marginTop: 10 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-            <span style={{ fontSize: 10, color: 'var(--text-muted)', fontFamily: 'var(--font-display)', letterSpacing: '0.06em' }}>REPORT SCOUTING AI</span>
+        <div className="ai-response scout-ai-response">
+          <div className="scout-ai-response__header">
+            <span>Report scouting AI</span>
             {reportStato.consiglio && (
-              <span className={`badge badge-${reportStato.consiglio === 'SI' ? 'green' : reportStato.consiglio === 'NO' ? 'red' : 'amber'}`}>
-                ACQUISTA: {reportStato.consiglio}
-              </span>
+              <strong className={`is-${reportStato.consiglio.toLowerCase()}`}>
+                Acquista: {reportStato.consiglio}
+              </strong>
             )}
           </div>
-          <div style={{ fontSize: 12, lineHeight: 1.65, color: 'var(--text-primary)' }}>{reportStato.testo}</div>
+          <p>{reportStato.testo}</p>
         </div>
       )}
-    </div>
+    </article>
   );
 }
 
 export default function Scouting() {
-  const rosa        = useAppStore((s) => s.rosa);
+  const rosa = useAppStore((s) => s.rosa);
   const addGiocatore = useAppStore((s) => s.addGiocatore);
-  const aiCrediti   = useAppStore((s) => s.aiCrediti);
+  const aiCrediti = useAppStore((s) => s.aiCrediti);
 
-  const { teams, loading, errors, fetchTeams } = useSerieAStore();
+  const teams = useSerieAStore((s) => s.teams);
+  const loading = useSerieAStore((s) => s.loading);
+  const errors = useSerieAStore((s) => s.errors);
+  const fetchTeams = useSerieAStore((s) => s.fetchTeams);
 
-  const [cerca,        setCerca]        = useState('');
-  const [filtroRuolo,  setFiltroRuolo]  = useState('Tutti');
-  const [filtroSquadra,setFiltroSquadra]= useState('Tutte');
+  const [cerca, setCerca] = useState('');
+  const [filtroRuolo, setFiltroRuolo] = useState('Tutti');
+  const [filtroSquadra, setFiltroSquadra] = useState('Tutte');
   const [filtroFascia, setFiltroFascia] = useState('');
   const [escludiInRosa, setEscludiInRosa] = useState(
     () => sessionStorage.getItem('scouting-escludi-rosa') === 'true'
   );
-  const [report,       setReport]       = useState({});
-  const [confronto,    setConfronto]    = useState([]);
+  const [report, setReport] = useState({});
+  const [confronto, setConfronto] = useState([]);
 
-  useEffect(() => { fetchTeams(); }, [fetchTeams]);
+  useEffect(() => {
+    fetchTeams();
+  }, [fetchTeams]);
 
-  // Costruisce lista piatta di tutti i giocatori Serie A con stats stimate
   const allPlayers = useMemo(() => {
     if (!teams.length) return [];
     return teams.flatMap((team) =>
       (team.squad || []).map((player) => {
         const { nome, cognome } = splitName(player.name);
         return {
-          id:          player.id,
+          id: player.id,
           nome,
           cognome,
           ruoloMantra: POSITION_TO_MANTRA[player.position] || 'C',
-          squadra:     team.shortName || team.name,
+          squadra: team.shortName || team.name,
           ...stimaStats(player),
         };
       })
     );
   }, [teams]);
 
-  // Lista squadre per il filtro (dinamica dall'API)
-  const squadreDisponibili = useMemo(() =>
-    [...new Set(allPlayers.map((p) => p.squadra))].sort(),
-  [allPlayers]);
+  const squadreDisponibili = useMemo(
+    () => [...new Set(allPlayers.map((player) => player.squadra))].sort(),
+    [allPlayers]
+  );
 
-  // IDs giocatori già in rosa per disabilitare pulsante "+"
-  const rosaIds = useMemo(() => new Set(rosa.map((g) => g.id)), [rosa]);
+  const rosaIds = useMemo(() => new Set(rosa.map((player) => player.id)), [rosa]);
 
-  const filtrati = useMemo(() => allPlayers.filter((g) => {
-    if (escludiInRosa && rosaIds.has(g.id)) return false;
-    if (filtroRuolo !== 'Tutti' && g.ruoloMantra !== filtroRuolo) return false;
-    if (filtroSquadra !== 'Tutte' && g.squadra !== filtroSquadra) return false;
-    if (filtroFascia === 'bassa' && g.quotazione >= 10) return false;
-    if (filtroFascia === 'media' && (g.quotazione < 10 || g.quotazione > 20)) return false;
-    if (filtroFascia === 'alta'  && (g.quotazione <= 20 || g.quotazione > 30)) return false;
-    if (filtroFascia === 'top'   && g.quotazione <= 30) return false;
-    if (cerca && !`${g.nome} ${g.cognome}`.toLowerCase().includes(cerca.toLowerCase())) return false;
+  const filtrati = useMemo(() => allPlayers.filter((player) => {
+    if (escludiInRosa && rosaIds.has(player.id)) return false;
+    if (filtroRuolo !== 'Tutti' && player.ruoloMantra !== filtroRuolo) return false;
+    if (filtroSquadra !== 'Tutte' && player.squadra !== filtroSquadra) return false;
+    if (filtroFascia === 'bassa' && player.quotazione >= 10) return false;
+    if (filtroFascia === 'media' && (player.quotazione < 10 || player.quotazione > 20)) return false;
+    if (filtroFascia === 'alta' && (player.quotazione <= 20 || player.quotazione > 30)) return false;
+    if (filtroFascia === 'top' && player.quotazione <= 30) return false;
+    if (cerca && !getPlayerName(player).toLowerCase().includes(cerca.toLowerCase())) return false;
     return true;
   }), [allPlayers, filtroRuolo, filtroSquadra, filtroFascia, cerca, escludiInRosa, rosaIds]);
 
-  async function generaReport(g) {
-    setReport((r) => ({ ...r, [g.id]: { loading: true, testo: null, error: null } }));
+  async function generaReport(player) {
+    setReport((state) => ({ ...state, [player.id]: { loading: true, testo: null, error: null } }));
     try {
-      const testo    = await reportScouting(g);
+      const testo = await reportScouting(player);
       const consiglio = estraiConsiglio(testo);
-      setReport((r) => ({ ...r, [g.id]: { loading: false, testo, consiglio, error: null } }));
+      setReport((state) => ({ ...state, [player.id]: { loading: false, testo, consiglio, error: null } }));
     } catch {
-      setReport((r) => ({ ...r, [g.id]: { loading: false, testo: null, error: 'Report non disponibile. Riprova più tardi.' } }));
+      setReport((state) => ({
+        ...state,
+        [player.id]: { loading: false, testo: null, error: 'Report non disponibile. Riprova piu tardi.' },
+      }));
     }
   }
 
-  function aggiungiARosa(g) {
-    if (rosaIds.has(g.id)) return;
-    addGiocatore(g);
+  function aggiungiARosa(player) {
+    if (!rosaIds.has(player.id)) addGiocatore(player);
   }
 
-  function toggleConfronto(g) {
-    setConfronto((prev) => {
-      if (prev.find((p) => p.id === g.id)) return prev.filter((p) => p.id !== g.id);
-      if (prev.length >= 2) return [prev[1], g];
-      return [...prev, g];
+  function toggleConfronto(player) {
+    setConfronto((previous) => {
+      if (previous.find((item) => item.id === player.id)) return previous.filter((item) => item.id !== player.id);
+      if (previous.length >= 2) return [previous[1], player];
+      return [...previous, player];
     });
   }
 
   function toggleEscludiRosa() {
-    setEscludiInRosa((prev) => {
-      const next = !prev;
+    setEscludiInRosa((previous) => {
+      const next = !previous;
       sessionStorage.setItem('scouting-escludi-rosa', String(next));
       return next;
     });
   }
 
-  // ── Loading state ──
+  const topTargets = filtrati.slice(0, 4);
+
   if (loading.teams && allPlayers.length === 0) {
     return (
-      <div className="empty-state" style={{ paddingTop: 80 }}>
-        <div className="empty-state-icon">⏳</div>
-        <div className="empty-state-title">Caricamento giocatori Serie A...</div>
-        <div className="empty-state-desc">Recupero rose delle 20 squadre dall'API.</div>
+      <div className="ops-page scout-page">
+        <section className="ops-empty">
+          <span className="lux-kicker">Scouting</span>
+          <h1>Caricamento giocatori Serie A...</h1>
+          <p>Recupero rose delle squadre dall'API.</p>
+        </section>
       </div>
     );
   }
 
-  // ── Errore API ──
   if (errors.teams && allPlayers.length === 0) {
     return (
-      <div className="empty-state" style={{ paddingTop: 80 }}>
-        <div className="empty-state-icon">⚠️</div>
-        <div className="empty-state-title">Errore caricamento giocatori</div>
-        <div className="empty-state-desc">{errors.teams}</div>
+      <div className="ops-page scout-page">
+        <section className="ops-empty">
+          <span className="lux-kicker">Scouting</span>
+          <h1>Errore caricamento giocatori.</h1>
+          <p>{errors.teams}</p>
+        </section>
       </div>
     );
   }
 
   return (
-    <div>
-      {/* Filtri */}
-      <div className="glass-card" style={{ padding: 16, marginBottom: 16 }}>
-        <input
-          className="input-field"
-          placeholder="Cerca giocatore Serie A..."
-          value={cerca}
-          onChange={(e) => setCerca(e.target.value)}
-          style={{ width: '100%', fontSize: 15, marginBottom: 12 }}
-        />
-        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
-          <select className="input-field" value={filtroRuolo} onChange={(e) => setFiltroRuolo(e.target.value)} style={{ maxWidth: 140 }}>
-            <option value="Tutti">Tutti i ruoli</option>
-            {RUOLI_MANTRA.map((r) => <option key={r} value={r}>{r}</option>)}
-          </select>
-          <select className="input-field" value={filtroSquadra} onChange={(e) => setFiltroSquadra(e.target.value)} style={{ maxWidth: 160 }}>
-            <option value="Tutte">Tutte le squadre</option>
-            {squadreDisponibili.map((s) => <option key={s} value={s}>{s}</option>)}
-          </select>
-          <select className="input-field" value={filtroFascia} onChange={(e) => setFiltroFascia(e.target.value)} style={{ maxWidth: 140 }}>
-            {FASCE.map((f) => <option key={f.val} value={f.val}>{f.label}</option>)}
-          </select>
-          <div style={{ flex: 1 }} />
-          <button
-            type="button"
-            aria-pressed={escludiInRosa}
-            onClick={toggleEscludiRosa}
-            style={{
-              display: 'flex', alignItems: 'center', gap: 7,
-              background: escludiInRosa ? 'rgba(126, 173, 212,0.1)' : 'rgba(255,255,255,0.04)',
-              border: `1px solid ${escludiInRosa ? 'rgba(126, 173, 212,0.35)' : 'var(--border-glass)'}`,
-              borderRadius: 7, padding: '5px 12px',
-              cursor: 'pointer', whiteSpace: 'nowrap',
-            }}
-          >
-            <div style={{
-              width: 26, height: 15,
-              background: escludiInRosa ? 'var(--accent-primary)' : 'rgba(255,255,255,0.15)',
-              borderRadius: 8, position: 'relative', transition: 'background 0.2s', flexShrink: 0,
-            }}>
-              <div style={{
-                width: 11, height: 11, background: '#fff', borderRadius: '50%',
-                position: 'absolute', top: 2,
-                left: escludiInRosa ? 13 : 2, transition: 'left 0.2s',
-              }} />
-            </div>
-            <span style={{
-              fontSize: 12,
-              color: escludiInRosa ? 'var(--accent-primary)' : 'var(--text-muted)',
-              fontWeight: 600, transition: 'color 0.2s',
-            }}>
-              Escludi in rosa
-            </span>
-          </button>
-          <span style={{ fontSize: 12, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
-            {filtrati.length} giocatori · <span className={`badge ${aiCrediti < 3 ? 'badge-red' : 'badge-gold'}`}>{aiCrediti} crediti</span>
-          </span>
+    <div className="ops-page scout-page">
+      <section className="ops-hero scout-hero">
+        <div className="ops-hero__copy">
+          <span className="lux-kicker">Scouting</span>
+          <h1>Player radar.</h1>
+          <p>
+            Cerca profili Serie A, confronta due obiettivi e genera report AI
+            prima di aggiungerli alla rosa.
+          </p>
         </div>
-      </div>
+        <div className="ops-hero__mark" aria-hidden="true">
+          <span />
+          <span />
+          <span />
+        </div>
+      </section>
 
-      {/* Confronto */}
-      {confronto.length === 2 && (
-        <div className="glass-card" style={{ padding: 20, marginBottom: 16 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-            <span className="section-title" style={{ fontSize: 15 }}>⚖️ Confronto Giocatori</span>
-            <button onClick={() => setConfronto([])} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: 18 }}>✕</button>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: 16, alignItems: 'center' }}>
-            <div>
-              <div style={{ fontWeight: 700, fontSize: 15, color: 'var(--text-primary)' }}>{confronto[0].cognome}</div>
-              <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>{confronto[0].squadra} · {confronto[0].ruoloMantra}</div>
-            </div>
-            <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 18, color: 'var(--text-muted)', textAlign: 'center' }}>VS</div>
-            <div style={{ textAlign: 'right' }}>
-              <div style={{ fontWeight: 700, fontSize: 15, color: 'var(--text-primary)' }}>{confronto[1].cognome}</div>
-              <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>{confronto[1].squadra} · {confronto[1].ruoloMantra}</div>
-            </div>
-          </div>
-          {[
-            { label: 'Media voti', a: confronto[0].votoMedia.toFixed(1), b: confronto[1].votoMedia.toFixed(1) },
-            { label: 'Quotazione', a: `${confronto[0].quotazione}M`,    b: `${confronto[1].quotazione}M` },
-            { label: 'Ruolo',      a: confronto[0].ruoloMantra,          b: confronto[1].ruoloMantra },
-          ].map((row) => {
-            const aWins = parseFloat(row.a) > parseFloat(row.b);
-            return (
-              <div key={row.label} style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: 16, alignItems: 'center', marginTop: 10, padding: '6px 0', borderTop: '1px solid rgba(126, 173, 212,0.1)' }}>
-                <div style={{ textAlign: 'left',  fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 16, color: aWins  ? 'var(--green)' : 'var(--text-secondary)' }}>{row.a}</div>
-                <div style={{ textAlign: 'center', fontSize: 11, color: 'var(--text-muted)' }}>{row.label}</div>
-                <div style={{ textAlign: 'right', fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 16, color: !aWins ? 'var(--green)' : 'var(--text-secondary)' }}>{row.b}</div>
-              </div>
-            );
-          })}
+      <section className="ops-stat-grid" aria-label="Sintesi scouting">
+        <div className="ops-stat">
+          <span>Pool</span>
+          <strong>{allPlayers.length}</strong>
+          <small>profili Serie A</small>
         </div>
+        <div className="ops-stat">
+          <span>Filtrati</span>
+          <strong>{filtrati.length}</strong>
+          <small>target visibili</small>
+        </div>
+        <div className="ops-stat">
+          <span>Crediti AI</span>
+          <strong>{aiCrediti}</strong>
+          <small>report disponibili</small>
+        </div>
+      </section>
+
+      <section className="ops-panel scout-filter-panel">
+        <div className="scout-search-row">
+          <input
+            className="input-field"
+            placeholder="Cerca giocatore Serie A..."
+            value={cerca}
+            onChange={(event) => setCerca(event.target.value)}
+          />
+          <button type="button" className={`scout-toggle${escludiInRosa ? ' is-active' : ''}`} onClick={toggleEscludiRosa}>
+            <span aria-hidden="true" />
+            Escludi in rosa
+          </button>
+        </div>
+        <div className="market-filter-grid">
+          <select className="input-field" value={filtroRuolo} onChange={(event) => setFiltroRuolo(event.target.value)}>
+            <option value="Tutti">Tutti i ruoli</option>
+            {RUOLI_MANTRA.map((role) => <option key={role} value={role}>{role}</option>)}
+          </select>
+          <select className="input-field" value={filtroSquadra} onChange={(event) => setFiltroSquadra(event.target.value)}>
+            <option value="Tutte">Tutte le squadre</option>
+            {squadreDisponibili.map((team) => <option key={team} value={team}>{team}</option>)}
+          </select>
+          <select className="input-field" value={filtroFascia} onChange={(event) => setFiltroFascia(event.target.value)}>
+            {FASCE.map((range) => <option key={range.val} value={range.val}>{range.label}</option>)}
+          </select>
+        </div>
+      </section>
+
+      {confronto.length === 2 && (
+        <section className="ops-panel scout-compare-panel">
+          <header className="ops-panel__header">
+            <div>
+              <span className="lux-kicker">Confronto</span>
+              <h2>{confronto[0].cognome} vs {confronto[1].cognome}</h2>
+            </div>
+            <button type="button" className="rosa-icon-btn" onClick={() => setConfronto([])} aria-label="Chiudi confronto">x</button>
+          </header>
+          <div className="scout-compare-grid">
+            {[
+              { label: 'Media voti', a: confronto[0].votoMedia.toFixed(1), b: confronto[1].votoMedia.toFixed(1) },
+              { label: 'Quotazione', a: `${confronto[0].quotazione}M`, b: `${confronto[1].quotazione}M` },
+              { label: 'Ruolo', a: confronto[0].ruoloMantra, b: confronto[1].ruoloMantra },
+            ].map((row) => (
+              <div key={row.label}>
+                <strong>{row.a}</strong>
+                <span>{row.label}</span>
+                <strong>{row.b}</strong>
+              </div>
+            ))}
+          </div>
+        </section>
       )}
 
-      {/* Grid giocatori */}
+      {topTargets.length > 0 && (
+        <section className="scout-top-strip" aria-label="Target rapidi">
+          {topTargets.map((player) => (
+            <button key={player.id} type="button" onClick={() => toggleConfronto(player)}>
+              <span>{player.ruoloMantra}</span>
+              <strong>{player.cognome}</strong>
+              <small>{player.quotazione}M</small>
+            </button>
+          ))}
+        </section>
+      )}
+
       {filtrati.length > 0 ? (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 12 }}>
-          {filtrati.map((g) => (
+        <section className="scout-player-grid">
+          {filtrati.map((player) => (
             <GiocatoreCard
-              key={g.id}
-              g={g}
-              inRosa={rosaIds.has(g.id)}
+              key={player.id}
+              player={player}
+              inRosa={rosaIds.has(player.id)}
               onAggiungi={aggiungiARosa}
               onGeneraReport={generaReport}
-              reportStato={report[g.id]}
+              reportStato={report[player.id]}
               onSeleziona={toggleConfronto}
-              isSelezionato={confronto.some((c) => c.id === g.id)}
+              isSelezionato={confronto.some((item) => item.id === player.id)}
             />
           ))}
-        </div>
+        </section>
       ) : (
-        <div className="empty-state" style={{ paddingTop: 60 }}>
-          <div className="empty-state-icon">🔍</div>
-          <div className="empty-state-title">Nessun giocatore trovato</div>
-          <div className="empty-state-desc">Prova a modificare i filtri di ricerca.</div>
-        </div>
+        <section className="ops-empty">
+          <span className="lux-kicker">Nessun target</span>
+          <h2>Nessun giocatore trovato.</h2>
+          <p>Prova a modificare ruolo, squadra, prezzo o testo di ricerca.</p>
+        </section>
       )}
     </div>
   );

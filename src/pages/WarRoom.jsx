@@ -15,17 +15,16 @@ export default function WarRoom() {
   const giornataCorrente = useAppStore((s) => s.giornataCorrente);
   const aiCrediti = useAppStore((s) => s.aiCrediti);
 
-  const avversariLista = classifica.filter((t) => !t.isUser).map((t) => t.nome);
-
+  const avversariLista = classifica.filter((team) => !team.isUser).map((team) => team.nome);
   const [avversario, setAvversario] = useState(avversariLista[0] || '');
   const [avversarioLibero, setAvversarioLibero] = useState('');
-
   const [loading, setLoading] = useState(false);
   const [loadingStep, setLoadingStep] = useState(0);
   const [risultato, setRisultato] = useState(null);
   const [error, setError] = useState(null);
 
   const nomeAvversario = avversariLista.length > 0 ? avversario : avversarioLibero;
+  const canLaunch = !loading && aiCrediti >= 3 && nomeAvversario.trim();
 
   async function lanciaAnalisi() {
     if (!nomeAvversario.trim()) return;
@@ -45,7 +44,6 @@ export default function WarRoom() {
       setLoadingStep(2);
       setRisultato({ analisiAvversario, vantaggi, pianoTattico });
     } catch (err) {
-      console.error('War Room AI error:', err);
       setError(`Analisi non disponibile: ${err.message}`);
     } finally {
       setLoading(false);
@@ -62,208 +60,144 @@ export default function WarRoom() {
   }
 
   return (
-    <div>
-      {/* Config card */}
-      <div className="glass-card" style={{ padding: 20, marginBottom: 20 }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
-          {/* Dropdown avversario */}
+    <div className="ops-page war-page">
+      <section className="ops-hero war-hero">
+        <div className="ops-hero__copy">
+          <span className="lux-kicker">War Room</span>
+          <h1>Piano partita.</h1>
+          <p>
+            Scegli l'avversario, lancia l'analisi e ottieni un piano tattico
+            pronto per la giornata.
+          </p>
+        </div>
+        <div className="ops-hero__mark" aria-hidden="true">
+          <span />
+          <span />
+          <span />
+        </div>
+      </section>
+
+      <section className="ops-stat-grid" aria-label="Sintesi War Room">
+        <div className="ops-stat">
+          <span>Giornata</span>
+          <strong>{giornataCorrente}</strong>
+          <small>matchday</small>
+        </div>
+        <div className="ops-stat">
+          <span>Rosa</span>
+          <strong>{rosa.length}</strong>
+          <small>profili letti</small>
+        </div>
+        <div className="ops-stat">
+          <span>Crediti AI</span>
+          <strong>{aiCrediti}</strong>
+          <small>ne servono 3</small>
+        </div>
+      </section>
+
+      <section className="ops-panel war-config-panel">
+        <div className="war-config-grid">
           <div>
-            <label style={{
-              fontSize: 11, color: 'var(--text-muted)',
-              fontFamily: 'var(--font-display)', letterSpacing: '0.08em',
-              display: 'block', marginBottom: 6, textTransform: 'uppercase',
-            }}>
-              Avversario · Giornata {giornataCorrente}
-            </label>
+            <label className="lux-kicker" htmlFor="war-opponent">Avversario</label>
             {avversariLista.length > 0 ? (
               <select
+                id="war-opponent"
                 className="input-field"
                 value={avversario}
-                onChange={(e) => { setAvversario(e.target.value); setRisultato(null); }}
+                onChange={(event) => {
+                  setAvversario(event.target.value);
+                  setRisultato(null);
+                }}
               >
-                {avversariLista.map((a) => <option key={a} value={a}>{a}</option>)}
+                {avversariLista.map((name) => <option key={name} value={name}>{name}</option>)}
               </select>
             ) : (
               <input
+                id="war-opponent"
                 className="input-field"
-                placeholder="Nome avversario (es. Juventino Power)"
+                placeholder="Nome avversario"
                 value={avversarioLibero}
-                onChange={(e) => { setAvversarioLibero(e.target.value); setRisultato(null); }}
+                onChange={(event) => {
+                  setAvversarioLibero(event.target.value);
+                  setRisultato(null);
+                }}
               />
             )}
             {avversariLista.length === 0 && (
-              <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>
-                Aggiungi la classifica per selezionare l'avversario dalla lista
-              </div>
+              <p className="ops-note">Aggiungi classifica per selezionare avversari dalla lista.</p>
             )}
           </div>
 
+          <div className="war-launch-card">
+            <span className="lux-kicker">Analisi privata</span>
+            <button
+              type="button"
+              className="home-lux-hero__cta war-launch-btn"
+              onClick={lanciaAnalisi}
+              disabled={!canLaunch}
+            >
+              {loading ? 'Analizzando...' : 'Lancia analisi AI'}
+            </button>
+            {aiCrediti < 3 && <small>Crediti insufficienti per questa analisi.</small>}
+          </div>
         </div>
 
-        {/* Avviso rosa vuota */}
         {rosa.length === 0 && (
-          <div style={{
-            marginBottom: 14, padding: '10px 14px',
-            background: 'rgba(126, 173, 212,0.08)',
-            border: '1px solid rgba(126, 173, 212,0.2)',
-            borderRadius: 8, fontSize: 12, color: 'var(--text-secondary)',
-          }}>
-            ℹ️ Aggiungi giocatori per un'analisi personalizzata. Puoi comunque eseguire un'analisi generica.
+          <div className="ops-error ops-error--info">
+            Aggiungi giocatori per un'analisi personalizzata. Puoi comunque eseguire un'analisi generica.
           </div>
         )}
 
-        {/* Avviso crediti */}
-        {aiCrediti < 3 && (
-          <div style={{
-            marginBottom: 14, padding: '8px 12px',
-            background: 'rgba(251,191,36,0.08)',
-            border: '1px solid rgba(251,191,36,0.25)',
-            borderRadius: 6, fontSize: 12, color: 'var(--amber)',
-          }}>
-            ⚠️ Solo {aiCrediti} crediti AI rimasti! L'analisi War Room ne usa 3.
-          </div>
-        )}
-
-        {/* Bottone grande centrato */}
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <button
-            className="btn-ai"
-            onClick={lanciaAnalisi}
-            disabled={loading || aiCrediti < 3 || !nomeAvversario.trim()}
-            style={{
-              padding: '14px 40px', fontSize: 16,
-              letterSpacing: '0.06em', fontFamily: 'var(--font-display)',
-              fontWeight: 700, minWidth: 240,
-            }}
-          >
-            {loading ? '⏳ Analizzando...' : '⚔️ LANCIA ANALISI AI'}
-          </button>
-        </div>
-
-        {/* Loading steps */}
         {loading && (
-          <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {LOADING_STEPS.map((step, i) => (
-              <div
-                key={step}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 10,
-                  fontSize: 13,
-                  color: i <= loadingStep ? 'var(--blue)' : 'var(--text-muted)',
-                  opacity: i <= loadingStep ? 1 : 0.4,
-                  transition: 'all 0.3s',
-                }}
-              >
-                {i < loadingStep ? (
-                  <span style={{ color: 'var(--green)' }}>✓</span>
-                ) : i === loadingStep ? (
-                  <div className="spinner" />
-                ) : (
-                  <span style={{ width: 14, display: 'inline-block' }} />
-                )}
+          <div className="war-loading-steps">
+            {LOADING_STEPS.map((step, index) => (
+              <div key={step} className={index <= loadingStep ? 'is-active' : ''}>
+                <span>{index + 1}</span>
                 {step}
               </div>
             ))}
           </div>
         )}
-      </div>
+      </section>
 
-      {/* Error */}
-      {error && (
-        <div style={{
-          padding: 16,
-          background: 'rgba(248,113,113,0.08)',
-          border: '1px solid rgba(248,113,113,0.2)',
-          borderRadius: 10, color: 'var(--red)',
-          fontSize: 13, marginBottom: 16,
-        }}>
-          {error}
-        </div>
-      )}
+      {error && <div className="ops-error">{error}</div>}
 
-      {/* Risultato AI */}
-      {risultato && (
-        <div>
-          <div style={{
-            display: 'flex', justifyContent: 'space-between',
-            alignItems: 'center', marginBottom: 16,
-          }}>
-            <div className="section-title" style={{ fontSize: 18 }}>
-              ⚔️ War Room — G{giornataCorrente} vs {nomeAvversario}
+      {risultato ? (
+        <section className="war-result-section">
+          <header className="ops-panel__header war-result-header">
+            <div>
+              <span className="lux-kicker">War Room - G{giornataCorrente}</span>
+              <h2>vs {nomeAvversario}</h2>
             </div>
-            <button onClick={salvaAnalisi} className="btn-secondary" style={{ fontSize: 12 }}>
-              💾 Salva
-            </button>
-          </div>
+            <button type="button" onClick={salvaAnalisi} className="btn-secondary">Salva</button>
+          </header>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
+          <div className="war-result-grid">
             {[
-              {
-                titolo: '🔍 Analisi Avversario',
-                contenuto: risultato.analisiAvversario,
-                color: 'var(--blue)',
-                bg: 'rgba(96,165,250,0.05)',
-                border: 'rgba(96,165,250,0.2)',
-              },
-              {
-                titolo: '⚡ Vantaggi e Rischi',
-                contenuto: risultato.vantaggi,
-                color: 'var(--green)',
-                bg: 'rgba(74,222,128,0.05)',
-                border: 'rgba(74,222,128,0.2)',
-              },
-              {
-                titolo: '🗺️ Piano Tattico',
-                contenuto: risultato.pianoTattico,
-                color: 'var(--gold)',
-                bg: 'rgba(245, 158, 11,0.05)',
-                border: 'rgba(245, 158, 11,0.2)',
-              },
-            ].map((sezione) => (
-              <div
-                key={sezione.titolo}
-                style={{
-                  background: sezione.bg,
-                  border: `1px solid ${sezione.border}`,
-                  borderRadius: 12, padding: 16,
-                  backdropFilter: 'blur(10px)',
-                }}
-              >
-                <div style={{
-                  fontFamily: 'var(--font-display)', fontWeight: 700,
-                  fontSize: 15, color: sezione.color,
-                  marginBottom: 12, letterSpacing: '0.03em',
-                }}>
-                  {sezione.titolo}
-                </div>
-                <div style={{
-                  fontSize: 13, lineHeight: 1.7,
-                  color: 'var(--text-primary)', whiteSpace: 'pre-wrap',
-                }}>
-                  {sezione.contenuto}
-                </div>
-              </div>
+              { title: 'Analisi avversario', content: risultato.analisiAvversario, tone: 'blue' },
+              { title: 'Vantaggi e rischi', content: risultato.vantaggi, tone: 'green' },
+              { title: 'Piano tattico', content: risultato.pianoTattico, tone: 'gold' },
+            ].map((section) => (
+              <article key={section.title} className={`ops-panel war-result-card is-${section.tone}`}>
+                <span className="lux-kicker">{section.title}</span>
+                <p>{section.content}</p>
+              </article>
             ))}
           </div>
 
-          {/* Condividi analisi */}
           <ShareButton
             analysisText={[risultato.analisiAvversario, risultato.vantaggi, risultato.pianoTattico].join('\n\n---\n\n')}
             matchContext={{ avversario: nomeAvversario, giornata: giornataCorrente }}
           />
-        </div>
-      )}
-
-      {/* Empty state */}
-      {!risultato && !loading && !error && (
-        <div className="empty-state" style={{ paddingTop: 60 }}>
-          <div className="empty-state-icon" style={{ fontSize: 52 }}>⚔️</div>
-          <div className="empty-state-title">War Room</div>
-          <div className="empty-state-desc">
-            Seleziona l'avversario della giornata e lancia l'analisi AI per ottenere
-            punti di forza, rischi e piano tattico personalizzato.
-          </div>
-        </div>
+        </section>
+      ) : (
+        !loading && !error && (
+          <section className="ops-empty war-empty">
+            <span className="lux-kicker">Pronta al lancio</span>
+            <h2>Seleziona l'avversario.</h2>
+            <p>La War Room generera lettura avversario, vantaggi e piano tattico personalizzato.</p>
+          </section>
+        )
       )}
     </div>
   );
