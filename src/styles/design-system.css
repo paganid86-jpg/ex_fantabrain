@@ -120,29 +120,29 @@ html[data-theme="light"] {
   --pitch-line: rgba(56, 25, 50, 0.28);
   --pitch-line-strong: rgba(56, 25, 50, 0.45);
 
-  /* Luxury Matchday OS (light) */
-  --lux-bg: #fff3e6;
-  --lux-bg-mid: #f8e4cc;
-  --lux-bg-deep: #f4dcc0;
-  --lux-panel: rgba(56, 25, 50, 0.08);
-  --lux-panel-soft: rgba(56, 25, 50, 0.045);
-  --lux-panel-hover: rgba(56, 25, 50, 0.08);
-  --lux-line: rgba(56, 25, 50, 0.14);
-  --lux-line-gold: rgba(166, 121, 38, 0.28);
-  --lux-gold: #a67926;
-  --lux-gold-soft: #7c5518;
-  --lux-gold-fill-start: #ffe7a6;
-  --lux-gold-fill-end: #d8a84a;
-  --lux-on-gold: #17100a;
-  --lux-milk: #381932;
-  --lux-muted: rgba(56, 25, 50, 0.66);
-  --lux-dim: rgba(56, 25, 50, 0.44);
-  --lux-ai: #6f42c1;
-  --lux-ai-soft: rgba(111, 66, 193, 0.13);
-  --lux-success: #207a4f;
-  --lux-danger: #b84d59;
-  --lux-warning: #9b6b05;
-  --lux-shadow: 0 20px 54px rgba(56, 25, 50, 0.16);
+  /* Luxury Matchday OS stays noir/gold even if legacy theme is light. */
+  --lux-bg: #05070d;
+  --lux-bg-mid: #08111d;
+  --lux-bg-deep: #02040a;
+  --lux-panel: rgba(12, 16, 26, 0.88);
+  --lux-panel-soft: rgba(255, 247, 234, 0.055);
+  --lux-panel-hover: rgba(255, 247, 234, 0.085);
+  --lux-line: rgba(255, 247, 234, 0.12);
+  --lux-line-gold: rgba(245, 207, 114, 0.28);
+  --lux-gold: #f5cf72;
+  --lux-gold-soft: #fff0bc;
+  --lux-gold-fill-start: var(--lux-gold-soft);
+  --lux-gold-fill-end: var(--lux-gold);
+  --lux-on-gold: #071016;
+  --lux-milk: #fff7ea;
+  --lux-muted: rgba(255, 247, 234, 0.66);
+  --lux-dim: rgba(255, 247, 234, 0.44);
+  --lux-ai: #9b64ff;
+  --lux-ai-soft: rgba(155, 100, 255, 0.16);
+  --lux-success: #37df96;
+  --lux-danger: #ff6f7b;
+  --lux-warning: #ffd65f;
+  --lux-shadow: 0 24px 80px rgba(0, 0, 0, 0.42);
 }
 
 /* ──────────────────────────────────────────────────────────
