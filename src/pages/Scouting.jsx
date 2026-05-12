@@ -87,7 +87,16 @@ function VotiDots({ voti }) {
   );
 }
 
-function GiocatoreCard({ player, inRosa, onAggiungi, onGeneraReport, reportStato, onSeleziona, isSelezionato }) {
+function GiocatoreCard({
+  player,
+  inRosa,
+  onAggiungi,
+  onGeneraReport,
+  reportStato,
+  onSeleziona,
+  isSelezionato,
+  canGenerateReport,
+}) {
   return (
     <article className={`ops-panel scout-player-card${isSelezionato ? ' is-selected' : ''}${player.infortunato ? ' is-injured' : ''}`}>
       <header className="scout-player-card__header">
@@ -123,9 +132,9 @@ function GiocatoreCard({ player, inRosa, onAggiungi, onGeneraReport, reportStato
           type="button"
           onClick={() => onGeneraReport(player)}
           className="home-lux-hero__cta scout-ai-btn"
-          disabled={reportStato?.loading}
+          disabled={reportStato?.loading || !canGenerateReport}
         >
-          {reportStato?.loading ? 'Report...' : 'Report AI'}
+          {reportStato?.loading ? 'Report...' : canGenerateReport ? 'Report AI' : 'Crediti 0'}
         </button>
         <button
           type="button"
@@ -231,7 +240,7 @@ export default function Scouting() {
     } catch {
       setReport((state) => ({
         ...state,
-        [player.id]: { loading: false, testo: null, error: 'Report non disponibile. Riprova piu tardi.' },
+        [player.id]: { loading: false, testo: null, error: 'Report non disponibile. Riprova più tardi.' },
       }));
     }
   }
@@ -395,6 +404,7 @@ export default function Scouting() {
               reportStato={report[player.id]}
               onSeleziona={toggleConfronto}
               isSelezionato={confronto.some((item) => item.id === player.id)}
+              canGenerateReport={aiCrediti > 0}
             />
           ))}
         </section>

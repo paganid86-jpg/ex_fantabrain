@@ -45,7 +45,7 @@ function TabOfferte() {
     } catch {
       setAiStati((state) => ({
         ...state,
-        [offerta.id]: { loading: false, testo: null, error: 'Analisi non disponibile. Riprova piu tardi.' },
+        [offerta.id]: { loading: false, testo: null, error: 'Analisi non disponibile. Riprova più tardi.' },
       }));
     }
   }
@@ -142,7 +142,7 @@ function TabScouting() {
       </div>
 
       <EmptyPanel kicker="Mercato libero" title="Svincolati non ancora attivi.">
-        In questa versione il mercato libero e vuoto. La ricerca completa sui giocatori Serie A vive nella sezione Scouting.
+        In questa versione il mercato libero è vuoto. La ricerca completa sui giocatori Serie A vive nella sezione Scouting.
       </EmptyPanel>
     </section>
   );

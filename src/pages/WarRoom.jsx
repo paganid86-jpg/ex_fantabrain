@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import useAppStore from '../store/useAppStore';
 import { warRoomAnalisi } from '../lib/claudeApi';
 import ShareButton from '../components/warroom/ShareButton';
@@ -15,7 +15,10 @@ export default function WarRoom() {
   const giornataCorrente = useAppStore((s) => s.giornataCorrente);
   const aiCrediti = useAppStore((s) => s.aiCrediti);
 
-  const avversariLista = classifica.filter((team) => !team.isUser).map((team) => team.nome);
+  const avversariLista = useMemo(
+    () => classifica.filter((team) => !team.isUser).map((team) => team.nome),
+    [classifica],
+  );
   const [avversario, setAvversario] = useState(avversariLista[0] || '');
   const [avversarioLibero, setAvversarioLibero] = useState('');
   const [loading, setLoading] = useState(false);
@@ -24,7 +27,24 @@ export default function WarRoom() {
   const [error, setError] = useState(null);
 
   const nomeAvversario = avversariLista.length > 0 ? avversario : avversarioLibero;
-  const canLaunch = !loading && aiCrediti >= 3 && nomeAvversario.trim();
+  const canLaunch = !loading && aiCrediti >= 3 && Boolean(nomeAvversario.trim());
+
+  useEffect(() => {
+    if (avversariLista.length > 0 && !avversariLista.includes(avversario)) {
+      setAvversario(avversariLista[0]);
+    }
+  }, [avversariLista, avversario]);
+
+  useEffect(() => {
+    if (!loading) return undefined;
+
+    setLoadingStep(0);
+    const intervalId = window.setInterval(() => {
+      setLoadingStep((step) => Math.min(step + 1, LOADING_STEPS.length - 1));
+    }, 900);
+
+    return () => window.clearInterval(intervalId);
+  }, [loading]);
 
   async function lanciaAnalisi() {
     if (!nomeAvversario.trim()) return;
@@ -195,7 +215,7 @@ export default function WarRoom() {
           <section className="ops-empty war-empty">
             <span className="lux-kicker">Pronta al lancio</span>
             <h2>Seleziona l'avversario.</h2>
-            <p>La War Room generera lettura avversario, vantaggi e piano tattico personalizzato.</p>
+            <p>La War Room genererà lettura avversario, vantaggi e piano tattico personalizzato.</p>
           </section>
         )
       )}
