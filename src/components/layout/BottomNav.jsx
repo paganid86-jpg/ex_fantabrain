@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { createPortal } from 'react-dom'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import useScrollDirection from '../../hooks/useScrollDirection'
 import RadialOrbitalTimeline from '../ui/RadialOrbitalTimeline'
@@ -69,7 +70,7 @@ const ORBITAL_ITEMS = [
     category: 'warRoomShare',
     icon: 'share',
     title: 'Condividi',
-    content: 'Apre la zona War Room per salvare e condividere l’analisi.',
+    content: "Apre la zona War Room per salvare e condividere l'analisi.",
     status: 'todo',
     statusLabel: 'Dopo analisi',
     date: 'Share',
@@ -177,10 +178,11 @@ export default function BottomNav() {
   }
 
   return (
-    <nav
-      className={`bottom-nav${isScrollingDown ? ' hidden' : ''}`}
-      aria-label="Navigazione principale"
-    >
+    <>
+      <nav
+        className={`bottom-nav${isScrollingDown ? ' hidden' : ''}`}
+        aria-label="Navigazione principale"
+      >
       {TABS.map(({ path, action, icon, label }) => {
         const active = action === 'ai-orbital'
           ? orbitalOpen || location.pathname === '/ai-analisi'
@@ -224,7 +226,8 @@ export default function BottomNav() {
           </Link>
         )
       })}
-      {orbitalOpen && (
+      </nav>
+      {orbitalOpen && createPortal(
         <RadialOrbitalTimeline
           items={ORBITAL_ITEMS}
           onClose={() => setOrbitalOpen(false)}
@@ -232,8 +235,9 @@ export default function BottomNav() {
             setOrbitalOpen(false)
             navigate(path)
           }}
-        />
+        />,
+        document.body,
       )}
-    </nav>
+    </>
   )
 }
