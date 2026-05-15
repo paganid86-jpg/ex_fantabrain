@@ -3,10 +3,10 @@ import useScrollDirection from '../../hooks/useScrollDirection'
 
 const TABS = [
   { path: '/', icon: 'home', label: 'Home' },
-  { path: '/schieramento?tab=rosa', icon: 'team', label: 'Rosa' },
-  { path: '/schieramento', icon: 'pitch', label: 'Partite' },
-  { path: '/ai-analisi', icon: 'spark', label: 'AI Assistant' },
-  { path: '/impostazioni-lega', icon: 'trophy', label: 'Lega' },
+  { path: '/schieramento', icon: 'pitch', label: 'Schiera' },
+  { path: '/classifica', icon: 'table', label: 'Classif.' },
+  { path: '/news', icon: 'pulse', label: 'News' },
+  { path: '/ai-analisi', icon: 'spark', label: 'AI' },
 ]
 
 function NavIcon({ name }) {
@@ -78,20 +78,14 @@ function NavIcon({ name }) {
 export default function BottomNav() {
   const isScrollingDown = useScrollDirection()
   const location = useLocation()
-  const params = new URLSearchParams(location.search)
-  const rosterTabIsActive = location.pathname === '/schieramento' && params.get('tab') === 'rosa'
 
   function isTabActive(path) {
     if (path === '/') {
       return location.pathname === '/'
     }
 
-    if (path === '/schieramento?tab=rosa') {
-      return rosterTabIsActive
-    }
-
     if (path === '/schieramento') {
-      return location.pathname === '/schieramento' && !rosterTabIsActive
+      return location.pathname === '/schieramento' || location.pathname === '/la-rosa'
     }
 
     return location.pathname === path

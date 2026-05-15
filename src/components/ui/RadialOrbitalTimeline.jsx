@@ -53,7 +53,7 @@ export default function RadialOrbitalTimeline({ items, onClose, onSelect }) {
   const [activeId, setActiveId] = useState(null)
   const [rotationAngle, setRotationAngle] = useState(0)
   const [autoRotate, setAutoRotate] = useState(true)
-  const [orbitRadius, setOrbitRadius] = useState(150)
+  const [orbitRadius, setOrbitRadius] = useState(224)
   const containerRef = useRef(null)
 
   useEffect(() => {
@@ -68,7 +68,7 @@ export default function RadialOrbitalTimeline({ items, onClose, onSelect }) {
   useEffect(() => {
     function updateOrbitRadius() {
       const shortestSide = Math.min(window.innerWidth, window.innerHeight)
-      setOrbitRadius(shortestSide < 680 ? 112 : 150)
+      setOrbitRadius(shortestSide < 680 ? 118 : 224)
     }
 
     updateOrbitRadius()
