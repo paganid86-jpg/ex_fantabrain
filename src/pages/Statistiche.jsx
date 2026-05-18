@@ -2,52 +2,33 @@ import { useEffect } from 'react';
 import useAppStore from '../store/useAppStore';
 import useSerieAStore from '../stores/useSerieAStore';
 
-function BarChart({ data, max, height = 80, labels }) {
-  const m = max || Math.max(...data, 1);
+function BarChart({ data, max, labels }) {
+  const maximum = max || Math.max(...data, 1);
   return (
-    <div style={{ display: 'flex', alignItems: 'flex-end', gap: 3, height }}>
-      {data.map((v, i) => (
-        <div
-          key={i}
-          style={{
-            flex: 1, display: 'flex', flexDirection: 'column',
-            alignItems: 'center', height: '100%', justifyContent: 'flex-end',
-          }}
-        >
-          <div
-            title={`${labels ? labels[i] : `G${i + 1}`}: ${v}pt`}
-            style={{
-              width: '100%',
-              background: 'linear-gradient(180deg, var(--accent-primary) 0%, var(--gold) 100%)',
-              borderRadius: '2px 2px 0 0',
-              height: `${Math.max((v / m) * 100, 2)}%`,
-              opacity: 0.75,
-              transition: 'opacity 0.15s',
-              cursor: 'default',
-              minHeight: 3,
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.opacity = 1; }}
-            onMouseLeave={(e) => { e.currentTarget.style.opacity = 0.75; }}
+    <div className="stats-bar-chart" aria-label="Andamento punti">
+      {data.map((value, index) => (
+        <span key={`${value}-${index}`}>
+          <i
+            title={`${labels ? labels[index] : `G${index + 1}`}: ${value}pt`}
+            style={{ '--bar-height': `${Math.max((value / maximum) * 100, 3)}%` }}
           />
-        </div>
+        </span>
       ))}
     </div>
   );
 }
 
-function StatBar({ value, max = 10, color = 'var(--gold)' }) {
-  const pct = Math.min(((parseFloat(value) - 5) / (max - 5)) * 100, 100);
+function StatBar({ value }) {
+  const pct = Math.min(((parseFloat(value) - 5) / 5) * 100, 100);
   return (
-    <div style={{ height: 4, background: 'rgba(255,255,255,0.06)', borderRadius: 2, overflow: 'hidden' }}>
-      <div style={{
-        height: '100%',
-        width: `${Math.max(pct, 0)}%`,
-        background: color,
-        borderRadius: 2,
-        transition: 'width 0.5s',
-      }} />
+    <div className="stats-progress">
+      <span style={{ '--progress': `${Math.max(pct, 0)}%` }} />
     </div>
   );
+}
+
+function formatPlayer(player) {
+  return player.cognome || player.nome || 'Giocatore';
 }
 
 export default function Statistiche() {
@@ -55,38 +36,23 @@ export default function Statistiche() {
   const classifica = useAppStore((s) => s.classifica);
   const calendario = useAppStore((s) => s.calendario);
 
-  // Dati reali Serie A
-  const scorers        = useSerieAStore((s) => s.scorers);
+  const scorers = useSerieAStore((s) => s.scorers);
   const loadingScorers = useSerieAStore((s) => s.loading.scorers);
-  const errorScorers   = useSerieAStore((s) => s.errors.scorers);
-  const fetchScorers   = useSerieAStore((s) => s.fetchScorers);
+  const errorScorers = useSerieAStore((s) => s.errors.scorers);
+  const fetchScorers = useSerieAStore((s) => s.fetchScorers);
 
-  useEffect(() => { fetchScorers(); }, [fetchScorers]);
+  useEffect(() => {
+    fetchScorers();
+  }, [fetchScorers]);
 
-  const userRow = classifica.find((c) => c.isUser);
-
-  // Empty state se non ci sono dati
-  if (rosa.length === 0 && classifica.length === 0) {
-    return (
-      <div className="empty-state" style={{ paddingTop: 80 }}>
-        <div className="empty-state-icon">📈</div>
-        <div className="empty-state-title">Nessun dato disponibile</div>
-        <div className="empty-state-desc">
-          Aggiungi giocatori e gioca le tue partite per vedere le statistiche della stagione.
-        </div>
-      </div>
-    );
-  }
-
-  // Calcoli da dati live
-  const giornateGiocate = calendario.filter((g) => g.giocata && g.puntiUser);
-  const andamentoPunti = giornateGiocate.map((g) => g.puntiUser);
-  const labelsGiornate = giornateGiocate.map((g) => `G${g.giornata}`);
-
-  const puntiTotali = userRow?.punti ?? andamentoPunti.reduce((s, v) => s + v, 0);
+  const userRow = classifica.find((row) => row.isUser);
+  const giornateGiocate = calendario.filter((day) => day.giocata && day.puntiUser);
+  const andamentoPunti = giornateGiocate.map((day) => day.puntiUser);
+  const labelsGiornate = giornateGiocate.map((day) => `G${day.giornata}`);
+  const puntiTotali = userRow?.punti ?? andamentoPunti.reduce((sum, value) => sum + value, 0);
   const media = andamentoPunti.length > 0
-    ? (andamentoPunti.reduce((s, v) => s + v, 0) / andamentoPunti.length).toFixed(1)
-    : (userRow?.puntimedia?.toFixed(1) ?? '—');
+    ? (andamentoPunti.reduce((sum, value) => sum + value, 0) / andamentoPunti.length).toFixed(1)
+    : (userRow?.puntimedia?.toFixed(1) ?? '--');
 
   const migliore = andamentoPunti.length > 0
     ? { punti: Math.max(...andamentoPunti), giornata: labelsGiornate[andamentoPunti.indexOf(Math.max(...andamentoPunti))] }
@@ -95,341 +61,219 @@ export default function Statistiche() {
     ? { punti: Math.min(...andamentoPunti), giornata: labelsGiornate[andamentoPunti.indexOf(Math.min(...andamentoPunti))] }
     : null;
 
-  // Top performer
   const topPerformer = [...rosa]
-    .filter((g) => !g.infortunato)
+    .filter((player) => !player.infortunato)
     .sort((a, b) => b.votoMedia - a.votoMedia)
     .slice(0, 8);
 
-  // Media per reparto
-  const ruoliGruppo = {
-    Portieri: rosa.filter((g) => g.ruoloMantra === 'Por'),
-    Difensori: rosa.filter((g) => ['DD', 'DS', 'DC'].some((r) => g.ruoloMantra.startsWith(r))),
-    Centrocampisti: rosa.filter((g) => ['M/C', 'C'].some((r) => g.ruoloMantra.startsWith(r))),
-    Attaccanti: rosa.filter((g) => ['T/A', 'PC', 'T', 'A', 'W'].some((r) => g.ruoloMantra.startsWith(r))),
+  const roleGroups = {
+    Portieri: rosa.filter((player) => player.ruoloMantra === 'Por'),
+    Difensori: rosa.filter((player) => ['DD', 'DS', 'DC'].some((role) => player.ruoloMantra?.startsWith(role))),
+    Centrocampisti: rosa.filter((player) => ['M/C', 'C'].some((role) => player.ruoloMantra?.startsWith(role))),
+    Attaccanti: rosa.filter((player) => ['T/A', 'PC', 'T', 'A', 'W'].some((role) => player.ruoloMantra?.startsWith(role))),
   };
-  const mediaPerRuolo = Object.entries(ruoliGruppo).map(([nome, giocatori]) => ({
-    nome,
-    media: giocatori.length > 0
-      ? (giocatori.reduce((s, g) => s + g.votoMedia, 0) / giocatori.length).toFixed(2)
+
+  const mediaPerRuolo = Object.entries(roleGroups).map(([name, players]) => ({
+    name,
+    media: players.length > 0
+      ? (players.reduce((sum, player) => sum + player.votoMedia, 0) / players.length).toFixed(2)
       : null,
-    count: giocatori.length,
+    count: players.length,
   }));
 
-  // Forma
-  const inForma = rosa.filter((g) => {
-    const ultimi3 = (g.votiUltimi5 || []).slice(-3).filter((v) => v > 0);
+  const inForma = rosa.filter((player) => {
+    const ultimi3 = (player.votiUltimi5 || []).slice(-3).filter((vote) => vote > 0);
     if (ultimi3.length === 0) return false;
-    const m3 = ultimi3.reduce((s, v) => s + v, 0) / ultimi3.length;
-    return m3 > g.votoMedia + 0.3;
+    const media3 = ultimi3.reduce((sum, vote) => sum + vote, 0) / ultimi3.length;
+    return media3 > player.votoMedia + 0.3;
   });
 
-  const inCalo = rosa.filter((g) => {
-    const ultimi3 = (g.votiUltimi5 || []).slice(-3).filter((v) => v > 0);
+  const inCalo = rosa.filter((player) => {
+    const ultimi3 = (player.votiUltimi5 || []).slice(-3).filter((vote) => vote > 0);
     if (ultimi3.length === 0) return false;
-    const m3 = ultimi3.reduce((s, v) => s + v, 0) / ultimi3.length;
-    return m3 < g.votoMedia - 0.3;
+    const media3 = ultimi3.reduce((sum, vote) => sum + vote, 0) / ultimi3.length;
+    return media3 < player.votoMedia - 0.3;
   });
 
   const kpiItems = [
-    { label: 'Punti Totali Stagione', value: puntiTotali, color: 'var(--green)' },
-    { label: 'Media Punti / Giornata', value: `${media}`, color: 'var(--blue)' },
-    migliore
-      ? { label: 'Migliore Giornata', value: `${migliore.punti}pt`, sub: migliore.giornata, color: 'var(--gold)' }
-      : { label: 'Migliore Giornata', value: '—', color: 'var(--gold)' },
-    peggiore
-      ? { label: 'Peggior Giornata', value: `${peggiore.punti}pt`, sub: peggiore.giornata, color: 'var(--red)' }
-      : { label: 'Peggior Giornata', value: '—', color: 'var(--red)' },
-    userRow
-      ? { label: 'V / P / S', value: `${userRow.vittorie}/${userRow.pareggi}/${userRow.sconfitte}`, color: 'var(--text-primary)' }
-      : null,
-  ].filter(Boolean);
+    { label: 'Punti stagione', value: puntiTotali, hint: 'totale' },
+    { label: 'Media giornata', value: media, hint: 'punti' },
+    migliore ? { label: 'Best', value: `${migliore.punti}pt`, hint: migliore.giornata } : { label: 'Best', value: '--', hint: 'nessun dato' },
+    peggiore ? { label: 'Worst', value: `${peggiore.punti}pt`, hint: peggiore.giornata } : { label: 'Worst', value: '--', hint: 'nessun dato' },
+  ];
+
+  const noData = rosa.length === 0 && classifica.length === 0;
 
   return (
-    <div>
-      {/* KPI Row */}
-      <div style={{ display: 'flex', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}>
-        {kpiItems.map((k) => (
-          <div key={k.label} className="glass-card" style={{ flex: 1, minWidth: 100, padding: '14px 18px' }}>
-            <div style={{
-              fontSize: 10, color: 'var(--text-muted)',
-              fontFamily: 'var(--font-display)', letterSpacing: '0.1em',
-              textTransform: 'uppercase', marginBottom: 4,
-            }}>{k.label}</div>
-            <div style={{
-              fontFamily: 'var(--font-display)', fontWeight: 800,
-              fontSize: 24, color: k.color,
-            }}>{k.value}</div>
-            {k.sub && (
-              <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{k.sub}</div>
-            )}
-          </div>
-        ))}
-      </div>
-
-      {/* Grafico andamento */}
-      {andamentoPunti.length > 0 && (
-        <div className="glass-card" style={{ padding: 20, marginBottom: 16 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-            <div className="section-title" style={{ fontSize: 15 }}>
-              📈 Andamento Punti — Stagione
-            </div>
-            <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-              G1 → G{andamentoPunti.length}
-            </div>
-          </div>
-          <BarChart data={andamentoPunti} height={100} labels={labelsGiornate} />
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
-            <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>G1</span>
-            <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>G{andamentoPunti.length}</span>
-          </div>
+    <div className="ops-page stats-page">
+      <section className="ops-hero stats-hero">
+        <div className="ops-hero__copy">
+          <span className="lux-kicker">Statistiche</span>
+          <h1>Season lab.</h1>
+          <p>
+            Trend punti, rendimento rosa, reparti e marcatori Serie A in una vista
+            pensata per leggere la stagione senza rumore.
+          </p>
         </div>
-      )}
-
-      {/* Grid: Top performer + Media per reparto */}
-      {rosa.length > 0 && (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
-          {/* Top performer */}
-          <div className="glass-card" style={{ padding: 16 }}>
-            <div className="section-title" style={{ fontSize: 14, marginBottom: 12 }}>
-              🏆 Top Performer della Rosa
-            </div>
-            {topPerformer.length === 0 ? (
-              <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Nessun dato disponibile</div>
-            ) : (
-              topPerformer.map((g, i) => (
-                <div key={g.id} style={{
-                  display: 'flex', alignItems: 'center', gap: 10,
-                  padding: '7px 0',
-                  borderBottom: '1px solid rgba(126, 173, 212,0.08)',
-                }}>
-                  <div style={{
-                    width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
-                    background: i < 3 ? 'var(--gold)' : 'rgba(255,255,255,0.06)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 11,
-                    color: i < 3 ? '#000' : 'var(--text-muted)',
-                  }}>{i + 1}</div>
-                  <span className="badge badge-muted" style={{ fontSize: 9, flexShrink: 0 }}>
-                    {g.ruoloMantra}
-                  </span>
-                  <span style={{
-                    flex: 1, fontSize: 13, fontWeight: 500,
-                    color: 'var(--text-primary)',
-                    overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                  }}>
-                    {g.cognome}
-                  </span>
-                  <span style={{
-                    fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 15,
-                    color: g.votoMedia >= 7 ? 'var(--green)' : 'var(--amber)',
-                  }}>
-                    {g.votoMedia.toFixed(1)}
-                  </span>
-                </div>
-              ))
-            )}
-          </div>
-
-          {/* Media per reparto */}
-          <div className="glass-card" style={{ padding: 16 }}>
-            <div className="section-title" style={{ fontSize: 14, marginBottom: 12 }}>
-              📊 Media per Reparto
-            </div>
-            {mediaPerRuolo.map((r) => {
-              const val = parseFloat(r.media);
-              const barColor = val >= 7 ? 'var(--green)' : val >= 6 ? 'var(--gold)' : 'var(--red)';
-              return (
-                <div key={r.nome} style={{ marginBottom: 14 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 5 }}>
-                    <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{r.nome}</span>
-                    <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                      <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{r.count} gioc.</span>
-                      <span style={{
-                        fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 16,
-                        color: r.media ? barColor : 'var(--text-muted)',
-                      }}>
-                        {r.media ?? '—'}
-                      </span>
-                    </div>
-                  </div>
-                  {r.media && <StatBar value={r.media} color={barColor} />}
-                </div>
-              );
-            })}
-          </div>
+        <div className="ops-hero__mark" aria-hidden="true">
+          <span />
+          <span />
+          <span />
         </div>
-      )}
+      </section>
 
-      {/* Forma / Calo */}
-      {rosa.length > 0 && (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-          {/* In forma */}
-          <div className="glass-card" style={{ padding: 16 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-              <span style={{ fontSize: 16 }}>🔥</span>
-              <div className="section-title" style={{ fontSize: 14 }}>In Forma</div>
-              <span className="badge badge-green">{inForma.length}</span>
-            </div>
-            {inForma.length === 0 ? (
-              <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-                Nessun giocatore particolarmente in forma
+      {noData ? (
+        <section className="ops-empty">
+          <span className="lux-kicker">Dataset vuoto</span>
+          <h2>Nessun dato disponibile.</h2>
+          <p>Aggiungi giocatori e partite per vedere statistiche, trend e segnali rosa.</p>
+        </section>
+      ) : (
+        <>
+          <section className="ops-stat-grid" aria-label="KPI statistiche">
+            {kpiItems.map((item) => (
+              <div key={item.label} className="ops-stat">
+                <span>{item.label}</span>
+                <strong>{item.value}</strong>
+                <small>{item.hint}</small>
               </div>
-            ) : (
-              inForma.map((g) => {
-                const ultimi3 = (g.votiUltimi5 || []).slice(-3).filter((v) => v > 0);
-                const media3 = (ultimi3.reduce((s, v) => s + v, 0) / ultimi3.length).toFixed(1);
-                return (
-                  <div key={g.id} style={{
-                    display: 'flex', alignItems: 'center', gap: 10,
-                    padding: '6px 0', borderBottom: '1px solid rgba(126, 173, 212,0.08)',
-                  }}>
-                    <span className="badge badge-muted" style={{ fontSize: 9, flexShrink: 0 }}>
-                      {g.ruoloMantra}
-                    </span>
-                    <span style={{ flex: 1, fontSize: 13, color: 'var(--text-primary)', fontWeight: 500 }}>
-                      {g.cognome}
-                    </span>
-                    <div style={{ textAlign: 'right' }}>
-                      <div style={{
-                        fontFamily: 'var(--font-display)', fontWeight: 700,
-                        fontSize: 14, color: 'var(--green)',
-                      }}>{media3}</div>
-                      <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>media 3</div>
-                    </div>
-                    <div style={{ textAlign: 'right' }}>
-                      <div style={{
-                        fontFamily: 'var(--font-display)', fontWeight: 700,
-                        fontSize: 14, color: 'var(--text-secondary)',
-                      }}>{g.votoMedia.toFixed(1)}</div>
-                      <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>stagione</div>
-                    </div>
-                  </div>
-                );
-              })
-            )}
-          </div>
+            ))}
+          </section>
 
-          {/* In calo */}
-          <div className="glass-card" style={{ padding: 16 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-              <span style={{ fontSize: 16 }}>📉</span>
-              <div className="section-title" style={{ fontSize: 14 }}>In Calo</div>
-              <span className="badge badge-red">{inCalo.length}</span>
-            </div>
-            {inCalo.length === 0 ? (
-              <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-                Nessun giocatore in calo di prestazioni
-              </div>
-            ) : (
-              inCalo.map((g) => {
-                const ultimi3 = (g.votiUltimi5 || []).slice(-3).filter((v) => v > 0);
-                const media3 = ultimi3.length > 0
-                  ? (ultimi3.reduce((s, v) => s + v, 0) / ultimi3.length).toFixed(1)
-                  : '—';
-                return (
-                  <div key={g.id} style={{
-                    display: 'flex', alignItems: 'center', gap: 10,
-                    padding: '6px 0', borderBottom: '1px solid rgba(126, 173, 212,0.08)',
-                  }}>
-                    <span className="badge badge-muted" style={{ fontSize: 9, flexShrink: 0 }}>
-                      {g.ruoloMantra}
-                    </span>
-                    <span style={{ flex: 1, fontSize: 13, color: 'var(--text-primary)', fontWeight: 500 }}>
-                      {g.cognome}
-                    </span>
-                    <div style={{ textAlign: 'right' }}>
-                      <div style={{
-                        fontFamily: 'var(--font-display)', fontWeight: 700,
-                        fontSize: 14, color: 'var(--red)',
-                      }}>{media3}</div>
-                      <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>media 3</div>
-                    </div>
-                    <div style={{ textAlign: 'right' }}>
-                      <div style={{
-                        fontFamily: 'var(--font-display)', fontWeight: 700,
-                        fontSize: 14, color: 'var(--text-secondary)',
-                      }}>{g.votoMedia.toFixed(1)}</div>
-                      <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>stagione</div>
-                    </div>
-                  </div>
-                );
-              })
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* ── TOP SCORER SERIE A REALE ── */}
-      <div className="glass-card" style={{ padding: 16, marginTop: 16 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-          <div className="section-title" style={{ fontSize: 14 }}>
-            ⚽ Top Marcatori Serie A 2025/2026
-          </div>
-          {loadingScorers && (
-            <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>caricamento…</span>
+          {andamentoPunti.length > 0 && (
+            <section className="ops-panel stats-chart-panel">
+              <header className="ops-panel__header">
+                <div>
+                  <span className="lux-kicker">Andamento punti</span>
+                  <h2>Stagione</h2>
+                </div>
+                <strong>{labelsGiornate[0]} - {labelsGiornate[labelsGiornate.length - 1]}</strong>
+              </header>
+              <BarChart data={andamentoPunti} labels={labelsGiornate} />
+            </section>
           )}
+
+          {rosa.length > 0 && (
+            <>
+              <div className="stats-grid">
+                <section className="ops-panel">
+                  <span className="lux-kicker">Top performer</span>
+                  <div className="stats-list">
+                    {topPerformer.length === 0 ? (
+                      <div className="ops-inline-empty">Nessun dato disponibile.</div>
+                    ) : (
+                      topPerformer.map((player, index) => (
+                        <article key={player.id} className="stats-row">
+                          <span className={`rank-position${index < 3 ? ' is-podium' : ''}`}>{index + 1}</span>
+                          <span className="ops-badge">{player.ruoloMantra}</span>
+                          <strong>{formatPlayer(player)}</strong>
+                          <em>{player.votoMedia.toFixed(1)}</em>
+                        </article>
+                      ))
+                    )}
+                  </div>
+                </section>
+
+                <section className="ops-panel">
+                  <span className="lux-kicker">Media per reparto</span>
+                  <div className="stats-role-list">
+                    {mediaPerRuolo.map((role) => (
+                      <article key={role.name}>
+                        <div>
+                          <strong>{role.name}</strong>
+                          <span>{role.count} giocatori</span>
+                        </div>
+                        <em>{role.media ?? '--'}</em>
+                        {role.media && <StatBar value={role.media} />}
+                      </article>
+                    ))}
+                  </div>
+                </section>
+              </div>
+
+              <div className="stats-grid">
+                <section className="ops-panel">
+                  <header className="stats-panel-title">
+                    <span className="lux-kicker">In forma</span>
+                    <strong>{inForma.length}</strong>
+                  </header>
+                  <div className="stats-list">
+                    {inForma.length === 0 ? (
+                      <div className="ops-inline-empty">Nessun giocatore particolarmente in forma.</div>
+                    ) : (
+                      inForma.map((player) => (
+                        <article key={player.id} className="stats-row">
+                          <span className="ops-badge">{player.ruoloMantra}</span>
+                          <strong>{formatPlayer(player)}</strong>
+                          <em>{player.votoMedia.toFixed(1)}</em>
+                        </article>
+                      ))
+                    )}
+                  </div>
+                </section>
+
+                <section className="ops-panel">
+                  <header className="stats-panel-title">
+                    <span className="lux-kicker">In calo</span>
+                    <strong>{inCalo.length}</strong>
+                  </header>
+                  <div className="stats-list">
+                    {inCalo.length === 0 ? (
+                      <div className="ops-inline-empty">Nessun giocatore in calo di prestazioni.</div>
+                    ) : (
+                      inCalo.map((player) => (
+                        <article key={player.id} className="stats-row">
+                          <span className="ops-badge">{player.ruoloMantra}</span>
+                          <strong>{formatPlayer(player)}</strong>
+                          <em>{player.votoMedia.toFixed(1)}</em>
+                        </article>
+                      ))
+                    )}
+                  </div>
+                </section>
+              </div>
+            </>
+          )}
+        </>
+      )}
+
+      <section className="ops-panel stats-scorers-panel">
+        <header className="ops-panel__header">
+          <div>
+            <span className="lux-kicker">Serie A reale</span>
+            <h2>Top marcatori</h2>
+          </div>
           {!loadingScorers && !errorScorers && scorers.length > 0 && (
-            <button
-              className="btn-secondary"
-              style={{ fontSize: 11, padding: '3px 8px' }}
-              onClick={() => fetchScorers(true)}
-            >
-              Aggiorna
-            </button>
+            <button type="button" className="btn-secondary" onClick={() => fetchScorers(true)}>Aggiorna</button>
           )}
-        </div>
+        </header>
 
+        {loadingScorers && <div className="ops-inline-empty">Caricamento marcatori...</div>}
         {errorScorers && (
-          <div style={{ fontSize: 12, color: 'var(--red)' }}>
+          <div className="ops-error">
             {errorScorers.includes('non configurata')
-              ? '⚙️ Configura VITE_FOOTBALL_DATA_API_KEY nel file .env'
+              ? 'Configura VITE_FOOTBALL_DATA_API_KEY nel file .env.'
               : `Errore: ${errorScorers}`}
           </div>
         )}
-
         {!loadingScorers && scorers.length === 0 && !errorScorers && (
-          <div style={{ fontSize: 12, color: 'var(--text-muted)', fontStyle: 'italic' }}>
-            Dati marcatori non disponibili
-          </div>
+          <div className="ops-inline-empty">Dati marcatori non disponibili.</div>
         )}
-
         {scorers.length > 0 && (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
-            {scorers.slice(0, 20).map((s, i) => (
-              <div key={s.playerId} style={{
-                display: 'flex', alignItems: 'center', gap: 8,
-                padding: '6px 0', borderBottom: '1px solid rgba(126, 173, 212,0.07)',
-              }}>
-                <div style={{
-                  width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
-                  background: i < 3 ? 'var(--gold)' : 'rgba(255,255,255,0.06)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 11,
-                  color: i < 3 ? '#000' : 'var(--text-muted)',
-                }}>{i + 1}</div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {s.name}
-                  </div>
-                  <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>
-                    {s.teamName} · {s.played}G
-                  </div>
+          <div className="stats-scorer-grid">
+            {scorers.slice(0, 20).map((scorer, index) => (
+              <article key={scorer.playerId} className="stats-scorer-row">
+                <span className={`rank-position${index < 3 ? ' is-podium' : ''}`}>{index + 1}</span>
+                <div>
+                  <strong>{scorer.name}</strong>
+                  <span>{scorer.teamName} - {scorer.played}G</span>
                 </div>
-                <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                  <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 16, color: 'var(--green)' }}>
-                    {s.goals}
-                    <span style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 400, marginLeft: 2 }}>gol</span>
-                  </div>
-                  {s.assists > 0 && (
-                    <div style={{ fontSize: 10, color: 'var(--blue)' }}>{s.assists} ass</div>
-                  )}
-                </div>
-              </div>
+                <em>{scorer.goals}<small> gol</small></em>
+              </article>
             ))}
           </div>
         )}
-      </div>
+      </section>
     </div>
   );
 }

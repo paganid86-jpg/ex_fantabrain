@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { NavLink, useLocation, useNavigate } from 'react-router-dom'
+import { createPortal } from 'react-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import useScrollDirection from '../../hooks/useScrollDirection'
 import RadialOrbitalTimeline from '../ui/RadialOrbitalTimeline'
 
@@ -8,86 +9,86 @@ const TABS = [
   { path: '/schieramento', icon: 'pitch', label: 'Schiera' },
   { path: '/classifica', icon: 'table', label: 'Classif.' },
   { path: '/news', icon: 'pulse', label: 'News' },
-  { path: '/ai-analisi', icon: 'spark', label: 'AI', orbital: true },
+  { action: 'ai-orbital', icon: 'spark', label: 'AI' },
 ]
 
-const AI_ORBITAL_ITEMS = [
+const ORBITAL_ITEMS = [
   {
-    id: 1,
-    title: 'Analizza',
-    date: 'Giornata',
-    content: 'Match migliori e rischi per i titolari prima della deadline.',
+    id: 'analizza',
     category: 'analizzaGiornata',
     icon: 'calendar',
-    relatedIds: [3, 6],
+    title: 'Analizza',
+    content: 'Legge giornata, calendario e contesto partita prima delle decisioni.',
     status: 'ready',
-    statusLabel: 'FRONTEND',
-    energy: 88,
+    statusLabel: 'Pronto',
+    date: 'Matchday',
+    energy: 82,
+    relatedIds: ['war-room', 'ai-coach'],
     path: '/calendario',
   },
   {
-    id: 2,
-    title: 'Valuta offerta',
-    date: 'Mercato',
-    content: 'Verdetto ACCETTA, RIFIUTA o CONTROPROPONI sulle offerte ricevute.',
+    id: 'valuta-offerta',
     category: 'valutaOfferta',
     icon: 'market',
-    relatedIds: [4, 5],
-    status: 'todo',
-    statusLabel: 'BACKEND TODO',
-    energy: 72,
+    title: 'Valuta offerta',
+    content: 'Porta uno scambio nel desk mercato e lo fa pesare al coach.',
+    status: 'ready',
+    statusLabel: 'Pronto',
+    date: 'Mercato',
+    energy: 68,
+    relatedIds: ['scouting', 'ai-coach'],
     path: '/mercato',
   },
   {
-    id: 3,
-    title: 'Scouting',
-    date: 'Report',
-    content: 'Report giocatore con forze, debolezze e verdetto SI, NO o FORSE.',
+    id: 'scouting',
     category: 'reportScouting',
     icon: 'scouting',
-    relatedIds: [1, 2],
-    status: 'todo',
-    statusLabel: 'BACKEND TODO',
-    energy: 76,
+    title: 'Scouting',
+    content: 'Cerca target Serie A, confronta profili e prepara un report mirato.',
+    status: 'ready',
+    statusLabel: 'Pronto',
+    date: 'Radar',
+    energy: 74,
+    relatedIds: ['valuta-offerta', 'war-room'],
     path: '/scouting',
   },
   {
-    id: 4,
-    title: 'War Room',
-    date: 'Pre-match',
-    content: 'Analisi in 3 step: avversario, vantaggi e piano tattico.',
+    id: 'war-room',
     category: 'warRoomAnalisi',
     icon: 'war',
-    relatedIds: [2, 5, 6],
-    status: 'todo',
-    statusLabel: 'BACKEND TODO',
-    energy: 94,
+    title: 'War Room',
+    content: 'Costruisce il piano partita contro il prossimo avversario.',
+    status: 'ready',
+    statusLabel: 'Pronto',
+    date: 'Tattica',
+    energy: 88,
+    relatedIds: ['analizza', 'condividi'],
     path: '/war-room',
   },
   {
-    id: 5,
-    title: 'Condividi',
-    date: 'Share',
-    content: "Genera un link condivisibile dell'analisi War Room.",
+    id: 'condividi',
     category: 'warRoomShare',
     icon: 'share',
-    relatedIds: [4],
+    title: 'Condividi',
+    content: "Apre la zona War Room per salvare e condividere l'analisi.",
     status: 'todo',
-    statusLabel: 'BACKEND TODO',
-    energy: 58,
+    statusLabel: 'Dopo analisi',
+    date: 'Share',
+    energy: 56,
+    relatedIds: ['war-room', 'ai-coach'],
     path: '/war-room',
   },
   {
-    id: 6,
-    title: 'AI Coach',
-    date: 'Console',
-    content: 'Chat privata con lettura contestuale della rosa e prompt rapidi.',
+    id: 'ai-coach',
     category: 'aiCoach',
     icon: 'spark',
-    relatedIds: [1, 4],
+    title: 'AI Coach',
+    content: 'Entra nella chat privata con il coach e fai una domanda diretta.',
     status: 'ready',
-    statusLabel: 'LIVE',
-    energy: 100,
+    statusLabel: 'Pronto',
+    date: 'Coach',
+    energy: 92,
+    relatedIds: ['analizza', 'scouting'],
     path: '/ai-analisi',
   },
 ]
@@ -110,6 +111,15 @@ function NavIcon({ name }) {
           <circle cx="12" cy="12" r="2.25" />
         </svg>
       )
+    case 'team':
+      return (
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="9" cy="8" r="3" />
+          <path d="M4.5 19c.6-3.1 2.2-5 4.5-5s3.9 1.9 4.5 5" />
+          <path d="M14.5 10.5a2.6 2.6 0 1 0 0-5" />
+          <path d="M15.5 14.5c2 .4 3.3 1.9 4 4.5" />
+        </svg>
+      )
     case 'table':
       return (
         <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -123,6 +133,17 @@ function NavIcon({ name }) {
       return (
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M4 12h3l2-4 4 9 2-5h5" />
+        </svg>
+      )
+    case 'trophy':
+      return (
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M8 4h8v4.5a4 4 0 0 1-8 0V4Z" />
+          <path d="M8 6H5.5v2.5A3.5 3.5 0 0 0 9 12" />
+          <path d="M16 6h2.5v2.5A3.5 3.5 0 0 1 15 12" />
+          <path d="M12 12.5V17" />
+          <path d="M8.5 20h7" />
+          <path d="M10 17h4l1 3H9l1-3Z" />
         </svg>
       )
     case 'spark':
@@ -140,53 +161,61 @@ function NavIcon({ name }) {
 
 export default function BottomNav() {
   const isScrollingDown = useScrollDirection()
-  const navigate = useNavigate()
   const location = useLocation()
-  const [isOrbitalOpen, setIsOrbitalOpen] = useState(false)
+  const navigate = useNavigate()
+  const [orbitalOpen, setOrbitalOpen] = useState(false)
 
-  function handleOrbitalSelect(path) {
-    setIsOrbitalOpen(false)
-    navigate(path)
+  function isTabActive(path) {
+    if (path === '/') {
+      return location.pathname === '/'
+    }
+
+    if (path === '/schieramento') {
+      return location.pathname === '/schieramento' || location.pathname === '/la-rosa'
+    }
+
+    return location.pathname === path
   }
 
   return (
     <>
-      {isOrbitalOpen && (
-        <RadialOrbitalTimeline
-          items={AI_ORBITAL_ITEMS}
-          onClose={() => setIsOrbitalOpen(false)}
-          onSelect={handleOrbitalSelect}
-        />
-      )}
-
       <nav
         className={`bottom-nav${isScrollingDown ? ' hidden' : ''}`}
         aria-label="Navigazione principale"
       >
-        {TABS.map(({ path, icon, label, orbital }) => orbital ? (
-          <button
-            type="button"
-            key={path}
-            className={`bottom-nav-item${location.pathname === path || isOrbitalOpen ? ' active' : ''}`}
-            aria-label="Apri menu AI"
-            aria-expanded={isOrbitalOpen}
-            onClick={() => setIsOrbitalOpen((current) => !current)}
-          >
-            <span className="bottom-nav-item-icon-wrap">
-              <span className="bottom-nav-item-icon" aria-hidden="true">
-                <NavIcon name={icon} />
+      {TABS.map(({ path, action, icon, label }) => {
+        const active = action === 'ai-orbital'
+          ? orbitalOpen || location.pathname === '/ai-analisi'
+          : isTabActive(path)
+
+        if (action === 'ai-orbital') {
+          return (
+            <button
+              key={action}
+              type="button"
+              className={`bottom-nav-item${active ? ' active' : ''}`}
+              aria-current={active ? 'page' : undefined}
+              aria-label="Apri menu AI"
+              aria-expanded={orbitalOpen}
+              onClick={() => setOrbitalOpen(true)}
+            >
+              <span className="bottom-nav-item-icon-wrap">
+                <span className="bottom-nav-item-icon" aria-hidden="true">
+                  <NavIcon name={icon} />
+                </span>
               </span>
-            </span>
-            <span className="bottom-nav-item-label">{label}</span>
-          </button>
-        ) : (
-          <NavLink
+              <span className="bottom-nav-item-label">{label}</span>
+            </button>
+          )
+        }
+
+        return (
+          <Link
             key={path}
             to={path}
-            end={path === '/'}
-            className={({ isActive }) => `bottom-nav-item${isActive ? ' active' : ''}`}
+            className={`bottom-nav-item${active ? ' active' : ''}`}
+            aria-current={active ? 'page' : undefined}
             aria-label={label}
-            onClick={() => setIsOrbitalOpen(false)}
           >
             <span className="bottom-nav-item-icon-wrap">
               <span className="bottom-nav-item-icon" aria-hidden="true">
@@ -194,9 +223,21 @@ export default function BottomNav() {
               </span>
             </span>
             <span className="bottom-nav-item-label">{label}</span>
-          </NavLink>
-        ))}
+          </Link>
+        )
+      })}
       </nav>
+      {orbitalOpen && createPortal(
+        <RadialOrbitalTimeline
+          items={ORBITAL_ITEMS}
+          onClose={() => setOrbitalOpen(false)}
+          onSelect={(path) => {
+            setOrbitalOpen(false)
+            navigate(path)
+          }}
+        />,
+        document.body,
+      )}
     </>
   )
 }

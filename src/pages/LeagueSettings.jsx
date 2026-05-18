@@ -1,230 +1,276 @@
 // src/pages/LeagueSettings.jsx
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import useLeagueStore from '../stores/useLeagueStore';
 
+const SECTIONS = [
+  { id: 'regolamento', label: 'Regolamento' },
+  { id: 'condividi', label: 'Condividi' },
+  { id: 'partecipanti', label: 'Partecipanti' },
+  { id: 'competizioni', label: 'Competizioni' },
+];
+
+function boolLabel(value) {
+  return value ? 'Si' : 'No';
+}
+
+function SettingList({ title, items }) {
+  return (
+    <section className="ops-panel league-settings-card">
+      <span className="lux-kicker">{title}</span>
+      <dl className="league-setting-list">
+        {items.map(([label, value]) => (
+          <div key={label}>
+            <dt>{label}</dt>
+            <dd>{value}</dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+  );
+}
+
 export default function LeagueSettings() {
-  // Selettore reattivo: si ri-renderizza quando leagues o currentLeagueId cambiano
   const league = useLeagueStore((s) =>
     s.leagues.find((l) => l.id === s.currentLeagueId) || null
   );
-  const updateLeagueSettings = useLeagueStore((s) => s.updateLeagueSettings);
   const removeParticipant = useLeagueStore((s) => s.removeParticipant);
   const [copied, setCopied] = useState(null);
   const [activeSection, setActiveSection] = useState('regolamento');
 
   if (!league) {
     return (
-      <div style={{ padding: 'var(--space-lg)', color: 'var(--text-secondary)', textAlign: 'center' }}>
-        Nessuna lega selezionata.
+      <div className="ops-page league-page">
+        <section className="ops-empty">
+          <span className="lux-kicker">Lega</span>
+          <h1>Nessuna lega selezionata.</h1>
+          <p>Crea una nuova lega o unisciti con un codice invito per attivare la control room.</p>
+          <div className="ops-empty__actions">
+            <Link to="/crea-lega" className="btn-primary">Crea lega</Link>
+            <Link to="/" className="btn-secondary">Torna alla Home</Link>
+          </div>
+        </section>
       </div>
     );
   }
 
-  const isAdmin = league.isAdmin;
-  const copy = (text, key) => {
-    navigator.clipboard.writeText(text);
+  const settings = league.settings || {};
+  const participants = league.participants || [];
+  const isAdmin = !!league.isAdmin;
+  const availableSeats = Math.max((settings.numPartecipanti || 0) - participants.length, 0);
+  const shareText = `Unisciti alla mia lega su FantaBrain AI!\nLega: ${settings.nome}\nCodice: ${league.inviteCode}\nEntra qui: ${league.inviteUrl}`;
+  const whatsappMsg = encodeURIComponent(shareText);
+
+  const copy = async (text, key) => {
+    await navigator.clipboard.writeText(text);
     setCopied(key);
     setTimeout(() => setCopied(null), 2000);
   };
 
-  const whatsappMsg = encodeURIComponent(
-    `Unisciti alla mia lega su FantaBrain AI! 🧠⚽\nLega: ${league.settings.nome}\nCodice: ${league.inviteCode}\nEntra qui: ${league.inviteUrl}`
-  );
-
-  const sections = [
-    { id: 'regolamento', label: '📋 Regolamento' },
-    { id: 'condividi', label: '🔗 Condividi' },
-    { id: 'partecipanti', label: '👥 Partecipanti' },
-    { id: 'competizioni', label: '📊 Competizioni' },
+  const settingSections = [
+    {
+      title: 'Opzioni generali',
+      items: [
+        ['Nome lega', settings.nome || 'Senza nome'],
+        ['Tipo', settings.tipo === 'privata' ? 'Privata' : 'Pubblica'],
+        ['Partecipanti', `${settings.numPartecipanti || 0} squadre`],
+        ['Modalita', settings.modalitaGioco === 'mantra' ? 'Mantra' : 'Classic'],
+      ],
+    },
+    {
+      title: 'Rose e formazione',
+      items: [
+        ['Crediti iniziali', settings.creditiIniziali ?? '--'],
+        ['Giocatori rosa', settings.numGiocatoriRosa ?? '--'],
+        ['Panchina', settings.numeroPanchina ?? '--'],
+        ['Calciatori', settings.disponibilitaCalciatori === 'singola' ? 'Singola' : 'Multipla'],
+      ],
+    },
+    {
+      title: 'Calcolo',
+      items: [
+        ['Fonte voti', settings.fonteVoti || '--'],
+        ['D-Factor', boolLabel(settings.dFactor)],
+        ['Mod. rendimento', boolLabel(settings.modificatoreRendimento)],
+        ['Fair Play', boolLabel(settings.fattoreFairPlay)],
+        ['Capitano', boolLabel(settings.fattoreCapitano)],
+      ],
+    },
+    {
+      title: 'Sostituzioni',
+      items: [
+        ['Modalita', settings.modalitaSostituzioni || '--'],
+        ['Numero', settings.numSostituzioni ?? '--'],
+        ["Riserva d'ufficio", settings.riservaUfficio ? `Si, voto ${settings.votoRiserva}` : 'No'],
+      ],
+    },
+    {
+      title: 'Calendario',
+      items: [
+        ['Tipo', settings.tipoCalendario === 'andata_ritorno' ? 'Andata e ritorno' : "All'italiana"],
+        ['Fasce gol', settings.fasceGol || '--'],
+      ],
+    },
   ];
 
   return (
-    <div style={{ padding: 'var(--space-lg)', maxWidth: '800px', margin: '0 auto' }}>
-      <h1 style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-display)', marginBottom: '0.25rem' }}>
-        ⚙️ Impostazioni Lega
-      </h1>
-      <p style={{ color: 'var(--text-secondary)', marginBottom: 'var(--space-lg)', fontSize: '0.875rem' }}>
-        {league.settings.nome} {!isAdmin && '· Sola lettura'}
-      </p>
+    <div className="ops-page league-page">
+      <section className="ops-hero league-hero">
+        <div className="ops-hero__copy">
+          <span className="lux-kicker">Lega Control Room</span>
+          <h1>{settings.nome || 'La tua lega'}</h1>
+          <p>
+            Regole, inviti, partecipanti e competizioni in una console mobile-first
+            pensata per la gestione rapida.
+          </p>
+        </div>
+        <div className="ops-hero__mark" aria-hidden="true">
+          <span />
+          <span />
+          <span />
+        </div>
+      </section>
 
-      {/* Navigation tabs */}
-      <div style={{ display: 'flex', gap: 'var(--space-sm)', marginBottom: 'var(--space-lg)', flexWrap: 'wrap' }}>
-        {sections.map((s) => (
-          <button key={s.id} onClick={() => setActiveSection(s.id)} style={{
-            padding: '8px 16px', borderRadius: 'var(--radius-md)', border: `1px solid ${activeSection === s.id ? 'var(--border-accent)' : 'var(--border-glass)'}`,
-            background: activeSection === s.id ? 'var(--accent-muted)' : 'var(--bg-glass)', color: activeSection === s.id ? 'var(--accent-primary)' : 'var(--text-secondary)',
-            cursor: 'pointer', fontSize: '0.875rem', fontWeight: activeSection === s.id ? 600 : 400,
-            backdropFilter: 'blur(var(--glass-blur))', transition: 'all 0.2s',
-          }}>
-            {s.label}
+      <section className="ops-stat-grid" aria-label="Sintesi lega">
+        <div className="ops-stat">
+          <span>Posti</span>
+          <strong>{participants.length}/{settings.numPartecipanti || 0}</strong>
+          <small>{availableSeats} disponibili</small>
+        </div>
+        <div className="ops-stat">
+          <span>Codice</span>
+          <strong>{league.inviteCode}</strong>
+          <small>{isAdmin ? 'admin attivo' : 'sola lettura'}</small>
+        </div>
+        <div className="ops-stat">
+          <span>Formato</span>
+          <strong>{settings.modalitaGioco === 'mantra' ? 'Mantra' : 'Classic'}</strong>
+          <small>{settings.tipoCalendario === 'andata_ritorno' ? 'andata/ritorno' : "all'italiana"}</small>
+        </div>
+      </section>
+
+      <nav className="ops-tabs" aria-label="Sezioni impostazioni lega">
+        {SECTIONS.map((section) => (
+          <button
+            key={section.id}
+            type="button"
+            className={`ops-tab${activeSection === section.id ? ' is-active' : ''}`}
+            onClick={() => setActiveSection(section.id)}
+          >
+            {section.label}
           </button>
         ))}
-      </div>
+      </nav>
 
-      {/* Section: Regolamento */}
       {activeSection === 'regolamento' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
-          {[
-            { title: 'Opzioni Generali', items: [
-              ['Nome lega', league.settings.nome],
-              ['Tipo', league.settings.tipo === 'privata' ? 'Privata' : 'Pubblica'],
-              ['Partecipanti', `${league.settings.numPartecipanti} squadre`],
-              ['Modalità', league.settings.modalitaGioco === 'mantra' ? 'Mantra' : 'Classic'],
-            ]},
-            { title: 'Rose e Formazioni', items: [
-              ['Crediti iniziali', `${league.settings.creditiIniziali}`],
-              ['Giocatori per rosa', `${league.settings.numGiocatoriRosa}`],
-              ['Panchina', `${league.settings.numeroPanchina}`],
-              ['Disponibilità', league.settings.disponibilitaCalciatori === 'singola' ? 'Singola' : 'Multipla'],
-            ]},
-            { title: 'Calcolo', items: [
-              ['Fonte voti', league.settings.fonteVoti],
-              ['D-Factor', league.settings.dFactor ? 'Sì' : 'No'],
-              ['Mod. Rendimento', league.settings.modificatoreRendimento ? 'Sì' : 'No'],
-              ['Fair Play', league.settings.fattoreFairPlay ? 'Sì' : 'No'],
-              ['Capitano', league.settings.fattoreCapitano ? 'Sì' : 'No'],
-            ]},
-            { title: 'Sostituzioni', items: [
-              ['Modalità', league.settings.modalitaSostituzioni],
-              ['Numero', `${league.settings.numSostituzioni}`],
-              ["Riserva d'ufficio", league.settings.riservaUfficio ? `Sì (voto ${league.settings.votoRiserva})` : 'No'],
-            ]},
-            { title: 'Calendario', items: [
-              ['Tipo', league.settings.tipoCalendario === 'andata_ritorno' ? 'Andata e Ritorno' : "All'italiana"],
-              ['Fasce gol', league.settings.fasceGol],
-            ]},
-          ].map((section) => (
-            <div key={section.title} className="glass-card" style={{ padding: 'var(--space-md)', borderRadius: 'var(--radius-md)' }}>
-              <h3 style={{ color: 'var(--accent-primary)', fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 'var(--space-sm)' }}>
-                {section.title}
-              </h3>
-              {section.items.map(([label, val]) => (
-                <div key={label} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid var(--border-glass)' }}>
-                  <span style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>{label}</span>
-                  <span style={{ color: 'var(--text-primary)', fontSize: '0.875rem', fontWeight: 500 }}>{val}</span>
-                </div>
-              ))}
-            </div>
+        <div className="ops-section-grid">
+          {settingSections.map((section) => (
+            <SettingList key={section.title} title={section.title} items={section.items} />
           ))}
           {!isAdmin && (
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.75rem', textAlign: 'center' }}>
-              Solo l'admin può modificare le impostazioni
-            </p>
+            <p className="ops-note">Solo l'admin puo modificare le impostazioni della lega.</p>
           )}
         </div>
       )}
 
-      {/* Section: Condividi */}
       {activeSection === 'condividi' && (
-        <div className="glass-card glass-card--accent" style={{ padding: 'var(--space-lg)', borderRadius: 'var(--radius-lg)' }}>
-          <h2 style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-display)', marginBottom: 'var(--space-lg)' }}>🔗 Condividi la Lega</h2>
-
-          <div style={{ marginBottom: 'var(--space-lg)' }}>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.75rem', marginBottom: '4px' }}>CODICE INVITO</p>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)' }}>
-              <span style={{ color: 'var(--accent-primary)', fontFamily: 'monospace', fontSize: '1.25rem', fontWeight: 700, letterSpacing: '0.1em' }}>
-                {league.inviteCode}
-              </span>
-              <button className="btn-secondary" onClick={() => copy(league.inviteCode, 'code')} style={{ padding: '6px 14px', fontSize: '0.75rem' }}>
-                {copied === 'code' ? '✓ Copiato' : '📋 Copia'}
-              </button>
-            </div>
+        <section className="ops-panel league-share-panel">
+          <div>
+            <span className="lux-kicker">Invito privato</span>
+            <h2>Porta dentro la tua lega.</h2>
+            <p>Il codice vive in localStorage per l'MVP: funziona nello stesso ambiente/browser.</p>
           </div>
 
-          <div style={{ marginBottom: 'var(--space-lg)' }}>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.75rem', marginBottom: '4px' }}>URL CONDIVISIBILE</p>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', background: 'var(--bg-elevated)', borderRadius: 'var(--radius-md)', padding: '10px var(--space-md)' }}>
-              <span style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {league.inviteUrl}
-              </span>
-              <button className="btn-secondary" onClick={() => copy(league.inviteUrl, 'url')} style={{ padding: '6px 14px', fontSize: '0.75rem', flexShrink: 0 }}>
-                {copied === 'url' ? '✓' : '📋'}
-              </button>
-            </div>
-          </div>
-
-          <div style={{ display: 'flex', gap: 'var(--space-sm)', flexWrap: 'wrap' }}>
-            <a href={`https://wa.me/?text=${whatsappMsg}`} target="_blank" rel="noopener noreferrer" className="btn-secondary" style={{ textDecoration: 'none', padding: '10px 20px' }}>
-              💬 WhatsApp
-            </a>
-            <a href={`https://t.me/share/url?url=${encodeURIComponent(league.inviteUrl)}&text=${encodeURIComponent(`Unisciti alla mia lega FantaBrain: ${league.settings.nome}`)}`} target="_blank" rel="noopener noreferrer" className="btn-secondary" style={{ textDecoration: 'none', padding: '10px 20px' }}>
-              ✈️ Telegram
-            </a>
-            <button className="btn-secondary" onClick={() => copy(league.inviteUrl, 'share')} style={{ padding: '10px 20px' }}>
-              {copied === 'share' ? '✓ Copiato' : '🔗 Copia Link'}
+          <div className="league-code-card">
+            <span>Codice invito</span>
+            <strong>{league.inviteCode}</strong>
+            <button type="button" className="btn-secondary" onClick={() => copy(league.inviteCode, 'code')}>
+              {copied === 'code' ? 'Copiato' : 'Copia codice'}
             </button>
           </div>
-        </div>
-      )}
 
-      {/* Section: Partecipanti */}
-      {activeSection === 'partecipanti' && (
-        <div className="glass-card" style={{ padding: 'var(--space-lg)', borderRadius: 'var(--radius-lg)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-lg)' }}>
-            <h2 style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-display)' }}>👥 Partecipanti</h2>
-            <span style={{ color: 'var(--accent-primary)', fontSize: '0.875rem', fontWeight: 600 }}>
-              {league.participants.length} / {league.settings.numPartecipanti} posti
-            </span>
+          <div className="league-url-row">
+            <span>{league.inviteUrl}</span>
+            <button type="button" className="btn-secondary" onClick={() => copy(league.inviteUrl, 'url')}>
+              {copied === 'url' ? 'Ok' : 'Copia'}
+            </button>
           </div>
 
-          {league.participants.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: 'var(--space-lg)', color: 'var(--text-muted)' }}>
-              <p style={{ marginBottom: 'var(--space-sm)' }}>Nessun partecipante ancora.</p>
-              <p style={{ fontSize: '0.875rem' }}>Condividi il codice invito per invitare i tuoi amici!</p>
+          <div className="league-share-actions">
+            <a href={`https://wa.me/?text=${whatsappMsg}`} target="_blank" rel="noopener noreferrer" className="btn-secondary">
+              WhatsApp
+            </a>
+            <a
+              href={`https://t.me/share/url?url=${encodeURIComponent(league.inviteUrl)}&text=${encodeURIComponent(`Unisciti alla mia lega FantaBrain: ${settings.nome}`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-secondary"
+            >
+              Telegram
+            </a>
+            <button type="button" className="btn-secondary" onClick={() => copy(league.inviteUrl, 'share')}>
+              {copied === 'share' ? 'Link copiato' : 'Copia link'}
+            </button>
+          </div>
+        </section>
+      )}
+
+      {activeSection === 'partecipanti' && (
+        <section className="ops-panel">
+          <header className="ops-panel__header">
+            <div>
+              <span className="lux-kicker">Partecipanti</span>
+              <h2>{participants.length} squadre registrate</h2>
+            </div>
+            <strong>{availableSeats} posti liberi</strong>
+          </header>
+
+          {participants.length === 0 ? (
+            <div className="ops-inline-empty">
+              <strong>Nessun partecipante ancora.</strong>
+              <span>Condividi il codice invito per aprire la lega agli amici.</span>
             </div>
           ) : (
-            league.participants.map((p, i) => (
-              <div key={p.id || i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: 'var(--space-sm) 0', borderBottom: '1px solid var(--border-glass)' }}>
-                <div>
-                  <span style={{ color: 'var(--text-primary)', fontWeight: 500 }}>{p.name}</span>
-                  {p.isAdmin && <span style={{ marginLeft: '8px', fontSize: '0.7rem', background: 'var(--accent-muted)', color: 'var(--accent-primary)', padding: '2px 8px', borderRadius: '9999px' }}>ADMIN</span>}
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)' }}>
-                  <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>
-                    {p.joinedAt ? new Date(p.joinedAt).toLocaleDateString('it-IT') : '—'}
-                  </span>
-                  {isAdmin && !p.isAdmin && (
+            <div className="league-participant-list">
+              {participants.map((participant, index) => (
+                <article key={participant.id || index} className="league-participant">
+                  <div className="league-participant__avatar">{participant.name?.slice(0, 2).toUpperCase() || 'FB'}</div>
+                  <div>
+                    <strong>{participant.name || 'Squadra'}</strong>
+                    <span>{participant.joinedAt ? new Date(participant.joinedAt).toLocaleDateString('it-IT') : 'Data non disponibile'}</span>
+                  </div>
+                  {participant.isAdmin && <span className="ops-badge ops-badge--gold">Admin</span>}
+                  {isAdmin && !participant.isAdmin && (
                     <button
+                      type="button"
                       className="btn-danger"
-                      style={{ padding: '4px 10px', fontSize: '0.75rem' }}
-                      onClick={() => removeParticipant(league.id, p.id)}
+                      onClick={() => removeParticipant(league.id, participant.id)}
                     >
                       Rimuovi
                     </button>
                   )}
-                </div>
-              </div>
-            ))
+                </article>
+              ))}
+            </div>
           )}
-
-          <div style={{ marginTop: 'var(--space-md)', padding: 'var(--space-sm) var(--space-md)', background: 'var(--bg-elevated)', borderRadius: 'var(--radius-md)', display: 'flex', justifyContent: 'space-between' }}>
-            <span style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>Posti disponibili</span>
-            <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{league.settings.numPartecipanti - league.participants.length}</span>
-          </div>
-        </div>
+        </section>
       )}
 
-      {/* Section: Competizioni */}
       {activeSection === 'competizioni' && (
-        <div className="glass-card" style={{ padding: 'var(--space-lg)', borderRadius: 'var(--radius-lg)' }}>
-          <h2 style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-display)', marginBottom: 'var(--space-lg)' }}>📊 Competizioni</h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: 'var(--space-md)', background: 'var(--bg-elevated)', borderRadius: 'var(--radius-md)' }}>
-              <div>
-                <p style={{ color: 'var(--text-primary)', fontWeight: 600 }}>🏆 Campionato</p>
-                <p style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>Competizione principale · Sempre attiva</p>
-              </div>
-              <span style={{ color: 'var(--success)', fontSize: '0.75rem', fontWeight: 600 }}>ATTIVO</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: 'var(--space-md)', background: 'var(--bg-elevated)', borderRadius: 'var(--radius-md)' }}>
-              <div>
-                <p style={{ color: 'var(--text-primary)', fontWeight: 600 }}>🥤 Coppa</p>
-                <p style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>Competizione eliminazione diretta · Opzionale</p>
-              </div>
-              <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>Prossimamente</span>
-            </div>
-          </div>
-        </div>
+        <section className="ops-competition-grid">
+          <article className="ops-panel league-competition is-active">
+            <span className="lux-kicker">Competizione principale</span>
+            <h2>Campionato</h2>
+            <p>Calendario, classifica e giornata corrente restano il cuore operativo della lega.</p>
+            <strong>Attivo</strong>
+          </article>
+          <article className="ops-panel league-competition">
+            <span className="lux-kicker">Formato extra</span>
+            <h2>Coppa</h2>
+            <p>Eliminazione diretta e bracket possono arrivare dopo il motore stagione.</p>
+            <strong>Prossimamente</strong>
+          </article>
+        </section>
       )}
     </div>
   );

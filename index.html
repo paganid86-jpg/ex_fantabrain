@@ -23,17 +23,15 @@
 
     <!-- Anti-FOUC: applica data-theme prima del primo paint.
          Ordine risoluzione identico a ThemeContext.jsx:
-         localStorage('fantabrain-theme') > prefers-color-scheme > 'dark' -->
+         localStorage('fantabrain-theme') > 'dark' -->
     <script>
       (function () {
         try {
           var stored = localStorage.getItem('fantabrain-theme');
-          var theme =
-            stored === 'light' || stored === 'dark'
-              ? stored
-              : window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches
-                ? 'light'
-                : 'dark';
+          var theme = 'dark';
+          if (stored !== 'dark') {
+            localStorage.setItem('fantabrain-theme', 'dark');
+          }
           document.documentElement.setAttribute('data-theme', theme);
         } catch (e) {
           document.documentElement.setAttribute('data-theme', 'dark');

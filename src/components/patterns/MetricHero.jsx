@@ -15,8 +15,8 @@ export default function MetricHero({
   const hasAction = action?.to && action?.label;
 
   return (
-    <section className={`metric-hero metric-hero--${tone}`}>
-      {kicker && <span className="metric-hero__kicker">{kicker}</span>}
+    <section className={`metric-hero metric-hero--luxury metric-hero--${tone}`}>
+      {kicker && <span className="metric-hero__kicker lux-kicker">{kicker}</span>}
       <strong className="metric-hero__value">{value}</strong>
       <div className="metric-hero__footer">
         {label && <span>{label}</span>}

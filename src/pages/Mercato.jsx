@@ -3,135 +3,115 @@ import useAppStore from '../store/useAppStore';
 import { RUOLI_MANTRA } from '../data/mockData';
 import { valutaOfferta } from '../lib/claudeApi';
 
+const TABS = [
+  { id: 'offerte', label: 'Offerte' },
+  { id: 'scouting', label: 'Svincolati' },
+  { id: 'trattative', label: 'Trattative' },
+];
+
+function EmptyPanel({ kicker, title, children }) {
+  return (
+    <section className="ops-empty market-empty">
+      <span className="lux-kicker">{kicker}</span>
+      <h2>{title}</h2>
+      <p>{children}</p>
+    </section>
+  );
+}
+
+function statusLabel(status = '') {
+  return status.replace('_', ' ').toUpperCase();
+}
+
+function statusTone(status) {
+  if (status === 'accettata') return 'green';
+  if (status === 'rifiutata') return 'red';
+  if (status === 'aperta') return 'blue';
+  return 'amber';
+}
+
 function TabOfferte() {
   const offerte = useAppStore((s) => s.offerte);
   const aggiornaOfferta = useAppStore((s) => s.aggiornaOfferta);
   const rosa = useAppStore((s) => s.rosa);
   const aiCrediti = useAppStore((s) => s.aiCrediti);
-
   const [aiStati, setAiStati] = useState({});
 
   async function valutaConAI(offerta) {
-    setAiStati((s) => ({ ...s, [offerta.id]: { loading: true, testo: null, error: null } }));
+    setAiStati((state) => ({ ...state, [offerta.id]: { loading: true, testo: null, error: null } }));
     try {
       const testo = await valutaOfferta(offerta, rosa);
-      setAiStati((s) => ({ ...s, [offerta.id]: { loading: false, testo, error: null } }));
+      setAiStati((state) => ({ ...state, [offerta.id]: { loading: false, testo, error: null } }));
     } catch {
-      setAiStati((s) => ({
-        ...s,
+      setAiStati((state) => ({
+        ...state,
         [offerta.id]: { loading: false, testo: null, error: 'Analisi non disponibile. Riprova più tardi.' },
       }));
     }
   }
 
+  if (offerte.length === 0) {
+    return (
+      <EmptyPanel kicker="Inbox scambi" title="Nessuna offerta ricevuta.">
+        Quando altri allenatori proporranno scambi, li vedrai qui con valutazione AI e azioni rapide.
+      </EmptyPanel>
+    );
+  }
+
   return (
-    <div>
-      {offerte.length === 0 ? (
-        <div className="empty-state" style={{ paddingTop: 60 }}>
-          <div className="empty-state-icon">💰</div>
-          <div className="empty-state-title">Nessuna offerta ricevuta</div>
-          <div className="empty-state-desc">
-            Quando altri allenatori ti propongono scambi, le offerte appariranno qui.
-          </div>
-        </div>
-      ) : (
-        offerte.map((offerta) => {
-          const ai = aiStati[offerta.id] || {};
-          const statoColors = { in_attesa: 'amber', accettata: 'green', rifiutata: 'red' };
-          const badgeColor = statoColors[offerta.stato] || 'muted';
-
-          return (
-            <div key={offerta.id} className="glass-card" style={{ marginBottom: 12, padding: 16 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
-                <div>
-                  <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 3 }}>
-                    Offerta da <span style={{ color: 'var(--blue)', fontWeight: 600 }}>{offerta.da}</span>
-                  </div>
-                  {offerta.scadenza && (
-                    <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>Scadenza: {offerta.scadenza}</div>
-                  )}
-                </div>
-                <span className={`badge badge-${badgeColor}`}>
-                  {offerta.stato.replace('_', ' ').toUpperCase()}
-                </span>
+    <section className="market-card-list">
+      {offerte.map((offerta) => {
+        const ai = aiStati[offerta.id] || {};
+        return (
+          <article key={offerta.id} className="ops-panel market-offer-card">
+            <header className="market-card-header">
+              <div>
+                <span className="lux-kicker">Offerta da {offerta.da}</span>
+                {offerta.scadenza && <p>Scadenza: {offerta.scadenza}</p>}
               </div>
+              <span className={`ops-badge ops-badge--${statusTone(offerta.stato)}`}>
+                {statusLabel(offerta.stato)}
+              </span>
+            </header>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: 12, alignItems: 'center', marginBottom: 12 }}>
-                <div style={{
-                  background: 'rgba(248,113,113,0.08)', borderRadius: 8, padding: '10px 12px',
-                  border: '1px solid rgba(248,113,113,0.2)',
-                }}>
-                  <div style={{
-                    fontSize: 10, color: 'var(--red)',
-                    fontFamily: 'var(--font-display)', letterSpacing: '0.08em',
-                    textTransform: 'uppercase', marginBottom: 4,
-                  }}>CEDO</div>
-                  <div style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: 14 }}>
-                    {offerta.giocatoreRichiesto}
-                  </div>
-                </div>
-                <div style={{ fontSize: 22, color: 'var(--text-muted)' }}>⇄</div>
-                <div style={{
-                  background: 'rgba(74,222,128,0.08)', borderRadius: 8, padding: '10px 12px',
-                  border: '1px solid rgba(74,222,128,0.2)',
-                }}>
-                  <div style={{
-                    fontSize: 10, color: 'var(--green)',
-                    fontFamily: 'var(--font-display)', letterSpacing: '0.08em',
-                    textTransform: 'uppercase', marginBottom: 4,
-                  }}>RICEVO</div>
-                  <div style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: 14 }}>
-                    {offerta.giocatoreOfferto}
-                  </div>
-                  {offerta.quotazioneOfferta && (
-                    <div style={{ fontSize: 11, color: 'var(--amber)' }}>{offerta.quotazioneOfferta}M</div>
-                  )}
-                </div>
+            <div className="market-trade-flow" aria-label="Dettaglio scambio">
+              <div className="market-trade-box is-out">
+                <span>Cedo</span>
+                <strong>{offerta.giocatoreRichiesto}</strong>
               </div>
-
-              {offerta.stato === 'in_attesa' && (
-                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: ai.testo || ai.loading || ai.error ? 10 : 0 }}>
-                  <button
-                    onClick={() => aggiornaOfferta(offerta.id, 'accettata')}
-                    className="btn-primary"
-                    style={{ fontSize: 12, padding: '6px 14px' }}
-                  >
-                    ✓ Accetta
-                  </button>
-                  <button
-                    onClick={() => aggiornaOfferta(offerta.id, 'rifiutata')}
-                    className="btn-danger"
-                    style={{ fontSize: 12, padding: '6px 14px' }}
-                  >
-                    ✕ Rifiuta
-                  </button>
-                  <button
-                    onClick={() => valutaConAI(offerta)}
-                    disabled={ai.loading || aiCrediti === 0}
-                    className="btn-ai"
-                    style={{ fontSize: 12, padding: '6px 14px', marginLeft: 'auto' }}
-                  >
-                    {ai.loading ? '⏳...' : '🤖 Valuta AI'}
-                  </button>
-                </div>
-              )}
-
-              {ai.error && (
-                <div style={{
-                  fontSize: 12, color: 'var(--red)', padding: '8px',
-                  background: 'rgba(248,113,113,0.08)', borderRadius: 6,
-                }}>
-                  {ai.error}
-                </div>
-              )}
-              {ai.testo && (
-                <div className="ai-response" style={{ fontSize: 12 }}>{ai.testo}</div>
-              )}
+              <div className="market-trade-swap" aria-hidden="true">VS</div>
+              <div className="market-trade-box is-in">
+                <span>Ricevo</span>
+                <strong>{offerta.giocatoreOfferto}</strong>
+                {offerta.quotazioneOfferta && <small>{offerta.quotazioneOfferta}M</small>}
+              </div>
             </div>
-          );
-        })
-      )}
-    </div>
+
+            {offerta.stato === 'in_attesa' && (
+              <div className="market-actions">
+                <button type="button" onClick={() => aggiornaOfferta(offerta.id, 'accettata')} className="btn-primary">
+                  Accetta
+                </button>
+                <button type="button" onClick={() => aggiornaOfferta(offerta.id, 'rifiutata')} className="btn-danger">
+                  Rifiuta
+                </button>
+                <button
+                  type="button"
+                  onClick={() => valutaConAI(offerta)}
+                  disabled={ai.loading || aiCrediti === 0}
+                  className="home-lux-hero__cta market-ai-btn"
+                >
+                  {ai.loading ? 'Valuto...' : 'Valuta AI'}
+                </button>
+              </div>
+            )}
+
+            {ai.error && <div className="ops-error">{ai.error}</div>}
+            {ai.testo && <div className="ai-response market-ai-response">{ai.testo}</div>}
+          </article>
+        );
+      })}
+    </section>
   );
 }
 
@@ -141,114 +121,115 @@ function TabScouting() {
   const [cerca, setCerca] = useState('');
 
   return (
-    <div>
-      {/* Filtri */}
-      <div style={{ display: 'flex', gap: 10, marginBottom: 16, flexWrap: 'wrap' }}>
+    <section className="ops-panel market-filter-panel">
+      <div className="market-filter-grid">
         <input
           className="input-field"
           placeholder="Cerca giocatore..."
           value={cerca}
-          onChange={(e) => setCerca(e.target.value)}
-          style={{ maxWidth: 200 }}
+          onChange={(event) => setCerca(event.target.value)}
         />
-        <select
-          className="input-field"
-          value={filtroRuolo}
-          onChange={(e) => setFiltroRuolo(e.target.value)}
-          style={{ maxWidth: 130 }}
-        >
+        <select className="input-field" value={filtroRuolo} onChange={(event) => setFiltroRuolo(event.target.value)}>
           <option value="Tutti">Tutti i ruoli</option>
-          {RUOLI_MANTRA.map((r) => <option key={r} value={r}>{r}</option>)}
+          {RUOLI_MANTRA.map((role) => <option key={role} value={role}>{role}</option>)}
         </select>
-        <select
-          className="input-field"
-          value={filtroQuota}
-          onChange={(e) => setFiltroQuota(e.target.value)}
-          style={{ maxWidth: 160 }}
-        >
+        <select className="input-field" value={filtroQuota} onChange={(event) => setFiltroQuota(event.target.value)}>
           <option value="">Tutti i prezzi</option>
           <option value="bassa">&lt; 10M</option>
-          <option value="media">10–20M</option>
+          <option value="media">10-20M</option>
           <option value="alta">&gt; 20M</option>
         </select>
       </div>
 
-      <div className="empty-state" style={{ paddingTop: 60 }}>
-        <div className="empty-state-icon">🔎</div>
-        <div className="empty-state-title">Nessun giocatore disponibile nel mercato libero</div>
-        <div className="empty-state-desc">
-          In questa versione il mercato degli svincolati è vuoto. In futuro potrai cercare e acquistare
-          giocatori liberi da tutte le squadre di Serie A.
-        </div>
-      </div>
-    </div>
+      <EmptyPanel kicker="Mercato libero" title="Svincolati non ancora attivi.">
+        In questa versione il mercato libero è vuoto. La ricerca completa sui giocatori Serie A vive nella sezione Scouting.
+      </EmptyPanel>
+    </section>
   );
 }
 
 function TabTrattative() {
   const trattative = useAppStore((s) => s.trattative);
 
-  const statoColors = { in_attesa: 'amber', accettata: 'green', rifiutata: 'red', aperta: 'blue' };
+  if (trattative.length === 0) {
+    return (
+      <EmptyPanel kicker="Pipeline scambi" title="Nessuna trattativa avviata.">
+        Le trattative aperte con altri allenatori appariranno qui con stato e contesto.
+      </EmptyPanel>
+    );
+  }
 
   return (
-    <div>
-      {trattative.length === 0 ? (
-        <div className="empty-state" style={{ paddingTop: 60 }}>
-          <div className="empty-state-icon">🤝</div>
-          <div className="empty-state-title">Nessuna trattativa avviata</div>
-          <div className="empty-state-desc">
-            Le trattative che avvii con altri allenatori appariranno qui per tenerti aggiornato sullo stato.
+    <section className="market-card-list">
+      {trattative.map((trattativa) => (
+        <article key={trattativa.id} className="ops-panel market-negotiation-card">
+          <div>
+            <span className="lux-kicker">Con {trattativa.avversario}</span>
+            <h2>{trattativa.mioGiocatore} <span>per</span> {trattativa.giocatoreVoluto}</h2>
           </div>
-        </div>
-      ) : (
-        <div>
-          {trattative.map((t) => (
-            <div key={t.id} className="glass-card" style={{ marginBottom: 12, padding: 16 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: 600, color: 'var(--text-primary)', marginBottom: 4, fontSize: 14 }}>
-                    {t.mioGiocatore}
-                    <span style={{ color: 'var(--text-muted)', margin: '0 6px' }}>→</span>
-                    {t.giocatoreVoluto}
-                  </div>
-                  <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-                    Con: <span style={{ color: 'var(--blue)' }}>{t.avversario}</span>
-                  </div>
-                </div>
-                <span className={`badge badge-${statoColors[t.stato] || 'muted'}`}>
-                  {t.stato.replace('_', ' ').toUpperCase()}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
+          <span className={`ops-badge ops-badge--${statusTone(trattativa.stato)}`}>
+            {statusLabel(trattativa.stato)}
+          </span>
+        </article>
+      ))}
+    </section>
   );
 }
 
 export default function Mercato() {
   const [tab, setTab] = useState('offerte');
-
-  const tabs = [
-    { id: 'offerte', label: 'Offerte Ricevute' },
-    { id: 'scouting', label: 'Scouting' },
-    { id: 'trattative', label: 'Trattative' },
-  ];
+  const offerte = useAppStore((s) => s.offerte);
+  const trattative = useAppStore((s) => s.trattative);
+  const aiCrediti = useAppStore((s) => s.aiCrediti);
 
   return (
-    <div>
-      <div className="tab-bar">
-        {tabs.map((t) => (
-          <div
-            key={t.id}
-            className={`tab-item${tab === t.id ? ' active' : ''}`}
-            onClick={() => setTab(t.id)}
+    <div className="ops-page market-page">
+      <section className="ops-hero market-hero">
+        <div className="ops-hero__copy">
+          <span className="lux-kicker">Mercato</span>
+          <h1>Trading desk.</h1>
+          <p>
+            Offerte, trattative e shortlist in una console rapida per decidere
+            cosa accettare, rifiutare o far valutare all'AI.
+          </p>
+        </div>
+        <div className="ops-hero__mark" aria-hidden="true">
+          <span />
+          <span />
+          <span />
+        </div>
+      </section>
+
+      <section className="ops-stat-grid" aria-label="Sintesi mercato">
+        <div className="ops-stat">
+          <span>Offerte</span>
+          <strong>{offerte.length}</strong>
+          <small>ricevute</small>
+        </div>
+        <div className="ops-stat">
+          <span>Trattative</span>
+          <strong>{trattative.length}</strong>
+          <small>in osservazione</small>
+        </div>
+        <div className="ops-stat">
+          <span>Crediti AI</span>
+          <strong>{aiCrediti}</strong>
+          <small>per valutare</small>
+        </div>
+      </section>
+
+      <nav className="ops-tabs" aria-label="Sezioni mercato">
+        {TABS.map((item) => (
+          <button
+            key={item.id}
+            type="button"
+            className={`ops-tab${tab === item.id ? ' is-active' : ''}`}
+            onClick={() => setTab(item.id)}
           >
-            {t.label}
-          </div>
+            {item.label}
+          </button>
         ))}
-      </div>
+      </nav>
 
       {tab === 'offerte' && <TabOfferte />}
       {tab === 'scouting' && <TabScouting />}

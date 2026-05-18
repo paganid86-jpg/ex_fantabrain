@@ -14,11 +14,11 @@ export default function SignalRow({ tone = 'neutral', label, value, hint, to }) 
 
   if (to) {
     return (
-      <Link to={to} className={`signal-row signal-row--${tone}`} aria-label={`${label}${value != null ? `: ${value}` : ''}`}>
+      <Link to={to} className={`signal-row signal-row--luxury signal-row--${tone}`} aria-label={`${label}${value != null ? `: ${value}` : ''}`}>
         {content}
       </Link>
     );
   }
 
-  return <div className={`signal-row signal-row--${tone}`}>{content}</div>;
+  return <div className={`signal-row signal-row--luxury signal-row--${tone}`}>{content}</div>;
 }
